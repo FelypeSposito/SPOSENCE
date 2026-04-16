@@ -30,6 +30,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/light-blue-mockup.png",
       tags: ["frescos", "dia", "calor", "citrico"],
       featured: true,
     },
@@ -47,6 +48,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/acqua-di-gio-mockup.png",
       tags: ["frescos", "dia", "aquatico", "masculino"],
     },
     {
@@ -63,6 +65,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/mandarino-mockup.png",
       tags: ["frescos", "citrico", "calor"],
     },
     {
@@ -79,6 +82,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/bleu-de-chanel-mockup.png",
       tags: ["frescos", "amadeirado", "masculino"],
       featured: true,
     },
@@ -113,6 +117,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/devotion-mockup.png",
       tags: ["doces", "floral", "baunilha"],
     },
     {
@@ -129,6 +134,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/italica-mockup.png",
       tags: ["doces", "amendoa", "gourmand"],
     },
     {
@@ -145,6 +151,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/baccarat-rouge-mockup.png",
       tags: ["doces", "ambar", "premium", "unissex"],
       is_special_edition: true,
       featured: true,
@@ -163,6 +170,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/olympea-mockup.png",
       tags: ["doces", "baunilha", "feminino"],
     },
     {
@@ -179,6 +187,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/212-sexy-mockup.png",
       tags: ["noturnos", "sedutor", "ambar", "feminino"],
     },
     {
@@ -195,6 +204,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/libre-intense-mockup.png",
       tags: ["noturnos", "lavanda", "baunilha", "feminino"],
     },
     {
@@ -211,6 +221,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/royal-amber-mockup.png",
       tags: ["noturnos", "oriental", "ambar", "oud", "unissex"],
     },
     {
@@ -227,6 +238,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/tobacco-vanille-mockup.png",
       tags: ["noturnos", "amadeirado", "baunilha", "unissex"],
       featured: true,
     },
@@ -244,6 +256,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/one-million-mockup.png",
       tags: ["noturnos", "couro", "especiado", "masculino"],
     },
     {
@@ -260,6 +273,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/invictus-victory-mockup.png",
       tags: ["noturnos", "amadeirado", "menta", "masculino"],
     },
     {
@@ -276,6 +290,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/libre-mockup.png",
       tags: ["elegantes", "lavanda", "baunilha", "feminino"],
     },
     {
@@ -292,6 +307,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/libre-flowers-flames-mockup.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
     },
     {
@@ -308,6 +324,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/coco-mademoiselle-mockup.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
       featured: true,
     },
@@ -369,7 +386,7 @@ const SPOSENCE_DATA = {
   technical_schema: {
     inventory_data: {
       perfumery: {
-        base_ingredients: ["Álcool de cereais", "Fixador Galaxo", "Glicerina bidestilada"],
+        base_ingredients: ["Essências Premium Importadas", "Base de Alta Pureza", "Fixador de Longa Duração"],
       },
     },
   },

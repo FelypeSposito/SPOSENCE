@@ -313,7 +313,7 @@ function renderProductCard(p) {
   return `
     <div class="product-card" id="card-${p.id}" onclick="location.href='produto.html?id=${p.id}'">
       <div class="product-card__image">
-        <div class="product-card__placeholder">${displayEmoji}</div>
+        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${displayEmoji}</div>`}
         <div class="product-card__badges">
           ${isPerfume ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : ''}
           ${isPerfume ? `<span class="badge badge--gold">27%</span>` : ''}
