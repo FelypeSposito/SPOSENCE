@@ -56,6 +56,17 @@
       align-items: flex-start;
       gap: 1.25rem;
     }
+    .price-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      .price-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -96,7 +107,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;flex-wrap:wrap" class="reveal">
+      <div class="price-grid reveal">
 
         <!-- Perfumes -->
         <div class="info-card">

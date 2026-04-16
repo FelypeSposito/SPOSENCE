@@ -1,307 +1,341 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sposence — Essências que contam histórias</title>
-  <meta name="description" content="Perfumes artesanais de alta concentração (27% essência pura). Frescos, doces, noturnos e elegantes — encontre sua essência."/>
-  <link rel="stylesheet" href="css/style.css"/>
-  <link rel="stylesheet" href="css/animations.css"/>
+  <meta name="description"
+    content="Perfumes artesanais de alta concentração (27% essência pura). Frescos, doces, noturnos e elegantes — encontre sua essência." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
 </head>
+
 <body>
 
-<div id="scroll-progress"></div>
-<div id="navbar-mount"></div>
-<div id="cart-mount"></div>
-<div id="toast-mount"></div>
+  <div id="scroll-progress"></div>
+  <div id="navbar-mount"></div>
+  <div id="cart-mount"></div>
+  <div id="toast-mount"></div>
 
-<main>
+  <main>
 
-  <!-- ============================================================
+    <!-- ============================================================
        HERO — Editorial assimétrico
   ============================================================ -->
-  <section class="hero" id="hero">
-    <div class="container">
-      <div class="hero__content">
+    <section class="hero" id="hero">
+      <div class="container">
+        <div class="hero__content">
 
-        <!-- ESQUERDA -->
-        <div class="hero__left">
-          <div class="hero__eyebrow">
-            <div class="hero__eyebrow-line"></div>
-            <span class="t-label">27% Essência Pura · Artesanal</span>
+          <!-- ESQUERDA -->
+          <div class="hero__left">
+            <div class="hero__eyebrow">
+              <div class="hero__eyebrow-line"></div>
+              <span class="t-label">27% Essência Pura · Artesanal</span>
+            </div>
+
+            <h1 class="t-display hero__title">
+              A delicadeza do<br /><em>perfume floral.</em>
+            </h1>
+
+            <p class="hero__description">
+              Perfumes de alta concentração inspirados nos maiores clássicos do mundo.
+              Álcool de cereais, Fixador Galaxo e Glicerina bidestilada — uma composição que permanece.
+            </p>
+
+            <div class="hero__cta">
+              <a href="produtos.html" class="btn btn--primary btn--lg">
+                Explorar Essências
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+              <a href="layering.html" class="btn btn--outline">Guia de Layering</a>
+            </div>
+
+            <div class="hero__stats">
+              <div>
+                <div class="hero__stat-value">27%</div>
+                <div class="hero__stat-label">Concentração</div>
+              </div>
+              <div>
+                <div class="hero__stat-value">18+</div>
+                <div class="hero__stat-label">Fragrâncias</div>
+              </div>
+              <div>
+                <div class="hero__stat-value">4</div>
+                <div class="hero__stat-label">Perfis olfativos</div>
+              </div>
+            </div>
           </div>
 
-          <h1 class="t-display hero__title">
-            Essências que<br/><em>contam histórias.</em>
-          </h1>
-
-          <p class="hero__description">
-            Perfumes de alta concentração inspirados nos maiores clássicos do mundo.
-            Álcool de cereais, Fixador Galaxo e Glicerina bidestilada — uma composição que permanece.
-          </p>
-
-          <div class="hero__cta">
-            <a href="produtos.html" class="btn btn--primary btn--lg">
-              Explorar Essências
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="layering.html" class="btn btn--outline">Guia de Layering</a>
-          </div>
-
-          <div class="hero__stats">
-            <div>
-              <div class="hero__stat-value">27%</div>
-              <div class="hero__stat-label">Concentração</div>
+          <!-- DIREITA / VISUAL -->
+          <div class="hero__visual">
+            <div class="hero__main-image-wrapper">
+              <img src="img/Perfume-Girassol.png" alt="Perfume Sposence" class="hero__main-image">
             </div>
-            <div>
-              <div class="hero__stat-value">18+</div>
-              <div class="hero__stat-label">Fragrâncias</div>
-            </div>
-            <div>
-              <div class="hero__stat-value">4</div>
-              <div class="hero__stat-label">Perfis olfativos</div>
+
+            <!-- Floating card (Left only as per design) -->
+            <div class="hero__floating-card hero__float-left">
+              <div class="hero__float-label">FAVORITO DA ESTAÇÃO</div>
+              <div class="hero__float-name">Light Blue</div>
+              <div class="hero__float-desc">50ml · Refrescante · Delicado</div>
+              <a href="produto.html?id=light-blue" class="hero__float-link">CONHECER AGORA</a>
             </div>
           </div>
+
         </div>
-
-        <!-- DIREITA / VISUAL -->
-        <div class="hero__visual">
-          <div class="hero__bottle-mockup">
-            <div class="hero__bottle-bg"></div>
-            <div class="hero__bottle-text">Spo<br/>sence</div>
-          </div>
-
-          <!-- Floating card (Left only as per design) -->
-          <div class="hero__floating-card hero__float-left">
-            <div class="hero__float-label">Arquivo No. 422</div>
-            <div class="hero__float-name">Earth & Moss</div>
-            <div class="hero__float-desc">Terroso · Orgânico · Profundo</div>
-          </div>
-        </div>
-
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================================================
+    <!-- ============================================================
        COLEÇÕES EM DESTAQUE (Stitch Style)
   ============================================================ -->
-  <section class="section--sm" style="background:var(--bg)">
-    <div class="container">
-      <div class="collections-preview">
-        
-        <!-- CARD 1: Perfumes -->
-        <a href="produtos.html?cat=perfumes" class="collection-card reveal">
-          <img src="img/perfume_collection.png" alt="Coleção de Perfumes" class="collection-card__img">
-          <div class="collection-card__overlay">
-            <span class="collection-card__label">27% Essência</span>
-            <h3 class="collection-card__title">Alta Perfumaria</h3>
-            <div class="collection-card__btn">
-              Explorar Perfumes
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </div>
-        </a>
+    <section class="section--sm" style="background:var(--bg)">
+      <div class="container">
+        <div class="collections-preview">
 
-        <!-- CARD 2: Body Splashes -->
-        <a href="produtos.html?cat=body_splashes" class="collection-card reveal reveal-delay-1">
-          <img src="img/splash_collection.png" alt="Coleção Body Splashes" class="collection-card__img">
-          <div class="collection-card__overlay">
-            <span class="collection-card__label">Leveza & Frescor</span>
-            <h3 class="collection-card__title">Body Splashes</h3>
-            <div class="collection-card__btn">
-              Ver Coleção
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <!-- CARD 1: Perfumes -->
+          <a href="produtos.html?cat=perfumes" class="collection-card reveal">
+            <img src="img/perfume_collection.png" alt="Coleção de Perfumes" class="collection-card__img">
+            <div class="collection-card__overlay">
+              <span class="collection-card__label">27% Essência</span>
+              <h3 class="collection-card__title">Alta Perfumaria</h3>
+              <div class="collection-card__btn">
+                Explorar Perfumes
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
-          </div>
-        </a>
+          </a>
 
-        <!-- CARD 3: Skincare -->
-        <a href="produtos.html?cat=skincare" class="collection-card reveal reveal-delay-2">
-          <img src="img/skincare_collection.png" alt="Coleção Cuidados Corporais" class="collection-card__img">
-          <div class="collection-card__overlay">
-            <span class="collection-card__label">Ritual de Bem-estar</span>
-            <h3 class="collection-card__title">Cuidados Corporais</h3>
-            <div class="collection-card__btn">
-              Descobrir mais
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <!-- CARD 2: Body Splashes -->
+          <a href="produtos.html?cat=body_splashes" class="collection-card reveal reveal-delay-1">
+            <img src="img/splash_collection.png" alt="Coleção Body Splashes" class="collection-card__img">
+            <div class="collection-card__overlay">
+              <span class="collection-card__label">Leveza & Frescor</span>
+              <h3 class="collection-card__title">Body Splashes</h3>
+              <div class="collection-card__btn">
+                Ver Coleção
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
-          </div>
-        </a>
+          </a>
 
+          <!-- CARD 3: Skincare -->
+          <a href="produtos.html?cat=skincare" class="collection-card reveal reveal-delay-2">
+            <img src="img/skincare_collection.png" alt="Coleção Cuidados Corporais" class="collection-card__img">
+            <div class="collection-card__overlay">
+              <span class="collection-card__label">Ritual de Bem-estar</span>
+              <h3 class="collection-card__title">Cuidados Corporais</h3>
+              <div class="collection-card__btn">
+                Descobrir mais
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </a>
+
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================================================
+    <!-- ============================================================
        DESTAQUES
   ============================================================ -->
-  <section class="section">
-    <div class="container">
+    <section class="section">
+      <div class="container">
 
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Mais Desejados</span>
+        <div class="section-header reveal">
+          <div>
+            <div class="eyebrow">
+              <div class="eyebrow-line"></div>
+              <span class="t-label">Mais Desejados</span>
+            </div>
+            <h2 class="t-headline">Em Destaque</h2>
           </div>
-          <h2 class="t-headline">Em Destaque</h2>
+          <a href="produtos.html" class="btn btn--outline btn--sm">Ver catálogo completo</a>
         </div>
-        <a href="produtos.html" class="btn btn--outline btn--sm">Ver catálogo completo</a>
+
+        <div class="grid-4" id="featured-grid"></div>
+
       </div>
+    </section>
 
-      <div class="grid-4" id="featured-grid"></div>
-
-    </div>
-  </section>
-
-  <!-- ============================================================
+    <!-- ============================================================
        CONCENTRAÇÃO — banner editorial
   ============================================================ -->
-  <section class="section--sm" style="background:var(--surface-container)">
-    <div class="container">
-      <div class="conc-banner reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Por que 27%?</span>
+    <section class="section--sm" style="background:var(--surface-container)">
+      <div class="container">
+        <div class="conc-banner reveal">
+          <div>
+            <div class="eyebrow">
+              <div class="eyebrow-line"></div>
+              <span class="t-label">Por que 27%?</span>
+            </div>
+            <h2 class="t-headline" style="margin-bottom:1rem">A concentração que <em
+                style="color:var(--primary-ctn)">faz a diferença.</em></h2>
+            <p class="t-body" style="max-width:500px">
+              Enquanto perfumes de massa usam entre 10–18% de essência, cada frasco Sposence contém
+              <strong>27% de essência pura</strong>. Maior projeção, fixação duradoura e experiência única.
+            </p>
+            <div class="conc-ingredients">
+              <div>
+                <div class="conc-ing__label">Base</div>
+                <div class="conc-ing__value">Álcool de Cereais</div>
+              </div>
+              <div>
+                <div class="conc-ing__label">Fixador</div>
+                <div class="conc-ing__value">Galaxo</div>
+              </div>
+              <div>
+                <div class="conc-ing__label">Hidratante</div>
+                <div class="conc-ing__value">Glicerina Bidestilada</div>
+              </div>
+            </div>
           </div>
-          <h2 class="t-headline" style="margin-bottom:1rem">A concentração que <em style="color:var(--primary-ctn)">faz a diferença.</em></h2>
-          <p class="t-body" style="max-width:500px">
-            Enquanto perfumes de massa usam entre 10–18% de essência, cada frasco Sposence contém
-            <strong>27% de essência pura</strong>. Maior projeção, fixação duradoura e experiência única.
-          </p>
-          <div class="conc-ingredients">
-            <div><div class="conc-ing__label">Base</div><div class="conc-ing__value">Álcool de Cereais</div></div>
-            <div><div class="conc-ing__label">Fixador</div><div class="conc-ing__value">Galaxo</div></div>
-            <div><div class="conc-ing__label">Hidratante</div><div class="conc-ing__value">Glicerina Bidestilada</div></div>
+          <div class="conc-circle">
+            <div class="conc-circle__val">27%</div>
+            <div class="conc-circle__lbl">ESSÊNCIA</div>
           </div>
-        </div>
-        <div class="conc-circle">
-          <div class="conc-circle__val">27%</div>
-          <div class="conc-circle__lbl">ESSÊNCIA</div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================================================
+    <!-- ============================================================
        LAYERING PREVIEW
   ============================================================ -->
-  <section class="section">
-    <div class="container">
+    <section class="section">
+      <div class="container">
 
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Técnica Sposence</span>
+        <div class="section-header reveal">
+          <div>
+            <div class="eyebrow">
+              <div class="eyebrow-line"></div>
+              <span class="t-label">Técnica Sposence</span>
+            </div>
+            <h2 class="t-headline">Combine e amplifique <em style="color:var(--primary-ctn)">sua essência</em></h2>
           </div>
-          <h2 class="t-headline">Combine e amplifique <em style="color:var(--primary-ctn)">sua essência</em></h2>
+          <a href="layering.html" class="btn btn--outline btn--sm">Ver guia completo</a>
         </div>
-        <a href="layering.html" class="btn btn--outline btn--sm">Ver guia completo</a>
+
+        <div class="grid-3" id="layering-preview-grid"></div>
+
       </div>
+    </section>
 
-      <div class="grid-3" id="layering-preview-grid"></div>
-
-    </div>
-  </section>
-
-  <!-- ============================================================
+    <!-- ============================================================
        LINHA COMPLETA — categorias
   ============================================================ -->
-  <section class="section" style="background:var(--surface-container)">
-    <div class="container">
+    <section class="section" style="background:var(--surface-container)">
+      <div class="container">
 
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Linha Completa</span>
+        <div class="section-header reveal">
+          <div>
+            <div class="eyebrow">
+              <div class="eyebrow-line"></div>
+              <span class="t-label">Linha Completa</span>
+            </div>
+            <h2 class="t-headline">Além dos perfumes</h2>
           </div>
-          <h2 class="t-headline">Além dos perfumes</h2>
         </div>
+
+        <div class="grid-4">
+          <a href="produtos.html?cat=perfumes" class="product-card reveal" style="text-decoration:none">
+            <div class="product-card__image" style="aspect-ratio:1">
+              <div class="product-card__placeholder">🌸</div>
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__name">Perfumes</div>
+              <div class="product-card__notes">18 fragrâncias · 27% concentração · 30ml, 50ml, 100ml</div>
+            </div>
+          </a>
+          <a href="produtos.html?cat=body_splashes" class="product-card reveal reveal-delay-1"
+            style="text-decoration:none">
+            <div class="product-card__image" style="aspect-ratio:1">
+              <div class="product-card__placeholder">💦</div>
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__name">Body Splashes</div>
+              <div class="product-card__notes">4 tipos · 200ml · 10% essência</div>
+            </div>
+          </a>
+          <a href="produtos.html?cat=skincare" class="product-card reveal reveal-delay-2" style="text-decoration:none">
+            <div class="product-card__image" style="aspect-ratio:1">
+              <div class="product-card__placeholder">🫧</div>
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__name">Cuidados Corporais</div>
+              <div class="product-card__notes">Cremes hidratantes e especiais — R$ 25 a R$ 45</div>
+            </div>
+          </a>
+          <a href="produtos.html?cat=merchandise" class="product-card reveal reveal-delay-3"
+            style="text-decoration:none">
+            <div class="product-card__image" style="aspect-ratio:1">
+              <div class="product-card__placeholder">✨</div>
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__name">Acessórios</div>
+              <div class="product-card__notes">Ecobag e Chaveiro Sposence</div>
+            </div>
+          </a>
+        </div>
+
       </div>
+    </section>
 
-      <div class="grid-4">
-        <a href="produtos.html?cat=perfumes" class="product-card reveal" style="text-decoration:none">
-          <div class="product-card__image" style="aspect-ratio:1"><div class="product-card__placeholder">🌸</div></div>
-          <div class="product-card__body">
-            <div class="product-card__name">Perfumes</div>
-            <div class="product-card__notes">18 fragrâncias · 27% concentração · 30ml, 50ml, 100ml</div>
-          </div>
-        </a>
-        <a href="produtos.html?cat=body_splashes" class="product-card reveal reveal-delay-1" style="text-decoration:none">
-          <div class="product-card__image" style="aspect-ratio:1"><div class="product-card__placeholder">💦</div></div>
-          <div class="product-card__body">
-            <div class="product-card__name">Body Splashes</div>
-            <div class="product-card__notes">4 tipos · 200ml · 10% essência</div>
-          </div>
-        </a>
-        <a href="produtos.html?cat=skincare" class="product-card reveal reveal-delay-2" style="text-decoration:none">
-          <div class="product-card__image" style="aspect-ratio:1"><div class="product-card__placeholder">🫧</div></div>
-          <div class="product-card__body">
-            <div class="product-card__name">Cuidados Corporais</div>
-            <div class="product-card__notes">Cremes hidratantes e especiais — R$ 25 a R$ 45</div>
-          </div>
-        </a>
-        <a href="produtos.html?cat=merchandise" class="product-card reveal reveal-delay-3" style="text-decoration:none">
-          <div class="product-card__image" style="aspect-ratio:1"><div class="product-card__placeholder">✨</div></div>
-          <div class="product-card__body">
-            <div class="product-card__name">Acessórios</div>
-            <div class="product-card__notes">Ecobag e Chaveiro Sposence</div>
-          </div>
-        </a>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============================================================
+    <!-- ============================================================
        CTA FINAL
   ============================================================ -->
-  <section class="section">
-    <div class="container">
-      <div class="reveal" style="
+    <section class="section">
+      <div class="container">
+        <div class="reveal" style="
         text-align:center;
         padding:5rem 2rem;
         background:var(--surface-container);
         border-radius:var(--r-xl);
       ">
-        <span class="t-label" style="display:inline-block;margin-bottom:1.5rem">Pronto para começar?</span>
-        <h2 class="t-headline" style="margin-bottom:1.25rem">Descubra sua <em style="color:var(--primary-ctn)">fragrância perfeita.</em></h2>
-        <p class="t-body" style="max-width:440px;margin:0 auto 2.5rem">
-          Explore o catálogo completo, filtre por perfil olfativo e monte seu kit de layering ideal.
-        </p>
-        <a href="produtos.html" class="btn btn--primary btn--lg">
-          Ver Catálogo Completo
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+          <span class="t-label" style="display:inline-block;margin-bottom:1.5rem">Pronto para começar?</span>
+          <h2 class="t-headline" style="margin-bottom:1.25rem">Descubra sua <em
+              style="color:var(--primary-ctn)">fragrância perfeita.</em></h2>
+          <p class="t-body" style="max-width:440px;margin:0 auto 2.5rem">
+            Explore o catálogo completo, filtre por perfil olfativo e monte seu kit de layering ideal.
+          </p>
+          <a href="produtos.html" class="btn btn--primary btn--lg">
+            Ver Catálogo Completo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-</main>
+  </main>
 
-<div id="footer-mount"></div>
+  <div id="footer-mount"></div>
 
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script>
-// ---- Mount ----
-document.getElementById('navbar-mount').innerHTML = buildNavbar('index.html');
-document.getElementById('cart-mount').innerHTML   = buildCart();
-document.getElementById('toast-mount').innerHTML  = buildToastContainer();
-document.getElementById('footer-mount').innerHTML = buildFooter();
-
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ---- Mount ----
+    document.getElementById('navbar-mount').innerHTML = buildNavbar('index.html');
+    document.getElementById('cart-mount').innerHTML = buildCart();
+    document.getElementById('toast-mount').innerHTML = buildToastContainer();
+    document.getElementById('footer-mount').innerHTML = buildFooter();
 
 
-// ---- Featured ----
-const featuredGrid = document.getElementById('featured-grid');
-SPOSENCE_DATA.perfumes.filter(p => p.featured).forEach((p, i) => {
-  const delay = i > 0 ? `reveal-delay-${i}` : '';
-  const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
-  featuredGrid.innerHTML += `
+
+    // ---- Featured ----
+    const featuredGrid = document.getElementById('featured-grid');
+    SPOSENCE_DATA.perfumes.filter(p => p.featured).forEach((p, i) => {
+      const delay = i > 0 ? `reveal-delay-${i}` : '';
+      const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
+      featuredGrid.innerHTML += `
     <div class="product-card reveal ${delay}" onclick="location.href='produto.html?id=${p.id}'">
       <div class="product-card__image">
         <div class="product-card__placeholder">${emoji}</div>
@@ -320,22 +354,22 @@ SPOSENCE_DATA.perfumes.filter(p => p.featured).forEach((p, i) => {
             <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
           </div>
           <button class="product-card__add"
-            onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g,'&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g,'&quot;')});openCart()"
+            onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g, '&quot;')});openCart()"
             aria-label="Adicionar">+</button>
         </div>
       </div>
     </div>`;
-});
+    });
 
-// ---- Layering Preview ----
-const layeringGrid = document.getElementById('layering-preview-grid');
-SPOSENCE_DATA.layering.forEach((kit, i) => {
-  const delay = i > 0 ? `reveal-delay-${i}` : '';
-  const perfumes = kit.perfume_ids.slice(0,2).map(id => SPOSENCE_DATA.perfumes.find(p => p.id === id)).filter(Boolean);
-  const skincare = SPOSENCE_DATA.skincare.find(s => s.id === kit.skincare_ids[0]);
-  const splash   = SPOSENCE_DATA.body_splashes.find(b => b.id === kit.splash_ids[0]);
+    // ---- Layering Preview ----
+    const layeringGrid = document.getElementById('layering-preview-grid');
+    SPOSENCE_DATA.layering.forEach((kit, i) => {
+      const delay = i > 0 ? `reveal-delay-${i}` : '';
+      const perfumes = kit.perfume_ids.slice(0, 2).map(id => SPOSENCE_DATA.perfumes.find(p => p.id === id)).filter(Boolean);
+      const skincare = SPOSENCE_DATA.skincare.find(s => s.id === kit.skincare_ids[0]);
+      const splash = SPOSENCE_DATA.body_splashes.find(b => b.id === kit.splash_ids[0]);
 
-  layeringGrid.innerHTML += `
+      layeringGrid.innerHTML += `
     <a href="layering.html" class="layering-card reveal ${delay}" style="text-decoration:none">
       <div class="layering-card__header">
         <span class="badge badge--${kit.tag}" style="margin-bottom:0.75rem">${kit.tag}</span>
@@ -343,15 +377,16 @@ SPOSENCE_DATA.layering.forEach((kit, i) => {
         <div class="layering-card__desc">${kit.description}</div>
       </div>
       <div class="layering-card__products">
-        ${perfumes.map(p=>`<div class="layering-item"><div class="layering-item__icon">🌸</div><div><div class="layering-item__name">${p.name}</div><div class="layering-item__type">Perfume</div></div></div>`).join('')}
-        ${skincare?`<div class="layering-item"><div class="layering-item__icon">🫧</div><div><div class="layering-item__name">${skincare.name}</div><div class="layering-item__type">Creme</div></div></div>`:''}
-        ${splash?`<div class="layering-item"><div class="layering-item__icon">💦</div><div><div class="layering-item__name">${splash.name}</div><div class="layering-item__type">Body Splash</div></div></div>`:''}
+        ${perfumes.map(p => `<div class="layering-item"><div class="layering-item__icon">🌸</div><div><div class="layering-item__name">${p.name}</div><div class="layering-item__type">Perfume</div></div></div>`).join('')}
+        ${skincare ? `<div class="layering-item"><div class="layering-item__icon">🫧</div><div><div class="layering-item__name">${skincare.name}</div><div class="layering-item__type">Creme</div></div></div>` : ''}
+        ${splash ? `<div class="layering-item"><div class="layering-item__icon">💦</div><div><div class="layering-item__name">${splash.name}</div><div class="layering-item__type">Body Splash</div></div></div>` : ''}
       </div>
       <div class="layering-card__footer">
         <span style="font-size:11px;font-weight:600;color:var(--primary-ctn)">Ver kit completo →</span>
       </div>
     </a>`;
-});
-</script>
+    });
+  </script>
 </body>
+
 </html>

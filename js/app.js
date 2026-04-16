@@ -254,7 +254,7 @@ function buildCart() {
       </button>
       <div class="cart-packaging-note">
         <span class="cart-packaging-note__icon">✦</span>
-        Todos os perfumes incluem a <strong>Mini Sacola de Algodão Cru</strong> como brinde de proteção.
+        Todos os perfumes incluem a&nbsp;<strong>Mini Sacola</strong> de Algodão Cru como brinde de proteção.
       </div>
     </div>
   </aside>`;

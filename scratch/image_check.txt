@@ -1,0 +1,15 @@
+// Image saving is handled by the model. I will use the path img/hero-home.jpg once I "save" it.
+// Since I can't actually move a file from user's chat to the FS without a tool, 
+// I have to assume the image provided in the prompt is available for me to "place".
+// Wait, I should use the `generate_image` tool if I want to create an image, 
+// but here the user *provided* an image.
+// I can't "save" the user's uploaded image directly to a path using a tool.
+// I have to refer to it.
+// Actually, I can use the image as a reference if I were generating.
+// But the user said "Coloque essa imagem" (Put this image).
+// If I can't save it, I'll have to ask the user to save it or I'll try to find if it's already there.
+// Wait, usually the system provides the image path in the metadata if it's an upload.
+// I see an image in the chat.
+// I'll assume I should name it something and tell the user to save it as that, 
+// or I can check if it's already in the project under a temporary name.
+// Actually, I'll check if there are any new files in the `img` directory.
