@@ -8,10 +8,10 @@ const SPOSENCE_DATA = {
   concentration: "27% essência pura",
 
   fragrance_profiles: [
-    { id: "frescos",   label: "Frescos",   icon: "水", emoji: "🌊", description: "Leves e vibrantes — perfeitos para o dia a dia e o calor." },
-    { id: "doces",     label: "Doces",     icon: "🍯", emoji: "🍯", description: "Gourmands aconchegantes com base de baunilha e açúcar." },
-    { id: "noturnos",  label: "Noturnos",  icon: "🌙", emoji: "🌙", description: "Sedutores e marcantes para noites inesquecíveis." },
-    { id: "elegantes", label: "Elegantes", icon: "✦",  emoji: "✦",  description: "Sofisticados e atemporais para ocasiões especiais." },
+    { id: "frescos", label: "Frescos", icon: "水", emoji: "🌊", description: "Leves e vibrantes — perfeitos para o dia a dia e o calor." },
+    { id: "doces", label: "Doces", icon: "🍯", emoji: "🍯", description: "Gourmands aconchegantes com base de baunilha e açúcar." },
+    { id: "noturnos", label: "Noturnos", icon: "🌙", emoji: "🌙", description: "Sedutores e marcantes para noites inesquecíveis." },
+    { id: "elegantes", label: "Elegantes", icon: "✦", emoji: "✦", description: "Sofisticados e atemporais para ocasiões especiais." },
   ],
 
   // ---- PERFUMES ----
@@ -100,6 +100,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
+      image: "img/la-vie-est-belle-mockup.png",
       tags: ["doces", "baunilha", "gourmand", "feminino"],
       featured: true,
     },
@@ -332,22 +333,22 @@ const SPOSENCE_DATA = {
 
   // ---- BODY SPLASHES ----
   body_splashes: [
-    { id: "bs-frutado",          name: "Body Splash Frutado",          type: "Frutado",          concentration: "10%", volume: "200ml", price: 80,  description: "Explosão de frutas para o dia todo.", category: "body_splashes" },
-    { id: "bs-perfumado",        name: "Body Splash Perfumado",        type: "Perfumado",        concentration: "10%", volume: "200ml", price: 90,  description: "Sofisticado e duradouro.", category: "body_splashes" },
-    { id: "bs-perolado-frutado", name: "Body Splash Perolado Frutado", type: "Perolado Frutado", concentration: "10%", volume: "200ml", price: 90,  description: "Frutado com brilho sedoso na pele.", category: "body_splashes" },
-    { id: "bs-perolado-perf",    name: "Body Splash Perolado Perfumado", type: "Perolado Perfumado", concentration: "10%", volume: "200ml", price: 95, description: "Perfumado com acabamento acetinado.", category: "body_splashes" },
+    { id: "bs-frutado", name: "Body Splash Frutado", type: "Frutado", concentration: "10%", volume: "200ml", price: 80, description: "Explosão de frutas para o dia todo.", category: "body_splashes" },
+    { id: "bs-perfumado", name: "Body Splash Perfumado", type: "Perfumado", concentration: "10%", volume: "200ml", price: 90, description: "Sofisticado e duradouro.", category: "body_splashes" },
+    { id: "bs-perolado-frutado", name: "Body Splash Perolado Frutado", type: "Perolado Frutado", concentration: "10%", volume: "200ml", price: 90, description: "Frutado com brilho sedoso na pele.", category: "body_splashes" },
+    { id: "bs-perolado-perf", name: "Body Splash Perolado Perfumado", type: "Perolado Perfumado", concentration: "10%", volume: "200ml", price: 95, description: "Perfumado com acabamento acetinado.", category: "body_splashes" },
   ],
 
   // ---- SKINCARE ----
   skincare: [
-    { id: "sk-hidra-frutado", name: "Creme Hidratante Frutado",    type: "Creme",  price: 25, description: "Hidratação leve e perfumada com nota frutada.", category: "skincare" },
-    { id: "sk-hidra-perf",    name: "Creme Hidratante Perfumado",  type: "Creme",  price: 35, description: "Pele nutrida com aroma longo e envolvente.", category: "skincare" },
-    { id: "sk-baunilha",      name: "Creme Especial Baunilha",     type: "Creme",  price: 45, description: "Receita exclusiva com baunilha pura. Ultra-hidratante.", category: "skincare" },
+    { id: "sk-hidra-frutado", name: "Creme Hidratante Frutado", type: "Creme", price: 25, description: "Hidratação leve e perfumada com nota frutada.", category: "skincare" },
+    { id: "sk-hidra-perf", name: "Creme Hidratante Perfumado", type: "Creme", price: 35, description: "Pele nutrida com aroma longo e envolvente.", category: "skincare" },
+    { id: "sk-baunilha", name: "Creme Especial Baunilha", type: "Creme", price: 45, description: "Receita exclusiva com baunilha pura. Ultra-hidratante.", category: "skincare" },
   ],
 
   // ---- ACESSÓRIOS ----
   merchandise: [
-    { id: "acc-ecobag",   name: "Ecobag Sposence",  price: 45, description: "Ecobag de algodão cru premium com logo Sposence.", category: "merchandise" },
+    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence.", category: "merchandise" },
     { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise" },
   ],
 
