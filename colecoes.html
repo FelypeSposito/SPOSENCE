@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coleções por Perfil — Sposence</title>
+  <meta name="description" content="Explore as coleções Sposence por perfil olfativo: frescos, doces, noturnos e elegantes."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+  <style>
+    .colecao-hero {
+      padding: 9rem 0 5rem;
+      border-bottom: 1px solid var(--color-border);
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212,175,55,0.07), transparent 60%);
+    }
+    .colecao-banner {
+      padding: 4rem;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--color-border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-bottom: 4rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .colecao-banner:hover { border-color: var(--color-border-hover); }
+    .colecao-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    .colecao-banner.frescos   { background: rgba(56,189,248,0.03); }
+    .colecao-banner.doces     { background: rgba(251,191,36,0.03); }
+    .colecao-banner.noturnos  { background: rgba(167,139,250,0.03); }
+    .colecao-banner.elegantes { background: rgba(212,175,55,0.03); }
+    .colecao-banner__emoji  { font-size: 5rem; text-align:center; }
+    .colecao-banner__title  { font-family: var(--font-display); font-size: 3rem; line-height: 1.1; margin-bottom: 0.75rem; }
+    .colecao-banner__desc   { font-size: 14px; color: var(--color-text-dim); line-height: 1.8; margin-bottom: 1.5rem; }
+    .colecao-perfumes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    @media(max-width:768px) {
+      .colecao-banner { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="navbar-mount"></div>
+<div id="cart-mount"></div>
+<div id="toast-mount"></div>
+
+<main>
+
+  <section class="colecao-hero">
+    <div class="container">
+      <div class="label-gold reveal" style="margin-bottom:1rem">Sposence</div>
+      <h1 class="display-xl reveal reveal-delay-1">Nossas Coleções</h1>
+      <p class="reveal reveal-delay-2" style="color:var(--color-text-dim);font-size:1.05rem;max-width:520px;margin-top:1.25rem;line-height:1.8">
+        Quatro perfis olfativos, cada um com sua própria atmosfera e emoção.
+        Encontre a coleção que fala com quem você é.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" id="colecoes-mount"></div>
+  </section>
+
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('navbar-mount').innerHTML = buildNavbar('colecoes.html');
+document.getElementById('cart-mount').innerHTML   = buildCart();
+document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+document.getElementById('footer-mount').innerHTML = buildFooter();
+
+const mount = document.getElementById('colecoes-mount');
+
+SPOSENCE_DATA.fragrance_profiles.forEach((profile, pi) => {
+  const perfumes = SPOSENCE_DATA.perfumes.filter(p => p.profile === profile.id);
+  const delay    = pi > 0 ? `reveal-delay-${Math.min(pi, 4)}` : '';
+  const even     = pi % 2 === 0;
+
+  mount.innerHTML += `
+    <div class="colecao-banner ${profile.id} reveal ${delay}">
+      ${!even ? `<div class="colecao-banner__emoji">${profile.emoji}</div>` : ''}
+      <div>
+        <span class="badge badge--${profile.id}" style="margin-bottom:1rem">${profile.id}</span>
+        <div class="colecao-banner__title">${profile.label}</div>
+        <div class="colecao-banner__desc">${profile.description}</div>
+        <div class="colecao-perfumes">
+          ${perfumes.map(p => `
+            <span class="badge badge--surface" style="cursor:pointer" onclick="location.href='produto.html?id=${p.id}'">${p.name}</span>
+          `).join('')}
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <a href="produtos.html?profile=${profile.id}" class="btn btn--primary">
+            Ver ${perfumes.length} fragrâncias
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <span style="font-size:12px;color:var(--color-text-muted)">${perfumes.length} perfumes · 27% concentração</span>
+        </div>
+      </div>
+      ${even ? `<div class="colecao-banner__emoji">${profile.emoji}</div>` : ''}
+    </div>`;
+});
+</script>
+</body>
+</html>

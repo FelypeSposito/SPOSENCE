@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Produto — Sposence</title>
+  <meta name="description" content="Detalhes do produto Sposence — notas olfativas, variantes de tamanho e kit de layering sugerido."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+</head>
+<body>
+
+<div id="navbar-mount"></div>
+<div id="cart-mount"></div>
+<div id="toast-mount"></div>
+
+<main>
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav style="padding-top:clamp(4.5rem, 8vw, 6rem);margin-bottom:1.5rem;font-size:11px;color:var(--color-text-muted);display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap">
+      <a href="index.html" style="color:var(--color-text-muted);transition:color 0.3s">Início</a>
+      <span>/</span>
+      <a href="produtos.html" style="color:var(--color-text-muted)">Catálogo</a>
+      <span>/</span>
+      <span id="breadcrumb-name" style="color:var(--color-text);font-weight:600">Produto</span>
+    </nav>
+
+    <div class="product-detail" id="product-detail-mount">
+      <!-- JS vai popular aqui -->
+      <div style="grid-column:1/-1;text-align:center;padding:5rem 2rem;color:var(--color-text-dim)">
+        Carregando produto...
+      </div>
+    </div>
+
+    <!-- Related / Layering suggestion -->
+    <section style="margin-top:5rem;padding-top:4rem;border-top:1px solid var(--color-border)">
+      <div class="section-header">
+        <div class="section-header__text">
+          <div class="section-header__eyebrow">
+            <div class="section-header__line"></div>
+            <span class="label-gold">Layering</span>
+          </div>
+          <h2 class="display-md">Complete sua essência</h2>
+        </div>
+      </div>
+      <div id="layering-suggestion"></div>
+    </section>
+
+    <!-- Related products -->
+    <section style="margin-top:4rem;padding-top:4rem;border-top:1px solid var(--color-border)">
+      <div class="section-header">
+        <div class="section-header__text">
+          <div class="section-header__eyebrow">
+            <div class="section-header__line"></div>
+            <span class="label-gold">Você também pode gostar</span>
+          </div>
+          <h2 class="display-md">Fragrâncias similares</h2>
+        </div>
+        <a href="produtos.html" class="btn btn--ghost">Ver todos →</a>
+      </div>
+      <div class="grid-4" id="related-grid"></div>
+    </section>
+
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('navbar-mount').innerHTML = buildNavbar('produtos.html');
+document.getElementById('cart-mount').innerHTML   = buildCart();
+document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+document.getElementById('footer-mount').innerHTML = buildFooter();
+
+// ---- Get product from URL ----
+const params  = new URLSearchParams(window.location.search);
+const pid     = params.get('id');
+const product = SPOSENCE_DATA.perfumes.find(p => p.id === pid)
+             || SPOSENCE_DATA.body_splashes.find(p => p.id === pid)
+             || SPOSENCE_DATA.skincare.find(p => p.id === pid)
+             || SPOSENCE_DATA.merchandise.find(p => p.id === pid);
+
+if (!product) {
+  document.getElementById('product-detail-mount').innerHTML = `
+    <div style="grid-column:1/-1;text-align:center;padding:5rem 2rem">
+      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+      <p style="color:var(--color-text-dim)">Produto não encontrado.</p>
+      <a href="produtos.html" class="btn btn--outline btn--sm" style="margin-top:1.5rem;display:inline-flex">Voltar ao catálogo</a>
+    </div>`;
+} else {
+  // ---- Render product detail ----
+  document.title = `${product.name} — Sposence`;
+  document.getElementById('breadcrumb-name').textContent = product.name;
+
+  const isPerfume    = !!product.variants;
+  const emoji        = product.profile === 'frescos' ? '🌊' : product.profile === 'doces' ? '🍯' : product.profile === 'noturnos' ? '🌙' : product.profile === 'elegantes' ? '✦' : '🌸';
+  let selectedVariant = isPerfume ? product.variants[0] : null;
+
+  function renderVariantButtons() {
+    return product.variants.map(v => `
+      <button class="variant-btn ${selectedVariant?.size === v.size ? 'active' : ''}"
+        id="vbtn-${v.size.replace('ml','')}"
+        onclick="selectV(${JSON.stringify(v).replace(/"/g,'&quot;')})">
+        ${v.size}
+      </button>`).join('');
+  }
+
+  const ingredientsBlock = isPerfume ? `
+    <div style="margin-top:2rem">
+      <div class="product-detail__section-title">Composição</div>
+      <div class="product-detail__ingredients">
+        ${SPOSENCE_DATA.technical_schema?.inventory_data?.perfumery?.base_ingredients?.map(i => `<span class="ingredient-tag">${i}</span>`).join('') || ''}
+      </div>
+    </div>` : '';
+
+  const notesBlock = product.notes ? `
+    <div style="margin-top:1.5rem">
+      <div class="product-detail__section-title">Pirâmide Olfativa</div>
+      <div class="notes-pyramid">
+        <div class="notes-row">
+          <div class="notes-row__label">Topo</div>
+          <div class="notes-row__items">${product.notes.top}</div>
+        </div>
+        <div class="notes-row">
+          <div class="notes-row__label">Coração</div>
+          <div class="notes-row__items">${product.notes.heart}</div>
+        </div>
+        <div class="notes-row">
+          <div class="notes-row__label">Fundo</div>
+          <div class="notes-row__items">${product.notes.base}</div>
+        </div>
+      </div>
+    </div>` : '';
+
+  const variantBlock = isPerfume ? `
+    <div style="margin-top:1.5rem">
+      <div class="product-detail__section-title">Escolha o tamanho</div>
+      <div class="variant-selector" id="variant-selector">
+        ${renderVariantButtons()}
+      </div>
+    </div>` : '';
+
+  document.getElementById('product-detail-mount').innerHTML = `
+    <div class="product-detail__gallery reveal">
+      <div class="product-detail__main-img">
+        <div class="product-detail__placeholder">${emoji}<br/><span style="font-size:2rem;font-style:normal">${product.name}</span></div>
+      </div>
+      ${isPerfume ? `
+        <div style="margin-top:1rem;display:flex;align-items:center;gap:0.75rem;padding:1rem;background:var(--color-surface-2);border-radius:var(--radius-md);border:1px solid var(--color-border)">
+          <span style="font-size:1.25rem">📦</span>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-gold)">Frasco selecionado</div>
+            <div style="font-size:13px;color:var(--color-text-dim)" id="selected-size-label">${selectedVariant?.size} — Parfum de Alta Concentração</div>
+          </div>
+        </div>` : ''}
+    </div>
+
+    <div class="product-detail__info reveal reveal-delay-1">
+      <div class="label-gold">Sposence ${isPerfume ? '· ' + profileLabel(product.profile || '') : ''}</div>
+      <h1 class="product-detail__name">${product.name}</h1>
+      ${product.inspired_by ? `<div class="product-detail__inspired">Inspirado em ${product.inspired_by}</div>` : ''}
+      <p class="product-detail__desc">${product.description}</p>
+
+      ${isPerfume ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
+      ${isPerfume ? `<span class="badge badge--gold" style="margin-left:0.5rem">27% Essência Pura</span>` : ''}
+      ${product.is_special_edition ? `<span class="badge badge--surface" style="margin-left:0.5rem">Edição Especial</span>` : ''}
+
+      ${variantBlock}
+      ${notesBlock}
+      ${ingredientsBlock}
+
+      <div class="product-detail__price-display" id="price-display">
+        R$ ${(selectedVariant?.price || product.price).toFixed(2).replace('.', ',')}
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <button class="btn btn--primary btn--lg btn--full" onclick="addToCartDetail()">
+          Adicionar ao carrinho
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </button>
+        <a href="produtos.html" class="btn btn--outline btn--full">← Voltar ao catálogo</a>
+      </div>
+
+      ${isPerfume ? `
+        <div class="packaging-notice">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+          <span>Acompanha <strong>Mini Sacola de Algodão Cru</strong> como brinde de proteção em todos os pedidos.</span>
+        </div>` : ''}
+    </div>`;
+
+  // Variant selector logic
+  window.selectV = function(variant) {
+    selectedVariant = variant;
+    document.getElementById('price-display').textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
+    document.getElementById('selected-size-label').textContent = `${variant.size} — Parfum de Alta Concentração`;
+    document.querySelectorAll('.variant-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === variant.size));
+  };
+
+  window.addToCartDetail = function() {
+    cart.add(product, selectedVariant);
+    openCart();
+  };
+
+  // ---- Layering suggestion ----
+  const layerKit = SPOSENCE_DATA.layering.find(k => k.tag === product.profile || k.perfume_ids?.includes(product.id));
+  const lContainer = document.getElementById('layering-suggestion');
+  if (layerKit) {
+    const items = [
+      ...layerKit.perfume_ids.slice(0,2).map(id => ({ p: SPOSENCE_DATA.perfumes.find(x => x.id === id), type: 'Perfume', icon:'🌸' })),
+      ...layerKit.skincare_ids.map(id => ({ p: SPOSENCE_DATA.skincare.find(x => x.id === id), type: 'Creme', icon:'🫧' })),
+      ...layerKit.splash_ids.map(id => ({ p: SPOSENCE_DATA.body_splashes.find(x => x.id === id), type: 'Body Splash', icon:'💦' })),
+    ].filter(x => x.p);
+
+    lContainer.innerHTML = `
+      <div style="background:var(--color-surface);border:1px solid var(--color-border-hover);border-radius:var(--radius-lg);padding:2rem">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+          <span class="badge badge--${layerKit.tag}">${layerKit.tag}</span>
+          <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--color-cream)">${layerKit.title}</div>
+        </div>
+        <p style="font-size:13px;color:var(--color-text-dim);margin-bottom:1.5rem">${layerKit.description}</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem">
+          ${items.map(({ p, type, icon }) => `
+            <div class="layering-item" style="cursor:pointer;padding:1rem" onclick="location.href='produto.html?id=${p.id}'">
+              <div class="layering-item__icon" style="width:44px;height:44px;font-size:1.2rem">${icon}</div>
+              <div>
+                <div class="layering-item__name" style="font-size:14px">${p.name}</div>
+                <div class="layering-item__type" style="font-size:11px">${type} — R$ ${((p.variants ? p.variants[0].price : p.price)).toFixed(2).replace('.', ',')}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    lContainer.innerHTML = `<p style="color:var(--color-text-dim);font-size:13px">Explore nosso <a href="layering.html" style="color:var(--color-gold)">guia de layering</a> para combinações personalizadas.</p>`;
+  }
+
+  // ---- Related products ----
+  const related = SPOSENCE_DATA.perfumes.filter(p => p.id !== product.id && (p.profile === product.profile || p.tags?.some(t => product.tags?.includes(t)))).slice(0, 4);
+  document.getElementById('related-grid').innerHTML = related.map(p => `
+    <div class="product-card" onclick="location.href='produto.html?id=${p.id}'">
+      <div class="product-card__image">
+        <div class="product-card__placeholder">${p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦'}</div>
+        <div class="product-card__badges">
+          <span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>
+          <span class="badge badge--gold">27%</span>
+        </div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__name">${p.name}</div>
+        <div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>
+        <div class="product-card__footer">
+          <div>
+            <div class="product-card__price-from">a partir de</div>
+            <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
+          </div>
+          <button class="product-card__add" onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g,'&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g,'&quot;')});openCart()">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>

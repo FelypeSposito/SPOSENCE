@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo de Produtos — Sposence</title>
+  <meta name="description" content="Explore o catálogo completo de perfumes, body splashes e cremes Sposence. Filtre por perfil olfativo e encontre sua essência ideal."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+  <style>
+    .produtos-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: clamp(1.5rem, 4vw, 3rem);
+      padding-top: clamp(5rem, 10vw, 7rem);
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .sidebar__section { display: flex; flex-direction: column; gap: 0.75rem; }
+    .sidebar__title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      padding-bottom: 0.625rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .sidebar__link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.625rem 1rem;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      color: var(--on-surface-var);
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .sidebar__link:hover { color: var(--on-bg); background: var(--surface-container); }
+    .sidebar__link.active { 
+      background: rgba(212, 175, 55, 0.1); 
+      border-color: rgba(218, 167, 83, 0.3); 
+      color: var(--primary-ctn);
+      font-weight: 600;
+    }
+    .sidebar__link-count {
+      font-size: 10px;
+      background: var(--color-surface-3);
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-full);
+      color: var(--color-text-muted);
+    }
+    .produtos-main {}
+    .produtos-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .produtos-count { font-size: 13px; color: var(--color-text-dim); }
+    .produtos-count strong { color: var(--color-text); }
+    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .search-row { display: flex; align-items: center; gap: 1rem; flex: 1; }
+
+    /* Category pills on mobile */
+    .cat-pills { display: none; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .cat-pill {
+      padding: 0.45rem 1.25rem;
+      border-radius: var(--r-full);
+      border: 1px solid var(--inner-border);
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--on-surface-var);
+      cursor: pointer; transition: var(--transition);
+    }
+    .cat-pill.active { border-color: var(--primary-ctn); color: var(--primary-ctn); background: rgba(70, 37, 6, 0.08); }
+
+    @media (max-width: 1024px) {
+      .produtos-layout { grid-template-columns: 1fr; padding-top: 5rem; }
+      .sidebar { display: none; }
+      .cat-pills { display: flex; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none; -ms-overflow-style: none; }
+      .cat-pills::-webkit-scrollbar { display: none; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    }
+    @media (max-width: 600px) {
+      .products-grid { grid-template-columns: 1fr; }
+    }
+
+    /* No results */
+    .no-results {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--color-text-dim);
+    }
+    .no-results__icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    /* Variant mini-selector on card hover */
+    .card-variants {
+      display: flex; gap: 0.375rem; flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    .card-variant-btn {
+      padding: 0.25rem 0.625rem;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--inner-border);
+      background: var(--surface-container);
+      color: var(--on-surface-muted);
+      font-size: 11px; font-weight: 600;
+      transition: var(--transition); cursor: pointer;
+    }
+    .card-variant-btn:hover, .card-variant-btn.active {
+      border-color: var(--primary-ctn);
+      color: var(--primary-ctn);
+      background: rgba(70, 37, 6, 0.08);
+    }
+  </style>
+</head>
+<body>
+
+<div id="navbar-mount"></div>
+<div id="cart-mount"></div>
+<div id="toast-mount"></div>
+
+<main>
+  <div class="container">
+    <div class="produtos-layout">
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Search -->
+        <div class="search-bar" style="border-radius:var(--radius-md)">
+          <svg class="search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="search-input-desk" placeholder="Buscar fragrância..."/>
+        </div>
+
+        <!-- Categorias -->
+        <div class="sidebar__section">
+          <div class="sidebar__title">Categoria</div>
+          <div class="sidebar__link active" data-cat="all" onclick="setCategory('all')">
+            Todos os produtos
+            <span class="sidebar__link-count" id="count-all">0</span>
+          </div>
+          <div class="sidebar__link" data-cat="perfumes" onclick="setCategory('perfumes')">
+            Perfumes
+            <span class="sidebar__link-count" id="count-perfumes">0</span>
+          </div>
+          <div class="sidebar__link" data-cat="body_splashes" onclick="setCategory('body_splashes')">
+            Body Splashes
+            <span class="sidebar__link-count" id="count-body_splashes">0</span>
+          </div>
+          <div class="sidebar__link" data-cat="skincare" onclick="setCategory('skincare')">
+            Cuidados Corporais
+            <span class="sidebar__link-count" id="count-skincare">0</span>
+          </div>
+          <div class="sidebar__link" data-cat="merchandise" onclick="setCategory('merchandise')">
+            Acessórios
+            <span class="sidebar__link-count" id="count-merchandise">0</span>
+          </div>
+        </div>
+
+        <!-- Perfil Olfativo -->
+        <div class="sidebar__section" id="profile-section">
+          <div class="sidebar__title">Perfil Olfativo</div>
+          <div class="sidebar__link active" data-profile="all" onclick="setProfile('all')">
+            Todos os perfis
+          </div>
+        </div>
+
+        <!-- Tamanho -->
+        <div class="sidebar__section" id="size-section">
+          <div class="sidebar__title">Tamanho</div>
+          <div class="sidebar__link active" data-size="all" onclick="setSize('all')">Todos</div>
+          <div class="sidebar__link" data-size="30ml" onclick="setSize('30ml')">30ml — R$ 85,00</div>
+          <div class="sidebar__link" data-size="50ml" onclick="setSize('50ml')">50ml — R$ 165,00</div>
+          <div class="sidebar__link" data-size="100ml" onclick="setSize('100ml')">100ml — R$ 240,00</div>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN ===== -->
+      <div class="produtos-main">
+
+        <!-- Mobile search + pills -->
+        <div class="search-bar" style="margin-bottom:1rem">
+          <svg class="search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="search-input-mob" placeholder="Buscar fragrância..."/>
+        </div>
+
+        <div class="cat-pills" id="cat-pills">
+          <div class="cat-pill active" data-cat="all" onclick="setCategory('all')">Todos</div>
+          <div class="cat-pill" data-cat="perfumes" onclick="setCategory('perfumes')">Perfumes</div>
+          <div class="cat-pill" data-cat="body_splashes" onclick="setCategory('body_splashes')">Body Splashes</div>
+          <div class="cat-pill" data-cat="skincare" onclick="setCategory('skincare')">Cuidados</div>
+          <div class="cat-pill" data-cat="merchandise" onclick="setCategory('merchandise')">Acessórios</div>
+        </div>
+
+        <!-- Profile filters (always visible) -->
+        <div class="filters" id="profile-filters" style="margin-bottom:1.5rem"></div>
+
+        <!-- Toolbar -->
+        <div class="produtos-toolbar">
+          <div class="produtos-count" id="result-count"><strong>0</strong> produtos encontrados</div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="products-grid"></div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+// ---- Mount ----
+document.getElementById('navbar-mount').innerHTML = buildNavbar('produtos.html');
+document.getElementById('cart-mount').innerHTML   = buildCart();
+document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+document.getElementById('footer-mount').innerHTML = buildFooter();
+
+// ---- State ----
+let activeCategory = 'all';
+let activeProfile  = 'all';
+let activeSize     = 'all';
+let searchQuery    = '';
+
+// Track selected variant per product
+const selectedVariants = {};
+
+// ---- Get URL params ----
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('cat'))     activeCategory = urlParams.get('cat');
+if (urlParams.get('profile')) activeProfile  = urlParams.get('profile');
+
+// ---- Build profile filters ----
+function buildProfileFilters() {
+  const container = document.getElementById('profile-filters');
+  const isPerf = activeCategory === 'all' || activeCategory === 'perfumes';
+  if (!isPerf) { container.innerHTML = ''; document.getElementById('profile-section').style.display = 'none'; return; }
+  document.getElementById('profile-section').style.display = '';
+
+  let html = `<button class="filter-pill ${activeProfile === 'all' ? 'active--all' : ''}" data-profile="all" onclick="setProfile('all')">Todos</button>`;
+  SPOSENCE_DATA.fragrance_profiles.forEach(p => {
+    html += `<button class="filter-pill ${activeProfile === p.id ? 'active--' + p.id : ''}" data-profile="${p.id}" onclick="setProfile('${p.id}')">${p.emoji} ${p.label}</button>`;
+  });
+  container.innerHTML = html;
+}
+
+// ---- Get all products flat ----
+function getAllProducts() {
+  const all = [];
+  SPOSENCE_DATA.perfumes.forEach(p => all.push({ ...p, category: 'perfumes' }));
+  SPOSENCE_DATA.body_splashes.forEach(p => all.push({ ...p, category: 'body_splashes' }));
+  SPOSENCE_DATA.skincare.forEach(p => all.push({ ...p, category: 'skincare' }));
+  SPOSENCE_DATA.merchandise.forEach(p => all.push({ ...p, category: 'merchandise' }));
+  return all;
+}
+
+// ---- Filter products ----
+function filterProducts() {
+  let products = getAllProducts();
+  if (activeCategory !== 'all') products = products.filter(p => p.category === activeCategory);
+  if (activeProfile !== 'all')  products = products.filter(p => p.profile === activeProfile);
+  if (activeSize !== 'all')     products = products.filter(p => p.variants?.some(v => v.size === activeSize));
+  if (searchQuery)               products = products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery) ||
+    (p.inspired_by || '').toLowerCase().includes(searchQuery) ||
+    (p.tags || []).some(t => t.includes(searchQuery))
+  );
+  return products;
+}
+
+// ---- Render card ----
+function renderProductCard(p) {
+  const isPerfume = p.category === 'perfumes';
+  const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : p.profile === 'elegantes' ? '✦' : p.category === 'body_splashes' ? '💦' : p.category === 'skincare' ? '🫧' : '✨';
+
+  if (!selectedVariants[p.id]) {
+    selectedVariants[p.id] = isPerfume ? p.variants[0] : null;
+  }
+  const selVar = selectedVariants[p.id];
+  const price  = selVar?.price || p.price;
+
+  const variantHtml = isPerfume ? `
+    <div class="card-variants" id="variants-${p.id}">
+      ${p.variants.map(v => `
+        <button class="card-variant-btn ${selVar?.size === v.size ? 'active' : ''}"
+          onclick="event.stopPropagation();selectVariant('${p.id}',${JSON.stringify(v).replace(/"/g,'&quot;')})" >
+          ${v.size}
+        </button>`).join('')}
+    </div>` : '';
+
+  const addPayload = isPerfume
+    ? `selectAndAdd('${p.id}')`
+    : `cart.add(${JSON.stringify({id:p.id,name:p.name,category:p.category,price:p.price}).replace(/"/g,'&quot;')},null);openCart()`;
+
+  const profileData = SPOSENCE_DATA.fragrance_profiles.find(f => f.id === p.profile);
+  const displayEmoji = profileData ? profileData.emoji : (p.category === 'body_splashes' ? '💦' : p.category === 'skincare' ? '🫧' : '✨');
+
+  return `
+    <div class="product-card" id="card-${p.id}" onclick="location.href='produto.html?id=${p.id}'">
+      <div class="product-card__image">
+        <div class="product-card__placeholder">${displayEmoji}</div>
+        <div class="product-card__badges">
+          ${isPerfume ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : ''}
+          ${isPerfume ? `<span class="badge badge--gold">27%</span>` : ''}
+          ${p.is_special_edition ? `<span class="badge badge--surface">Edição Especial</span>` : ''}
+        </div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__name">${p.name}</div>
+        ${p.inspired_by ? `<div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>` : ''}
+        ${p.type ? `<div class="product-card__notes">${p.type}${p.volume ? ' · ' + p.volume : ''}</div>` : ''}
+        ${p.notes ? `<div class="product-card__notes" style="font-size:11px;color:var(--color-text-muted)">🌸 ${p.notes.top}</div>` : ''}
+        ${variantHtml}
+        <div class="product-card__footer">
+          <div>
+            ${isPerfume ? `<div class="product-card__price-from">a partir de</div>` : ''}
+            <div class="product-card__price" id="price-${p.id}">R$ ${price.toFixed(2).replace('.', ',')}</div>
+          </div>
+          <button class="product-card__add" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho">+</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ---- Select variant ----
+window.selectVariant = function(productId, variant) {
+  selectedVariants[productId] = variant;
+  // Update price display
+  const priceEl = document.getElementById(`price-${productId}`);
+  if (priceEl) priceEl.textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
+  // Update button states
+  const btns = document.querySelectorAll(`#variants-${productId} .card-variant-btn`);
+  btns.forEach(b => b.classList.toggle('active', b.textContent.trim() === variant.size));
+};
+
+window.selectAndAdd = function(productId) {
+  const product = SPOSENCE_DATA.perfumes.find(p => p.id === productId);
+  const variant  = selectedVariants[productId] || product.variants[0];
+  cart.add(product, variant);
+  openCart();
+};
+
+// ---- Render grid ----
+function renderGrid() {
+  buildProfileFilters();
+  updateSidebarActive();
+  updateSidebarCounts();
+
+  const grid = document.getElementById('products-grid');
+  const products = filterProducts();
+
+  document.getElementById('result-count').innerHTML = `<strong>${products.length}</strong> produto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''}`;
+
+  if (products.length === 0) {
+    grid.innerHTML = `
+      <div class="no-results">
+        <div class="no-results__icon">🔍</div>
+        <p>Nenhum produto encontrado para os filtros selecionados.</p>
+        <button class="btn btn--outline btn--sm" style="margin-top:1rem" onclick="resetFilters()">Limpar filtros</button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = products.map(renderProductCard).join('');
+
+  // Re-init reveal
+  document.querySelectorAll('#products-grid .product-card').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = `opacity 0.4s ease ${i * 0.04}s, transform 0.4s ease ${i * 0.04}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }));
+  });
+}
+
+// ---- Update sidebar counts ----
+function updateSidebarCounts() {
+  const all = getAllProducts();
+  const search = searchQuery;
+  const profile = activeProfile;
+
+  const countFor = (cat) => {
+    let p = cat === 'all' ? all : all.filter(x => x.category === cat);
+    if (profile !== 'all') p = p.filter(x => x.profile === profile);
+    if (search) p = p.filter(x => x.name.toLowerCase().includes(search) || (x.inspired_by||'').toLowerCase().includes(search));
+    return p.length;
+  };
+
+  ['all','perfumes','body_splashes','skincare','merchandise'].forEach(cat => {
+    const el = document.getElementById(`count-${cat}`);
+    if (el) el.textContent = countFor(cat);
+  });
+}
+
+// ---- Update sidebar active ----
+function updateSidebarActive() {
+  document.querySelectorAll('[data-cat]').forEach(el => {
+    el.classList.toggle('active', el.dataset.cat === activeCategory);
+  });
+  document.querySelectorAll('[data-profile]').forEach(el => {
+    el.classList.toggle('active', el.dataset.profile === activeProfile);
+    if (el.classList.contains('filter-pill')) {
+      el.className = el.className.replace(/active--\S+/g, '');
+      if (el.dataset.profile === activeProfile) {
+        el.classList.add(`active--${activeProfile === 'all' ? 'all' : activeProfile}`);
+      }
+    }
+  });
+  document.querySelectorAll('[data-size]').forEach(el => {
+    el.classList.toggle('active', el.dataset.size === activeSize);
+  });
+}
+
+// ---- Setters ----
+window.setCategory = function(cat) { activeCategory = cat; activeProfile = 'all'; renderGrid(); };
+window.setProfile  = function(p)   { activeProfile = p; renderGrid(); };
+window.setSize     = function(s)   { activeSize = s; renderGrid(); };
+window.resetFilters = function()   { activeCategory = 'all'; activeProfile = 'all'; activeSize = 'all'; searchQuery = ''; document.getElementById('search-input-desk').value = ''; document.getElementById('search-input-mob').value = ''; renderGrid(); };
+
+// ---- Search inputs ----
+['search-input-desk','search-input-mob'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', e => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    renderGrid();
+  });
+});
+
+// ---- Init ----
+renderGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+/* ============================================================
+   SPOSENCE — Animations (Aurelian Earth edition)
+   Complementa o style.css com micro-interações editoriais.
+   ============================================================ */
+
+/* ---- Keyframes ---- */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+@keyframes borderBreath {
+  0%,100% { border-color: rgba(213,195,184,0.20); }
+  50%      { border-color: rgba(213,195,184,0.55); }
+}
+@keyframes priceIn {
+  from { opacity:0; transform: translateY(-6px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes cartBounce {
+  0%,100% { transform: scale(1); }
+  40%      { transform: scale(1.18); }
+  60%      { transform: scale(0.94); }
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar { animation: slideDown 0.5s 0.05s var(--ease) both; }
+
+@keyframes slideDown {
+  from { opacity:0; transform: translateY(-100%); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* Cart count bounce on add */
+.navbar__cart-count.bump { animation: cartBounce 0.4s var(--ease-spring); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+/* Stagger entrada de children */
+.hero__left > * {
+  opacity: 0;
+  animation: fadeInUp 0.7s var(--ease) forwards;
+}
+.hero__left > *:nth-child(1) { animation-delay: 0.15s; }
+.hero__left > *:nth-child(2) { animation-delay: 0.28s; }
+.hero__left > *:nth-child(3) { animation-delay: 0.40s; }
+.hero__left > *:nth-child(4) { animation-delay: 0.52s; }
+.hero__left > *:nth-child(5) { animation-delay: 0.64s; }
+
+.hero__visual {
+  opacity: 0;
+  animation: scaleUp 0.85s 0.25s var(--ease-spring) forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes scaleUp {
+  from { opacity:0; transform: scale(0.93) translateY(20px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* Eyebrow line expand */
+.hero__eyebrow-line,
+.eyebrow-line {
+  transform-origin: left;
+  animation: lineExpand 0.6s 0.15s var(--ease) both;
+}
+@keyframes lineExpand {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ============================================================
+   PRODUCT CARDS
+   ============================================================ */
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(213, 195, 184, 0);
+  transition: box-shadow var(--dur) var(--ease);
+}
+.product-card:hover::after {
+  box-shadow: inset 0 0 0 1px rgba(70, 37, 6, 0.14);
+}
+
+/* Price update animation */
+.price-animate {
+  animation: priceIn 0.22s var(--ease) both;
+}
+
+/* ============================================================
+   FILTER PILLS
+   ============================================================ */
+.filter-pill {
+  position: relative;
+  overflow: hidden;
+}
+.filter-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--surface-container);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s var(--ease);
+  z-index: -1;
+  border-radius: inherit;
+}
+.filter-pill:hover::after { transform: scaleX(1); }
+
+/* ============================================================
+   VARIANT BUTTONS
+   ============================================================ */
+.variant-btn:hover  { transform: translateY(-1px); }
+.variant-btn:active { transform: translateY(0); }
+.variant-btn.active {
+  animation: scaleIn 0.2s var(--ease-spring);
+}
+@keyframes scaleIn {
+  from { transform: scale(0.92); }
+  to   { transform: scale(1); }
+}
+
+/* ============================================================
+   CARD VARIANT INLINE
+   ============================================================ */
+.card-variant-btn {
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--r-xs);
+  border: 1px solid var(--ghost-border);
+  background: var(--surface-container);
+  color: var(--on-surface-var);
+  font-size: 11px; font-weight: 600;
+  transition: all var(--dur) var(--ease);
+  cursor: pointer;
+}
+.card-variant-btn:hover { border-color: var(--outline-var); color: var(--on-bg); }
+.card-variant-btn.active {
+  background: var(--primary-ctn);
+  border-color: var(--primary-ctn);
+  color: var(--on-primary);
+}
+
+/* ============================================================
+   CART SIDEBAR
+   ============================================================ */
+.cart-overlay { display: block !important; pointer-events: none; }
+.cart-overlay.open { pointer-events: auto; }
+
+/* ============================================================
+   SPECIAL EDITION — glow sutil
+   ============================================================ */
+.badge--surface {
+  animation: borderBreath 3.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   BUTTONS RIPPLE
+   ============================================================ */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  border-radius: inherit;
+  pointer-events: none;
+  transition: transform 0.5s var(--ease), opacity 0.3s var(--ease);
+}
+.btn:active::before {
+  opacity: 1;
+  transform: scale(2.5);
+  transition: transform 0s, opacity 0s;
+}
+
+/* ============================================================
+   TOAST BOUNCE
+   ============================================================ */
+.toast { transition: transform 0.45s var(--ease-spring); }
+.toast.show { transform: translateX(0) !important; }
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+@keyframes skeletonPulse {
+  0%,100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.skeleton {
+  background: var(--surface-container);
+  border-radius: var(--r-sm);
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   LOGO HOVER
+   ============================================================ */
+.navbar__logo,
+.footer__logo {
+  transition: opacity var(--dur) var(--ease), letter-spacing var(--dur-slow) var(--ease);
+}
+.navbar__logo:hover { letter-spacing: 0.09em; }
+
+/* ============================================================
+   MOBILE MENU — link stagger
+   ============================================================ */
+.mobile-menu.open a {
+  animation: fadeInUp 0.6s var(--ease) both;
+}
+/* Delays are handled via inline style in app.js or specific classes */
+
+/* Burger → X */
+.navbar__burger span {
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.navbar__burger.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--primary-ctn); }
+.navbar__burger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.navbar__burger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--primary-ctn); }
+
+/* ============================================================
+   FOOTER LINKS
+   ============================================================ */
+.footer__links a {
+  transition: color var(--dur) var(--ease), padding-left var(--dur) var(--ease);
+}
+
+/* ============================================================
+   SCROLL PROGRESS
+   ============================================================ */
+#scroll-progress {
+  transition: width 0.08s linear;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero__left > * { opacity: 1; animation: none; }
+  .hero__visual    { opacity: 1; animation: none; }
+}

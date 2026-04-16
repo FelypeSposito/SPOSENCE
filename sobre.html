@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre a Sposence</title>
+  <meta name="description" content="A história da Sposence — perfumaria artesanal de alta concentração, 27% essência pura."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+  <style>
+    .sobre-hero {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      padding-top: 6rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212,175,55,0.06), transparent 60%);
+    }
+    .tabela-precos {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .tabela-precos th, .tabela-precos td {
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+    .tabela-precos th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-text-muted);
+      font-weight: 700;
+      background: var(--color-surface-2);
+    }
+    .tabela-precos td:last-child { color: var(--color-gold); font-weight: 700; }
+    .tabela-precos tr:last-child td { border-bottom: none; }
+    .tabela-precos tr:hover td { background: var(--color-surface-2); }
+    .info-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: var(--transition);
+    }
+    .info-card:hover { border-color: var(--color-border-hover); }
+    .info-card__icon { font-size: 1.75rem; margin-bottom: 1rem; }
+    .info-card__title { font-weight: 700; font-size: 15px; margin-bottom: 0.5rem; }
+    .info-card__text  { font-size: 13px; color: var(--color-text-dim); line-height: 1.7; }
+    .special-banner {
+      background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.04));
+      border: 1px solid rgba(212,175,55,0.35);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="navbar-mount"></div>
+<div id="cart-mount"></div>
+<div id="toast-mount"></div>
+
+<main>
+
+  <!-- HERO -->
+  <section class="sobre-hero">
+    <div class="container">
+      <div style="max-width:700px">
+        <div class="label-gold reveal" style="margin-bottom:1.25rem">Nossa história</div>
+        <h1 class="display-xl reveal reveal-delay-1">Sposence —<br/><span class="text-gold">Essências que</span><br/>contam histórias.</h1>
+        <p class="reveal reveal-delay-2" style="font-size:1.05rem;color:var(--color-text-dim);max-width:540px;margin-top:1.5rem;line-height:1.9">
+          Nascemos da crença de que fragrâncias excepcionais não deveriam ser privilégio de poucos.
+          Com <strong style="color:var(--color-gold)">27% de essência pura</strong>, cada frasco
+          Sposence entrega a intensidade dos grandes clássicos com a autenticidade artesanal de quem
+          se importa com cada gota.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABELA DE PREÇOS -->
+  <section class="section" style="border-top:1px solid var(--color-border)">
+    <div class="container">
+
+      <div class="section-header reveal">
+        <div class="section-header__text">
+          <div class="section-header__eyebrow">
+            <div class="section-header__line"></div>
+            <span class="label-gold">Tabela de Preços</span>
+          </div>
+          <h2 class="display-md">Preços transparentes</h2>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;flex-wrap:wrap" class="reveal">
+
+        <!-- Perfumes -->
+        <div class="info-card">
+          <div class="info-card__icon">🌸</div>
+          <div class="info-card__title">Perfumes · 27% Essência</div>
+          <div class="info-card__text" style="margin-bottom:1.25rem">Álcool de cereais • Fixador Galaxo • Glicerina bidestilada</div>
+          <table class="tabela-precos">
+            <thead><tr><th>Tamanho</th><th>Preço</th></tr></thead>
+            <tbody>
+              <tr><td>30ml</td><td>R$ 85,00</td></tr>
+              <tr><td>50ml</td><td>R$ 165,00</td></tr>
+              <tr><td>100ml</td><td>R$ 240,00</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Body Splashes -->
+        <div class="info-card">
+          <div class="info-card__icon">💦</div>
+          <div class="info-card__title">Body Splashes · 10% Essência · 200ml</div>
+          <div class="info-card__text" style="margin-bottom:1.25rem">Leves e refrescantes, ideais para o dia a dia.</div>
+          <table class="tabela-precos">
+            <thead><tr><th>Tipo</th><th>Preço</th></tr></thead>
+            <tbody>
+              <tr><td>Frutado</td><td>R$ 80,00</td></tr>
+              <tr><td>Perfumado</td><td>R$ 90,00</td></tr>
+              <tr><td>Perolado Frutado</td><td>R$ 90,00</td></tr>
+              <tr><td>Perolado Perfumado</td><td>R$ 95,00</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cremes -->
+        <div class="info-card">
+          <div class="info-card__icon">🫧</div>
+          <div class="info-card__title">Cuidados Corporais</div>
+          <div class="info-card__text" style="margin-bottom:1.25rem">Cremes hidratantes que completam o ritual de layering.</div>
+          <table class="tabela-precos">
+            <thead><tr><th>Produto</th><th>Preço</th></tr></thead>
+            <tbody>
+              <tr><td>Hidratante Frutado</td><td>R$ 25,00</td></tr>
+              <tr><td>Hidratante Perfumado</td><td>R$ 35,00</td></tr>
+              <tr><td>Especial Baunilha</td><td>R$ 45,00</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Acessórios -->
+        <div class="info-card">
+          <div class="info-card__icon">✨</div>
+          <div class="info-card__title">Acessórios</div>
+          <div class="info-card__text" style="margin-bottom:1.25rem">Itens exclusivos da marca para completar sua experiência.</div>
+          <table class="tabela-precos">
+            <thead><tr><th>Produto</th><th>Preço</th></tr></thead>
+            <tbody>
+              <tr><td>Ecobag Sposence</td><td>R$ 45,00</td></tr>
+              <tr><td>Chaveiro Sposence</td><td>R$ 10,00</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Edição Especial -->
+      <div class="special-banner reveal" style="margin-top:2rem">
+        <div style="font-size:1.75rem;flex-shrink:0">⭐</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:var(--color-gold);margin-bottom:0.375rem">Edição Especial 50ml — R$ 200,00</div>
+          <div style="font-size:13px;color:var(--color-text-dim);line-height:1.7">
+            Produzida com essência premium (custo de R$ 35/50ml), esta edição limitada entrega uma
+            intensidade e sillage acima da linha padrão. Disponível para fragrâncias selecionadas.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- NOSSA ESSÊNCIA -->
+  <section class="section" style="border-top:1px solid var(--color-border);background:var(--color-surface)">
+    <div class="container">
+
+      <div class="section-header reveal">
+        <div class="section-header__text">
+          <div class="section-header__eyebrow">
+            <div class="section-header__line"></div>
+            <span class="label-gold">Nossa Essência</span>
+          </div>
+          <h2 class="display-md">O que nos torna únicos</h2>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="info-card reveal">
+          <div class="info-card__icon">🧪</div>
+          <div class="info-card__title">Formulação Premium</div>
+          <div class="info-card__text">Apenas três ingredientes base: Álcool de cereais (puríssimo), Fixador Galaxo (prolonga a fixação) e Glicerina bidestilada (suaviza na pele).</div>
+        </div>
+        <div class="info-card reveal reveal-delay-1">
+          <div class="info-card__icon">🎁</div>
+          <div class="info-card__title">Brinde Exclusivo</div>
+          <div class="info-card__text">Todo pedido de perfume inclui obrigatoriamente a <strong>Mini Sacola de Algodão Cru</strong> — item de proteção e charme que é marca registrada Sposence.</div>
+        </div>
+        <div class="info-card reveal reveal-delay-2">
+          <div class="info-card__icon">🌍</div>
+          <div class="info-card__title">Inspirações Globais</div>
+          <div class="info-card__text">Nossas 18 fragrâncias são inspiradas nos mais icônicos perfumes do mundo — de Chanel a Tom Ford — tornando o luxo acessível sem perder a autenticidade.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal" style="text-align:center;padding:4rem 2rem;border:1px solid var(--color-border);border-radius:var(--radius-xl);background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.05),transparent 70%)">
+        <div class="label-gold" style="margin-bottom:1.25rem">Pronto para começar?</div>
+        <h2 class="display-md" style="margin-bottom:1.25rem">Encontre sua <span class="text-gold">fragrância perfeita.</span></h2>
+        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2rem">
+          <a href="produtos.html" class="btn btn--primary btn--lg">Ver Catálogo</a>
+          <a href="layering.html" class="btn btn--outline">Guia de Layering</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('navbar-mount').innerHTML = buildNavbar('sobre.html');
+document.getElementById('cart-mount').innerHTML   = buildCart();
+document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+document.getElementById('footer-mount').innerHTML = buildFooter();
+</script>
+</body>
+</html>
