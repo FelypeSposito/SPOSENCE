@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../Downloads/ID. VISUAL SPOSENCE"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Sposence"
+	}
+}

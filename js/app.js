@@ -96,6 +96,248 @@ function closeCart() {
   document.body.style.overflow = '';
 }
 
+// ---- Checkout Modal & Logic ----
+function closeCheckout() {
+  document.getElementById('checkout-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Inicia as máscaras quando o modal abre
+function openCheckout() {
+  if (cart.items.length === 0) return;
+  closeCart();
+  document.getElementById('checkout-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  initCheckoutHelpers(); // Inicializa máscaras e API de CEP
+}
+
+async function processCheckout(e) {
+  e.preventDefault();
+  const btn = document.getElementById('ck-submit');
+  const originalText = btn.textContent;
+  
+  btn.textContent = "Processando...";
+  btn.disabled = true;
+
+  try {
+    if (typeof emailjs === 'undefined') {
+      throw new Error("O sistema de e-mail ainda está carregando. Aguarde um instante.");
+    }
+
+    const name = document.getElementById('ck-name').value;
+    const email = document.getElementById('ck-email').value;
+    const phone = document.getElementById('ck-phone').value;
+    const cpf = document.getElementById('ck-cpf').value;
+    const cep = document.getElementById('ck-cep').value;
+    const address = document.getElementById('ck-address').value; // Rua/Bairro/Cidade (preenchido pela API)
+    const number = document.getElementById('ck-number').value;
+    const comp = document.getElementById('ck-comp').value;
+
+    const deliveryMethod = document.querySelector('input[name="ck-delivery"]:checked')?.value || 'shipping';
+    let fullAddress = "Retirada Presencial (a combinar)";
+    
+    if (deliveryMethod === 'shipping') {
+      fullAddress = `${address}, Nº ${number}${comp ? ' (' + comp + ')' : ''} - CEP: ${cep}`;
+    }
+    // Formatar itens do carrinho
+    let orderDetails = "ITENS DO PEDIDO:\n\n";
+    cart.items.forEach(item => {
+      orderDetails += `- ${item.qty}x ${item.name} (${item.variant ? item.variant : item.category}) | R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}\n`;
+    });
+    orderDetails += `\nTOTAL: R$ ${cart.total().toFixed(2).replace('.', ',')}`;
+
+    // 1. Abrir WhatsApp (Reativado conforme solicitado)
+    const myPhone = "5511933175390";
+    let waText = `Olá Sposence! Acabei de fazer um pedido no site e estou aguardando a confirmação do PIX:\n\n`;
+    waText += `*DADOS DO CLIENTE*\nNome: ${name}\nWhatsApp: ${phone}\n\n`;
+    waText += `*${orderDetails}*`;
+    
+    // Extrai apenas os números do telefone preenchido
+    let cleanPhone = phone.replace(/\D/g, '');
+    // Se não tiver o 55 (DDI do Brasil), adiciona
+    if (!cleanPhone.startsWith('55') && cleanPhone.length >= 10) {
+      cleanPhone = '55' + cleanPhone;
+    }
+    
+    const waUrl = `https://api.whatsapp.com/send?phone=${myPhone}&text=${encodeURIComponent(waText)}`;
+    window.open(waUrl, '_blank');
+
+    // 2. Enviar E-mails via EmailJS (COMENTADO PARA TESTES)
+    const emailParams = {
+      to_name: "Sposence",
+      from_name: name,
+      reply_to: email,
+      phone: cleanPhone, // Agora envia o número limpo para o link do botão no email
+      cpf: cpf,
+      address: fullAddress,
+      order_details: orderDetails,
+      payment_status: "Aguardando Pagamento" 
+    };
+
+    /* CHAVES DO EMAILJS OCULTAS PARA TESTES
+    Promise.all([
+      emailjs.send("service_0pef7hl", "template_9fbieif", emailParams, "vuRyyPfZQpHshbobj"),
+      emailjs.send("service_0pef7hl", "template_098jyr3", emailParams, "vuRyyPfZQpHshbobj")
+    ]).catch(err => console.error("Erro no EmailJS:", err));
+    */
+
+    // 3. Gerar PIX
+    const pixCode = generatePix(cart.total(), "e45ca6dd-c219-45cf-ae50-8ae7bc318cae", "SPOSENCE", "SAO PAULO");
+    
+    // 4. Mostrar tela de sucesso com PIX (Isso remove o formulário do HTML)
+    showPixStep(pixCode);
+
+    // 5. Limpar carrinho
+    cart.items = [];
+    cart.save();
+    cart.render();
+    showToast("Pedido enviado! Gere o pagamento abaixo. ✦");
+
+  } catch (err) {
+    alert("Erro: " + err.message);
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+/**
+ * Gera o payload do PIX Estático (BR Code)
+ */
+function generatePix(amount, key, name, city) {
+  const formatAmount = amount.toFixed(2);
+  
+  // Tag 26: Merchant Account Information
+  const gui = "0014br.gov.bcb.pix";
+  const keyTag = "01" + key.length.toString().padStart(2, '0') + key;
+  const merchantInfo = gui + keyTag;
+  
+  const payloadChunks = [
+    "000201", // Payload Format Indicator
+    "26" + merchantInfo.length.toString().padStart(2, '0') + merchantInfo,
+    "52040000", // Merchant Category Code
+    "5303986",  // Currency (BRL)
+    "54" + formatAmount.length.toString().padStart(2, '0') + formatAmount,
+    "5802BR",   // Country Code
+    "59" + name.length.toString().padStart(2, '0') + name,
+    "60" + city.length.toString().padStart(2, '0') + city,
+    "62070503***", // Additional Data (TXID fixo)
+    "6304"      // CRC16 Checksum (início)
+  ];
+
+  const payload = payloadChunks.join('');
+  return payload + crc16(payload);
+}
+
+/**
+ * Cálculo de CRC16 para o PIX
+ */
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+      else crc <<= 1;
+    }
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+}
+
+/**
+ * Mostra o código PIX no modal
+ */
+function showPixStep(code) {
+  const content = document.querySelector('.checkout-modal__content');
+  const originalHTML = content.innerHTML;
+
+  content.innerHTML = `
+    <div class="checkout-success">
+      <div class="checkout-success__header">
+        <div class="checkout-success__icon">✦</div>
+        <h3 class="checkout-modal__title">Pedido Recebido!</h3>
+        <p>Agora basta realizar o pagamento via PIX para confirmarmos sua essência.</p>
+      </div>
+      
+      <div class="pix-box">
+        <label class="form-label" style="text-align: center; display: block; margin-bottom: 1rem;">Copia e Cola</label>
+        <textarea class="pix-box__code" readonly>${code}</textarea>
+        <button class="btn btn--primary btn--full" id="btn-copy-pix">Copiar Código PIX</button>
+      </div>
+
+      <div class="checkout-success__info">
+        <p><strong>Total:</strong> R$ ${cart.total().toFixed(2).replace('.', ',')}</p>
+        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">Após copiar, abra o app do seu banco e escolha "Pix Copia e Cola".</p>
+      </div>
+
+      <div class="checkout-modal__actions">
+        <button class="btn btn--outline btn--full" onclick="location.reload()">Concluir e Voltar ao Início</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btn-copy-pix').addEventListener('click', (e) => {
+    navigator.clipboard.writeText(code);
+    e.target.textContent = "Copiado! ✓";
+    setTimeout(() => e.target.textContent = "Copiar Código PIX", 2000);
+  });
+}
+
+// ---- Máscaras e API de CEP ----
+function initCheckoutHelpers() {
+  const cpfInput = document.getElementById('ck-cpf');
+  const phoneInput = document.getElementById('ck-phone');
+  const cepInput = document.getElementById('ck-cep');
+  const addressInput = document.getElementById('ck-address');
+
+  if (cpfInput) {
+    cpfInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.slice(0, 11);
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      e.target.value = v;
+    });
+  }
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.slice(0, 11);
+      v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+      v = v.replace(/(\d{5})(\d)/, '$1-$2');
+      e.target.value = v;
+    });
+  }
+
+  if (cepInput) {
+    cepInput.addEventListener('input', async (e) => {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 8) v = v.slice(0, 8);
+      v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+      e.target.value = v;
+
+      if (v.replace('-', '').length === 8) {
+        addressInput.value = "Buscando endereço...";
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${v.replace('-', '')}/json/`);
+          const data = await res.json();
+          if (data.erro) {
+            addressInput.value = "";
+            alert("CEP não encontrado.");
+          } else {
+            addressInput.value = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+            document.getElementById('ck-number').focus();
+          }
+        } catch (err) {
+          addressInput.value = "";
+        }
+      }
+    });
+  }
+}
+
 // ---- Toast ----
 let toastTimer;
 function showToast(message, icon = '✦') {
@@ -183,11 +425,11 @@ function profileLabel(profileId) {
 // ---- Build Navbar HTML (shared) ----
 function buildNavbar(activePage) {
   const pages = [
-    { href: 'index.html',    label: 'Início' },
+    { href: 'index.html', label: 'Início' },
     { href: 'produtos.html', label: 'Perfumes' },
     { href: 'colecoes.html', label: 'Coleções' },
     { href: 'layering.html', label: 'Layering' },
-    { href: 'sobre.html',    label: 'Sobre' },
+    { href: 'sobre.html', label: 'Sobre' },
   ];
   return `
   <nav class="navbar" id="navbar">
@@ -249,7 +491,7 @@ function buildCart() {
         <span class="cart-total__label">Total</span>
         <span class="cart-total__value" id="cart-total-value">R$ 0,00</span>
       </div>
-      <button class="btn btn--primary btn--full btn--lg" onclick="showToast('Em breve: checkout disponível ✦')">
+      <button class="btn btn--primary btn--full btn--lg" onclick="openCheckout()">
         Finalizar Pedido
       </button>
       <div class="cart-packaging-note">
@@ -257,7 +499,76 @@ function buildCart() {
         Todos os perfumes incluem a&nbsp;<strong>Mini Sacola</strong> de Algodão Cru como brinde de proteção.
       </div>
     </div>
-  </aside>`;
+  </aside>
+  
+  <!-- Modal de Checkout -->
+  <div class="checkout-modal" id="checkout-modal">
+    <div class="checkout-modal__content">
+      <div class="checkout-modal__header">
+        <h3 class="checkout-modal__title">Finalizar Pedido</h3>
+        <button onclick="closeCheckout()" class="btn--ghost" style="font-size:1.4rem">×</button>
+      </div>
+      <form id="checkout-form" onsubmit="processCheckout(event)">
+        <div class="form-group">
+          <label class="form-label">Nome Completo</label>
+          <input type="text" id="ck-name" class="form-input" required placeholder="Ex: João da Silva">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="ck-email" class="form-input" required placeholder="Ex: joao@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp</label>
+            <input type="text" id="ck-phone" class="form-input" required placeholder="(00) 00000-0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CPF</label>
+          <input type="text" id="ck-cpf" class="form-input" required placeholder="000.000.000-00">
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" style="margin-bottom: 0.75rem;">Método de Recebimento</label>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <label style="font-size: 14px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="ck-delivery" value="shipping" checked onchange="document.getElementById('address-fields').style.display='block';"> 
+              Entrega (Correios/Transportadora)
+            </label>
+            <label style="font-size: 14px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="ck-delivery" value="pickup" onchange="document.getElementById('address-fields').style.display='none';"> 
+              Receber Presencialmente (Data e local a combinar)
+            </label>
+          </div>
+        </div>
+
+        <div id="address-fields">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">CEP</label>
+              <input type="text" id="ck-cep" class="form-input" placeholder="00000-000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número da Casa</label>
+              <input type="text" id="ck-number" class="form-input" placeholder="Ex: 123">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Endereço (Autocompletado pelo CEP)</label>
+            <input type="text" id="ck-address" class="form-input" readonly placeholder="Rua, Bairro, Cidade - UF" style="background:var(--surface-container); opacity: 0.8; cursor: not-allowed;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Complemento (Opcional)</label>
+            <input type="text" id="ck-comp" class="form-input" placeholder="Ex: Apto 4, Bloco B">
+          </div>
+        </div>
+
+        <div class="checkout-modal__actions">
+          <button type="button" class="btn btn--outline btn--full" onclick="closeCheckout()">Voltar</button>
+          <button type="submit" class="btn btn--primary btn--full" id="ck-submit">Confirmar e Gerar PIX</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
 }
 
 // ---- Build Footer HTML (shared) ----
@@ -298,7 +609,7 @@ function buildFooter() {
       </div>
       <div class="footer__bottom">
         <p class="footer__copy">© 2026 Sposence — Essências que contam histórias.</p>
-        <p class="footer__copy">Concentração: 27% • Álcool de cereais • Fixador Galaxo</p>
+        <p class="footer__copy">Concentração: 27%</p>
       </div>
     </div>
   </footer>`;
@@ -311,6 +622,11 @@ function buildToastContainer() {
 
 // ---- Init Global ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Injetar EmailJS dinamicamente
+  const script = document.createElement('script');
+  script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";
+  document.head.appendChild(script);
+
   cart.load();
   cart.render();
   initNavbar();

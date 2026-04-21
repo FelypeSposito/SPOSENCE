@@ -30,7 +30,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/light-blue-mockup.png",
+      image: "img/Light Blue.png",
       tags: ["frescos", "dia", "calor", "citrico"],
       featured: true,
     },
@@ -48,7 +48,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/acqua-di-gio-mockup.png",
+      image: "img/Acqua di Gio.png",
       tags: ["frescos", "dia", "aquatico", "masculino"],
     },
     {
@@ -65,7 +65,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/mandarino-mockup.png",
+      image: "img/Mandarino.png",
       tags: ["frescos", "citrico", "calor"],
     },
     {
@@ -82,7 +82,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/bleu-de-chanel-mockup.png",
+      image: "img/Bleu de Chanel.png",
       tags: ["frescos", "amadeirado", "masculino"],
       featured: true,
     },
@@ -100,7 +100,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/la-vie-est-belle-mockup.png",
+      image: "img/La Vie Est Belle.png",
       tags: ["doces", "baunilha", "gourmand", "feminino"],
       featured: true,
     },
@@ -118,7 +118,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/devotion-mockup.png",
+      image: "img/Devotion.png",
       tags: ["doces", "floral", "baunilha"],
     },
     {
@@ -135,7 +135,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/italica-mockup.png",
+      image: "img/Italica.png",
       tags: ["doces", "amendoa", "gourmand"],
     },
     {
@@ -152,7 +152,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/baccarat-rouge-mockup.png",
+      image: "img/Baccarat.png",
       tags: ["doces", "ambar", "premium", "unissex"],
       is_special_edition: true,
       featured: true,
@@ -171,7 +171,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/olympea-mockup.png",
+      image: "img/Olympea.png",
       tags: ["doces", "baunilha", "feminino"],
     },
     {
@@ -188,7 +188,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/212-sexy-mockup.png",
+      image: "img/212 Sexy.png",
       tags: ["noturnos", "sedutor", "ambar", "feminino"],
     },
     {
@@ -205,7 +205,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/libre-intense-mockup.png",
+      image: "img/Libre Intense.png",
       tags: ["noturnos", "lavanda", "baunilha", "feminino"],
     },
     {
@@ -222,7 +222,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/royal-amber-mockup.png",
+      image: "img/Royal Amber.png",
       tags: ["noturnos", "oriental", "ambar", "oud", "unissex"],
     },
     {
@@ -239,7 +239,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/tobacco-vanille-mockup.png",
+      image: "img/Tobaco Vanile.png",
       tags: ["noturnos", "amadeirado", "baunilha", "unissex"],
       featured: true,
     },
@@ -257,7 +257,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/one-million-mockup.png",
+      image: "img/One Million.png",
       tags: ["noturnos", "couro", "especiado", "masculino"],
     },
     {
@@ -274,7 +274,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/invictus-victory-mockup.png",
+      image: "img/Invictus Victory.png",
       tags: ["noturnos", "amadeirado", "menta", "masculino"],
     },
     {
@@ -291,7 +291,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/libre-mockup.png",
+      image: "img/Libre.png",
       tags: ["elegantes", "lavanda", "baunilha", "feminino"],
     },
     {
@@ -308,7 +308,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/libre-flowers-flames-mockup.png",
+      image: "img/Libre Flowers and Flames.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
     },
     {
@@ -325,7 +325,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240 },
       ],
-      image: "img/coco-mademoiselle-mockup.png",
+      image: "img/Chanel Coco Mademoseille.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
       featured: true,
     },
@@ -333,23 +333,47 @@ const SPOSENCE_DATA = {
 
   // ---- BODY SPLASHES ----
   body_splashes: [
-    { id: "bs-frutado", name: "Body Splash Frutado", type: "Frutado", concentration: "10%", volume: "200ml", price: 80, description: "Explosão de frutas para o dia todo.", category: "body_splashes" },
-    { id: "bs-perfumado", name: "Body Splash Perfumado", type: "Perfumado", concentration: "10%", volume: "200ml", price: 90, description: "Sofisticado e duradouro.", category: "body_splashes" },
-    { id: "bs-perolado-frutado", name: "Body Splash Perolado Frutado", type: "Perolado Frutado", concentration: "10%", volume: "200ml", price: 90, description: "Frutado com brilho sedoso na pele.", category: "body_splashes" },
-    { id: "bs-perolado-perf", name: "Body Splash Perolado Perfumado", type: "Perolado Perfumado", concentration: "10%", volume: "200ml", price: 95, description: "Perfumado com acabamento acetinado.", category: "body_splashes" },
+    { id: "bs-frutado", name: "Body Splash Frutado", type: "Frutado", concentration: "10%", volume: "200ml", price: 80, description: "Explosão de frutas para o dia todo.", category: "body_splashes", image: "img/Body Splash Frutado.png" },
+    { id: "bs-perfumado", name: "Body Splash Perfumado", type: "Perfumado", concentration: "10%", volume: "200ml", price: 90, description: "Sofisticado e duradouro.", category: "body_splashes", image: "img/Body Splash Perfumado.png" },
+    { id: "bs-perolado-frutado", name: "Body Splash Perolado Frutado", type: "Perolado Frutado", concentration: "10%", volume: "200ml", price: 90, description: "Frutado com brilho sedoso na pele.", category: "body_splashes", image: "img/Body Splash Frutado.png" },
+    { id: "bs-perolado-perf", name: "Body Splash Perolado Perfumado", type: "Perolado Perfumado", concentration: "10%", volume: "200ml", price: 95, description: "Perfumado com acabamento acetinado.", category: "body_splashes", image: "img/Body Splash Perfumado.png" },
   ],
 
-  // ---- SKINCARE ----
+  // ---- CUIDADOS CORPORAIS ----
   skincare: [
-    { id: "sk-hidra-frutado", name: "Creme Hidratante Frutado", type: "Creme", price: 25, description: "Hidratação leve e perfumada com nota frutada.", category: "skincare" },
-    { id: "sk-hidra-perf", name: "Creme Hidratante Perfumado", type: "Creme", price: 35, description: "Pele nutrida com aroma longo e envolvente.", category: "skincare" },
-    { id: "sk-baunilha", name: "Creme Especial Baunilha", type: "Creme", price: 45, description: "Receita exclusiva com baunilha pura. Ultra-hidratante.", category: "skincare" },
+    { 
+      id: "sk-hidra-frutado", 
+      name: "Creme Hidratante Frutado", 
+      type: "Creme Corporal", 
+      description: "Hidratação intensa e exclusiva para o corpo. Não recomendado para o rosto devido à alta concentração de essências.", 
+      category: "skincare",
+      image: "img/Creme Frutado.png",
+      variants: [
+        { size: "Oceano", price: 25 },
+        { size: "Flor de laranjeira", price: 25 },
+        { size: "Uva", price: 25 },
+        { size: "Vanilla cookie", price: 25 },
+        { size: "Morango", price: 25 },
+        { size: "Baunilha", price: 25 },
+        { size: "Licor de chocolate", price: 25 },
+        { size: "Jabuticaba - best seller", price: 25 }
+      ]
+    },
+    { 
+      id: "sk-hidra-perf", 
+      name: "Creme Hidratante Perfumado", 
+      type: "Creme Corporal", 
+      price: 35, 
+      description: "Pele nutrida com aroma envolvente. Apenas para uso corporal.", 
+      category: "skincare",
+      image: "img/Creme Perfumado.png"
+    }
   ],
 
   // ---- ACESSÓRIOS ----
   merchandise: [
-    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence.", category: "merchandise" },
-    { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise" },
+    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence.", category: "merchandise", image: "img/ecobag.png" },
+    { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise", image: "img/Chaveiro.png" },
   ],
 
   // ---- LAYERING SUGGESTIONS ----
@@ -359,7 +383,7 @@ const SPOSENCE_DATA = {
       title: "Kit Baunilha Intenso",
       description: "Combine o perfume com o creme para uma fixação que dura 2x mais.",
       perfume_ids: ["la-vie-est-belle", "devotion", "olympea"],
-      skincare_ids: ["sk-baunilha"],
+      skincare_ids: ["sk-hidra-perf"],
       splash_ids: ["bs-perfumado"],
       tag: "doces",
     },

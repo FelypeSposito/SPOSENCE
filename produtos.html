@@ -289,12 +289,12 @@ function renderProductCard(p) {
   const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : p.profile === 'elegantes' ? '✦' : p.category === 'body_splashes' ? '💦' : p.category === 'skincare' ? '🫧' : '✨';
 
   if (!selectedVariants[p.id]) {
-    selectedVariants[p.id] = isPerfume ? p.variants[0] : null;
+    selectedVariants[p.id] = p.variants ? p.variants[0] : null;
   }
   const selVar = selectedVariants[p.id];
-  const price  = selVar?.price || p.price;
+  const price  = selVar?.price || p.price || 0;
 
-  const variantHtml = isPerfume ? `
+  const variantHtml = p.variants ? `
     <div class="card-variants" id="variants-${p.id}">
       ${p.variants.map(v => `
         <button class="card-variant-btn ${selVar?.size === v.size ? 'active' : ''}"
@@ -303,9 +303,9 @@ function renderProductCard(p) {
         </button>`).join('')}
     </div>` : '';
 
-  const addPayload = isPerfume
+  const addPayload = p.variants
     ? `selectAndAdd('${p.id}')`
-    : `cart.add(${JSON.stringify({id:p.id,name:p.name,category:p.category,price:p.price}).replace(/"/g,'&quot;')},null);openCart()`;
+    : `cart.add(${JSON.stringify({id:p.id,name:p.name,category:p.category,price:p.price||0}).replace(/"/g,'&quot;')},null);openCart()`;
 
   const profileData = SPOSENCE_DATA.fragrance_profiles.find(f => f.id === p.profile);
   const displayEmoji = profileData ? profileData.emoji : (p.category === 'body_splashes' ? '💦' : p.category === 'skincare' ? '🫧' : '✨');
@@ -328,7 +328,7 @@ function renderProductCard(p) {
         ${variantHtml}
         <div class="product-card__footer">
           <div>
-            ${isPerfume ? `<div class="product-card__price-from">a partir de</div>` : ''}
+            ${p.variants ? `<div class="product-card__price-from">a partir de</div>` : ''}
             <div class="product-card__price" id="price-${p.id}">R$ ${price.toFixed(2).replace('.', ',')}</div>
           </div>
           <button class="product-card__add" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho">+</button>
@@ -349,7 +349,8 @@ window.selectVariant = function(productId, variant) {
 };
 
 window.selectAndAdd = function(productId) {
-  const product = SPOSENCE_DATA.perfumes.find(p => p.id === productId);
+  const allProducts = getAllProducts();
+  const product = allProducts.find(p => p.id === productId);
   const variant  = selectedVariants[productId] || product.variants[0];
   cart.add(product, variant);
   openCart();
