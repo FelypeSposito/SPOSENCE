@@ -292,14 +292,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   z-index: 2000;
-  display: none;
   opacity: 0;
-  transition: opacity 0.5s var(--ease);
+  visibility: hidden;
+  pointer-events: none;
+  display: flex; /* Fixo para permitir transição de opacidade */
+  transition: opacity 0.4s var(--ease), visibility 0.4s var(--ease);
 }
 .mobile-menu.open { 
-  display: flex; 
   opacity: 1;
-  animation: fadeIn 0.4s var(--ease) both; 
+  visibility: visible;
+  pointer-events: auto;
 }
 .mobile-menu__content {
   width: 100%;
@@ -308,6 +310,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   flex-direction: column;
   justify-content: center;
   padding: 4rem 3.5rem;
+  position: relative;
 }
 .mobile-menu__links {
   display: flex;
@@ -335,8 +338,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .mobile-menu__header {
   position: absolute;
-  top: 3rem;
-  left: 3.5rem;
+  top: 1.25rem; /* Alinhado com a altura do burger no navbar */
+  right: 1.5rem; /* Mesmo padding lateral do navbar */
 }
 .mobile-menu__close {
   background: none;

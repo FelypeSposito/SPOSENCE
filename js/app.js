@@ -461,13 +461,8 @@ function buildNavbar(activePage) {
       <div class="mobile-menu__footer">
         <div class="mobile-menu__meta">
           <div class="t-label" style="margin-bottom:0.5rem">Contato</div>
-          <p>@sposence.br</p>
-          <p>contato@sposence.com.br</p>
-        </div>
-        <div class="mobile-menu__meta">
-          <div class="t-label" style="margin-bottom:0.5rem">Essência</div>
-          <p>27% Concentração Pura</p>
-          <p>Artesanal · Atemporal</p>
+          <p>sposence@gmail.com</p>
+          <p>Whatsapp: (11) 93317-5390 - Sposito</p>
         </div>
       </div>
     </div>
@@ -604,9 +599,9 @@ function buildFooter() {
         <div>
           <div class="footer__heading">Informações</div>
           <ul class="footer__links">
-            <li><a href="#">Concentração 27%</a></li>
-            <li><a href="#">Base de Insumos</a></li>
-            <li><a href="#">Contato</a></li>
+            <li><a href="sobre.html">Concentração 27%</a></li>
+            <li><a href="mailto:sposence@gmail.com">sposence@gmail.com</a></li>
+            <li><a href="https://wa.me/5511933175390" target="_blank">Whatsapp: (11) 93317-5390</a></li>
           </ul>
         </div>
       </div>
