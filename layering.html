@@ -12,7 +12,7 @@
       padding: 9rem 0 6rem;
       text-align: center;
       background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,175,55,0.08), transparent 60%);
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--ghost-border);
     }
     .step-flow {
       display: flex;
@@ -28,27 +28,27 @@
       align-items: center;
       gap: 0.75rem;
       padding: 2rem 1.5rem;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px solid var(--ghost-border);
+      border-radius: var(--r-lg);
       min-width: 160px; flex: 1; max-width:220px;
       text-align: center;
-      transition: var(--transition);
+      transition: var(--dur) var(--ease);
     }
-    .step-card:hover { border-color: var(--color-border-hover); transform: translateY(-3px); }
+    .step-card:hover { border-color: var(--outline-var); transform: translateY(-3px); }
     .step-card__num {
       width: 36px; height: 36px;
       border-radius: 50%;
-      background: rgba(212,175,55,0.12);
-      border: 1px solid rgba(212,175,55,0.3);
+      background: rgba(218,167,83,0.12);
+      border: 1px solid rgba(218,167,83,0.3);
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 700;
-      color: var(--color-gold);
+      color: var(--gold);
     }
     .step-card__icon { font-size: 2rem; }
     .step-card__name { font-weight: 600; font-size: 13px; }
-    .step-card__desc { font-size: 11px; color: var(--color-text-dim); line-height: 1.5; }
-    .step-arrow { color: var(--color-gold); font-size: 1.25rem; flex-shrink:0; }
+    .step-card__desc { font-size: 11px; color: var(--on-surface-muted); line-height: 1.5; }
+    .step-arrow { color: var(--gold); font-size: 1.25rem; flex-shrink:0; }
     @media(max-width:600px){ .step-arrow { transform: rotate(90deg); } }
 
     .kit-section {
@@ -60,7 +60,7 @@
       gap: 1.5rem;
       margin-bottom: 2rem;
       padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--ghost-border);
     }
     .kit-products {
       display: grid;
@@ -68,20 +68,20 @@
       gap: 2rem;
     }
     .kit-column {}
-    .kit-column__title { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 0.875rem; }
+    .kit-column__title { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--on-surface-muted); margin-bottom: 0.875rem; }
     @media(max-width:640px){ .kit-products { grid-template-columns: 1fr; } }
 
     .benefit-card {
       padding: 2rem;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      transition: var(--transition);
+      background: var(--surface);
+      border: 1px solid var(--ghost-border);
+      border-radius: var(--r-lg);
+      transition: var(--dur) var(--ease);
     }
-    .benefit-card:hover { border-color: var(--color-border-hover); }
+    .benefit-card:hover { border-color: var(--outline-var); }
     .benefit-card__icon { font-size: 1.75rem; margin-bottom: 1rem; }
     .benefit-card__title { font-weight: 700; font-size: 15px; margin-bottom: 0.5rem; }
-    .benefit-card__desc { font-size: 13px; color: var(--color-text-dim); line-height: 1.6; }
+    .benefit-card__desc { font-size: 13px; color: var(--on-surface-muted); line-height: 1.6; }
 
     .layering-item {
       display: flex;
@@ -306,7 +306,8 @@ window.addSelectedToCart = function(kitIndex) {
     if (type === 'splash') product = SPOSENCE_DATA.body_splashes.find(p => p.id === id);
 
     if (product) {
-      const variant = type === 'perfume' ? product.variants[0] : null;
+      // Pega a primeira variante como padrão se não houver preço direto no produto
+      const variant = (type === 'perfume' || !product.price) ? product.variants[0] : null;
       // Chamada direta ao objeto cart global definido em app.js
       if (typeof cart !== 'undefined' && cart.add) {
         cart.add(product, variant);
@@ -334,7 +335,7 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
 
   const totalMin = (perfumes[0]?.variants[0]?.price || 0) + 
                    (skincares[0]?.price || skincares[0]?.variants?.[0]?.price || 0) + 
-                   (splashes[0]?.price || 0);
+                   (splashes[0]?.price || splashes[0]?.variants?.[0]?.price || 0);
 
   kitsMount.innerHTML += `
     <div class="kit-section reveal ${ki > 0 ? 'reveal-delay-' + ki : ''}" id="kit-${ki}">
@@ -387,7 +388,9 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
                 <div class="layering-item__price">R$ ${price.toFixed(2).replace('.',',')}</div>
               </div>`;
             }).join('')}
-            ${splashes.map((b, i) => `
+            ${splashes.map((b, i) => {
+              const price = b.price || b.variants?.[0]?.price || 0;
+              return `
               <div class="layering-item selected" data-type="splash" data-id="${b.id}" onclick="toggleItem(this)">
                 <div class="layering-item__checkbox"></div>
                 <div class="layering-item__icon">
@@ -397,8 +400,9 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
                   <div class="layering-item__name">${b.name}</div>
                   <div class="layering-item__type">Body Splash ${b.volume}</div>
                 </div>
-                <div class="layering-item__price">R$ ${b.price.toFixed(2).replace('.',',')}</div>
-              </div>`).join('')}
+                <div class="layering-item__price">R$ ${price.toFixed(2).replace('.',',')}</div>
+              </div>`;
+            }).join('')}
           </div>
         </div>
       </div>
