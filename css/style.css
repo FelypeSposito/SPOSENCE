@@ -188,24 +188,22 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .navbar__logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: var(--primary-ctn);
-  font-style: italic;
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
 }
 .navbar__logo:hover { opacity: 0.8; }
 
-
-.footer__logo {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 500;
-  color: var(--primary-ctn);
-  font-style: italic;
-  margin-bottom: 2rem;
+.navbar__logo-img {
+  height: 24px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
+.navbar__logo-img--mobile {
+  height: 30px;
+}
+
+
 
 .navbar__links {
   display: flex;
@@ -1201,12 +1199,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-bottom: 1px solid var(--ghost-border);
 }
 .footer__logo {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  color: var(--primary-ctn);
-  font-style: italic;
-  font-weight: 400;
   margin-bottom: 1rem;
+}
+.footer__logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 .footer__tagline { font-size: 13px; color: var(--on-surface-var); max-width: 260px; line-height: 1.7; }
 .footer__heading {
@@ -1386,6 +1385,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* Inline horizontal divider */
 .divider { height: 1px; background: var(--ghost-border); }
 
+@keyframes variantUpdate {
+  0% { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.animate-update {
+  animation: variantUpdate 0.5s var(--ease-spring) forwards;
+}
+
 /* ============================================================
    REVEAL (scroll animations)
    ============================================================ */
@@ -1408,14 +1415,53 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @keyframes floatY      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
 /* ============================================================
-   RESPONSIVE — mobile adjustments
+   LAYERING CARDS (Home Preview)
    ============================================================ */
-@media(max-width:640px){
-  .section { padding: 3.5rem 0; }
-  .hero { padding-top: 3.5rem; }
-  .hero__stats { gap: 1.5rem; flex-wrap: wrap; margin-top: 2.5rem; padding-top: 2rem; }
-  .hero__stat-value { font-size: 1.75rem; }
-  .conc-banner { padding: 1.5rem; gap: 1.25rem; }
+.layering-card {
+  background: var(--surface);
+  border: 1px solid var(--ghost-border);
+  border-radius: var(--r-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Garante altura igual no grid */
+  transition: all var(--dur) var(--ease);
+}
+.layering-card:hover {
+  border-color: var(--outline-var);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lifted);
+}
+.layering-card__header {
+  margin-bottom: 1.5rem;
+  flex-grow: 0;
+}
+.layering-card__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--primary-ctn);
+  margin-bottom: 0.5rem;
+}
+.layering-card__desc {
+  font-size: 13px;
+  color: var(--on-surface-muted);
+  line-height: 1.4;
+}
+.layering-card__products {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-grow: 1; /* Faz esta parte crescer para empurrar o footer */
+}
+.layering-card__footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ghost-border);
+}
+
+@media(max-width: 900px) {
+  .grid-3 { grid-template-columns: 1fr; }
 }
 
 @media(prefers-reduced-motion: reduce){

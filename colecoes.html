@@ -9,39 +9,47 @@
   <link rel="stylesheet" href="css/animations.css"/>
   <style>
     .colecao-hero {
-      padding: 9rem 0 5rem;
-      border-bottom: 1px solid var(--color-border);
-      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212,175,55,0.07), transparent 60%);
+      padding: 10rem 0 6rem;
+      border-bottom: 1px solid var(--ghost-border);
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212,175,55,0.08), transparent 70%);
     }
     .colecao-banner {
       padding: 4rem;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--color-border);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--ghost-border);
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 3rem;
       align-items: center;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
       position: relative;
       overflow: hidden;
-      transition: var(--transition);
+      transition: all var(--dur) var(--ease);
+      background: var(--surface-low);
+      border-left: 4px solid transparent;
     }
-    .colecao-banner:hover { border-color: var(--color-border-hover); }
-    .colecao-banner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0.05;
-      pointer-events: none;
+    .colecao-banner:hover { 
+      border-color: var(--outline-var);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-float);
     }
-    .colecao-banner.frescos   { background: rgba(56,189,248,0.03); }
-    .colecao-banner.doces     { background: rgba(251,191,36,0.03); }
-    .colecao-banner.noturnos  { background: rgba(167,139,250,0.03); }
-    .colecao-banner.elegantes { background: rgba(212,175,55,0.03); }
-    .colecao-banner__emoji  { font-size: 5rem; text-align:center; }
-    .colecao-banner__title  { font-family: var(--font-display); font-size: 3rem; line-height: 1.1; margin-bottom: 0.75rem; }
-    .colecao-banner__desc   { font-size: 14px; color: var(--color-text-dim); line-height: 1.8; margin-bottom: 1.5rem; }
-    .colecao-perfumes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .colecao-banner.frescos   { background: rgba(56,189,248,0.05); border-left-color: #0ea5e9; }
+    .colecao-banner.doces     { background: rgba(251,191,36,0.06); border-left-color: #f59e0b; }
+    .colecao-banner.noturnos  { background: rgba(167,139,250,0.06); border-left-color: #8b5cf6; }
+    .colecao-banner.elegantes { background: rgba(212,175,55,0.06); border-left-color: #d4af37; }
+    
+    .colecao-banner__emoji  { 
+      font-size: 6rem; 
+      text-align:center; 
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+      transition: transform var(--dur-slow) var(--ease-spring);
+    }
+    .colecao-banner:hover .colecao-banner__emoji {
+      transform: scale(1.1) rotate(5deg);
+    }
+    .colecao-banner__title  { font-family: var(--font-display); font-size: 3.5rem; line-height: 1; margin-bottom: 1rem; color: var(--primary-ctn); }
+    .colecao-banner__desc   { font-size: 15px; color: var(--on-surface-var); line-height: 1.8; margin-bottom: 2rem; max-width: 90%; }
+    .colecao-perfumes { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-bottom: 2rem; }
     @media(max-width:768px) {
       .colecao-banner { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem; }
     }
@@ -59,7 +67,7 @@
     <div class="container">
       <div class="label-gold reveal" style="margin-bottom:1rem">Sposence</div>
       <h1 class="display-xl reveal reveal-delay-1">Nossas Coleções</h1>
-      <p class="reveal reveal-delay-2" style="color:var(--color-text-dim);font-size:1.05rem;max-width:520px;margin-top:1.25rem;line-height:1.8">
+      <p class="reveal reveal-delay-2" style="color:var(--on-surface-muted);font-size:1.05rem;max-width:520px;margin-top:1.25rem;line-height:1.8">
         Quatro perfis olfativos, cada um com sua própria atmosfera e emoção.
         Encontre a coleção que fala com quem você é.
       </p>
@@ -84,16 +92,27 @@ document.getElementById('footer-mount').innerHTML = buildFooter();
 
 const mount = document.getElementById('colecoes-mount');
 
-SPOSENCE_DATA.fragrance_profiles.forEach((profile, pi) => {
+// Ordena para que 'elegantes' fique no topo
+const sortedProfiles = [...SPOSENCE_DATA.fragrance_profiles].sort((a, b) => {
+  if (a.id === 'elegantes') return -1;
+  if (b.id === 'elegantes') return 1;
+  return 0;
+});
+
+sortedProfiles.forEach((profile, pi) => {
   const perfumes = SPOSENCE_DATA.perfumes.filter(p => p.profile === profile.id);
   const delay    = pi > 0 ? `reveal-delay-${Math.min(pi, 4)}` : '';
   const even     = pi % 2 === 0;
+  const isElegante = profile.id === 'elegantes';
 
   mount.innerHTML += `
     <div class="colecao-banner ${profile.id} reveal ${delay}">
       ${!even ? `<div class="colecao-banner__emoji">${profile.emoji}</div>` : ''}
       <div>
-        <span class="badge badge--${profile.id}" style="margin-bottom:1rem">${profile.id}</span>
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+          <span class="badge badge--${profile.id}" style="font-size:10px">${profile.label}</span>
+          ${isElegante ? '<span class="badge badge--gold" style="font-size:9px">✦ Seleção Especial</span>' : ''}
+        </div>
         <div class="colecao-banner__title">${profile.label}</div>
         <div class="colecao-banner__desc">${profile.description}</div>
         <div class="colecao-perfumes">
@@ -101,12 +120,12 @@ SPOSENCE_DATA.fragrance_profiles.forEach((profile, pi) => {
             <span class="badge badge--surface" style="cursor:pointer" onclick="location.href='produto.html?id=${p.id}'">${p.name}</span>
           `).join('')}
         </div>
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
           <a href="produtos.html?profile=${profile.id}" class="btn btn--primary">
-            Ver ${perfumes.length} fragrâncias
+            Explorar Coleção
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <span style="font-size:12px;color:var(--color-text-muted)">${perfumes.length} perfumes · 27% concentração</span>
+          <span style="font-size:12px;color:var(--on-surface-muted);font-weight:600">${perfumes.length} Fragrâncias Premium</span>
         </div>
       </div>
       ${even ? `<div class="colecao-banner__emoji">${profile.emoji}</div>` : ''}

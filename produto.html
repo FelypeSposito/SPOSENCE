@@ -95,20 +95,19 @@ if (!product) {
   document.title = `${product.name} — Sposence`;
   document.getElementById('breadcrumb-name').textContent = product.name;
 
-  const isPerfume    = !!product.variants;
-  const emoji        = product.profile === 'frescos' ? '🌊' : product.profile === 'doces' ? '🍯' : product.profile === 'noturnos' ? '🌙' : product.profile === 'elegantes' ? '✦' : '🌸';
-  let selectedVariant = isPerfume ? product.variants[0] : null;
+  const hasVariants   = !!product.variants;
+  const emoji         = product.profile === 'frescos' ? '🌊' : product.profile === 'doces' ? '🍯' : product.profile === 'noturnos' ? '🌙' : product.profile === 'elegantes' ? '✦' : '🌸';
+  let selectedVariant = hasVariants ? product.variants[0] : null;
 
   function renderVariantButtons() {
     return product.variants.map(v => `
       <button class="variant-btn ${selectedVariant?.size === v.size ? 'active' : ''}"
-        id="vbtn-${v.size.replace('ml','')}"
         onclick="selectV(${JSON.stringify(v).replace(/"/g,'&quot;')})">
         ${v.size}
       </button>`).join('');
   }
 
-  const ingredientsBlock = isPerfume ? `
+  const ingredientsBlock = product.category === 'perfumes' ? `
     <div style="margin-top:2rem">
       <div class="product-detail__section-title">Composição</div>
       <div class="product-detail__ingredients">
@@ -135,9 +134,9 @@ if (!product) {
       </div>
     </div>` : '';
 
-  const variantBlock = isPerfume ? `
+  const variantBlock = hasVariants ? `
     <div style="margin-top:1.5rem">
-      <div class="product-detail__section-title">Escolha o tamanho</div>
+      <div class="product-detail__section-title">${product.category === 'perfumes' ? 'Escolha o tamanho' : 'Escolha a fragrância'}</div>
       <div class="variant-selector" id="variant-selector">
         ${renderVariantButtons()}
       </div>
@@ -148,24 +147,26 @@ if (!product) {
       <div class="product-detail__main-img" style="aspect-ratio:1; display:flex; align-items:center; justify-content:center; background:var(--surface-container); border-radius:var(--r-md); overflow:hidden;">
         ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">` : `<div class="product-detail__placeholder">${emoji}<br/><span style="font-size:2rem;font-style:normal">${product.name}</span></div>`}
       </div>
-      ${isPerfume ? `
+      ${hasVariants ? `
         <div style="margin-top:1rem;display:flex;align-items:center;gap:0.75rem;padding:1rem;background:var(--color-surface-2);border-radius:var(--radius-md);border:1px solid var(--color-border)">
-          <span style="font-size:1.25rem">📦</span>
+          <span style="font-size:1.25rem">${product.category === 'perfumes' ? '📦' : '✨'}</span>
           <div>
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-gold)">Frasco selecionado</div>
-            <div style="font-size:13px;color:var(--color-text-dim)" id="selected-size-label">${selectedVariant?.size} — Parfum de Alta Concentração</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-gold)">Opção selecionada</div>
+            <div style="font-size:13px;color:var(--color-text-dim)" id="selected-size-label">
+               ${selectedVariant?.size} ${product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : ''}
+            </div>
           </div>
         </div>` : ''}
     </div>
 
     <div class="product-detail__info reveal reveal-delay-1">
-      <div class="label-gold">Sposence ${isPerfume ? '· ' + profileLabel(product.profile || '') : ''}</div>
+      <div class="label-gold">Sposence ${product.profile ? '· ' + profileLabel(product.profile || '') : ''}</div>
       <h1 class="product-detail__name">${product.name}</h1>
       ${product.inspired_by ? `<div class="product-detail__inspired">Inspirado em ${product.inspired_by}</div>` : ''}
       <p class="product-detail__desc">${product.description}</p>
 
-      ${isPerfume ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
-      ${isPerfume ? `<span class="badge badge--gold" style="margin-left:0.5rem">27% Essência Pura</span>` : ''}
+      ${product.profile ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
+      ${product.category === 'perfumes' ? `<span class="badge badge--gold" style="margin-left:0.5rem">27% Essência Pura</span>` : ''}
       ${product.is_special_edition ? `<span class="badge badge--surface" style="margin-left:0.5rem">Edição Especial</span>` : ''}
 
       ${variantBlock}
@@ -184,7 +185,7 @@ if (!product) {
         <a href="produtos.html" class="btn btn--outline btn--full">← Voltar ao catálogo</a>
       </div>
 
-      ${isPerfume ? `
+      ${product.category === 'perfumes' ? `
         <div class="packaging-notice">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
           <span>Acompanha <strong>Mini Sacola de Algodão Cru</strong> como brinde de proteção em todos os pedidos.</span>
@@ -194,8 +195,23 @@ if (!product) {
   // Variant selector logic
   window.selectV = function(variant) {
     selectedVariant = variant;
-    document.getElementById('price-display').textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
-    document.getElementById('selected-size-label').textContent = `${variant.size} — Parfum de Alta Concentração`;
+    
+    const priceEl = document.getElementById('price-display');
+    const labelEl = document.getElementById('selected-size-label');
+    
+    // Animate price update
+    priceEl.classList.remove('animate-update');
+    if(labelEl) labelEl.classList.remove('animate-update');
+    void priceEl.offsetWidth; // Trigger reflow
+    
+    priceEl.textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
+    if(labelEl) {
+      labelEl.textContent = `${variant.size} ${product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : ''}`;
+    }
+    
+    priceEl.classList.add('animate-update');
+    if(labelEl) labelEl.classList.add('animate-update');
+    
     document.querySelectorAll('.variant-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === variant.size));
   };
 

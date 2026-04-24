@@ -208,9 +208,8 @@
    ============================================================ */
 .navbar__logo,
 .footer__logo {
-  transition: opacity var(--dur) var(--ease), letter-spacing var(--dur-slow) var(--ease);
+  transition: opacity var(--dur) var(--ease);
 }
-.navbar__logo:hover { letter-spacing: 0.09em; }
 
 /* ============================================================
    MOBILE MENU — link stagger

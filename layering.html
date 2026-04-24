@@ -82,6 +82,98 @@
     .benefit-card__icon { font-size: 1.75rem; margin-bottom: 1rem; }
     .benefit-card__title { font-weight: 700; font-size: 15px; margin-bottom: 0.5rem; }
     .benefit-card__desc { font-size: 13px; color: var(--color-text-dim); line-height: 1.6; }
+
+    .layering-item {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--ghost-border);
+      border-radius: var(--r-md);
+      transition: all var(--dur) var(--ease);
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    .layering-item:hover {
+      background: var(--surface-low);
+      border-color: var(--outline-var);
+      transform: translateY(-2px);
+    }
+    .layering-item.selected {
+      border: 2px solid var(--primary-ctn);
+      background: var(--surface-container);
+      padding: calc(1.25rem - 1px); /* Compensa a borda mais grossa */
+    }
+    .layering-item__checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--outline-var);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--dur) var(--ease);
+      background: white;
+      flex-shrink: 0;
+    }
+    .layering-item.selected .layering-item__checkbox {
+      background: var(--primary-ctn);
+      border-color: var(--primary-ctn);
+    }
+    .layering-item.selected .layering-item__checkbox::after {
+      content: '';
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+    .layering-item__icon {
+      width: 56px;
+      height: 56px;
+      background: var(--surface-container);
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      overflow: hidden;
+      border: 1px solid var(--ghost-border);
+    }
+    .layering-item__name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--on-bg);
+      margin-bottom: 0.2rem;
+    }
+    .layering-item__type {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-muted);
+    }
+    .layering-item__price {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--primary-ctn);
+    }
+    .kit-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding: 1.75rem 2rem;
+      background: var(--surface-low);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--ghost-border);
+    }
+    @media(max-width: 640px) {
+      .kit-actions { flex-direction: column; align-items: stretch; gap: 1rem; text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -187,6 +279,47 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
+// Funções globais definidas antes de qualquer uso
+window.toggleItem = function(el) {
+  el.classList.toggle('selected');
+};
+
+window.addSelectedToCart = function(kitIndex) {
+  const kitContainer = document.getElementById(`kit-${kitIndex}`);
+  if (!kitContainer) return;
+
+  const selectedItems = kitContainer.querySelectorAll('.layering-item.selected');
+  
+  if (selectedItems.length === 0) {
+    if (typeof showToast === 'function') showToast("Selecione ao menos um item ✧", "⚠️");
+    return;
+  }
+
+  let addedCount = 0;
+  selectedItems.forEach(item => {
+    const type = item.dataset.type;
+    const id = item.dataset.id;
+    
+    let product;
+    if (type === 'perfume') product = SPOSENCE_DATA.perfumes.find(p => p.id === id);
+    if (type === 'skincare') product = SPOSENCE_DATA.skincare.find(p => p.id === id);
+    if (type === 'splash') product = SPOSENCE_DATA.body_splashes.find(p => p.id === id);
+
+    if (product) {
+      const variant = type === 'perfume' ? product.variants[0] : null;
+      // Chamada direta ao objeto cart global definido em app.js
+      if (typeof cart !== 'undefined' && cart.add) {
+        cart.add(product, variant);
+        addedCount++;
+      }
+    }
+  });
+
+  if (addedCount > 0) {
+    if (typeof openCart === 'function') openCart();
+  }
+};
+
 document.getElementById('navbar-mount').innerHTML = buildNavbar('layering.html');
 document.getElementById('cart-mount').innerHTML   = buildCart();
 document.getElementById('toast-mount').innerHTML  = buildToastContainer();
@@ -199,19 +332,21 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
   const skincares = kit.skincare_ids.map(id => SPOSENCE_DATA.skincare.find(p => p.id === id)).filter(Boolean);
   const splashes  = kit.splash_ids.map(id => SPOSENCE_DATA.body_splashes.find(p => p.id === id)).filter(Boolean);
 
-  const totalMin = (perfumes[0]?.variants[0]?.price || 0) + (skincares[0]?.price || 0) + (splashes[0]?.price || 0);
+  const totalMin = (perfumes[0]?.variants[0]?.price || 0) + 
+                   (skincares[0]?.price || skincares[0]?.variants?.[0]?.price || 0) + 
+                   (splashes[0]?.price || 0);
 
   kitsMount.innerHTML += `
-    <div class="kit-section reveal ${ki > 0 ? 'reveal-delay-' + ki : ''}">
+    <div class="kit-section reveal ${ki > 0 ? 'reveal-delay-' + ki : ''}" id="kit-${ki}">
       <div class="kit-header">
         <span class="badge badge--${kit.tag}" style="font-size:11px;padding:0.4rem 1rem">${kit.tag}</span>
         <div>
-          <div style="font-family:var(--font-display);font-size:2rem;color:var(--color-cream);line-height:1.1">${kit.title}</div>
-          <div style="font-size:13px;color:var(--color-text-dim);margin-top:0.25rem">${kit.description}</div>
+          <div style="font-family:var(--font-display);font-size:2rem;color:var(--primary-ctn);line-height:1.1">${kit.title}</div>
+          <div style="font-size:13px;color:var(--on-surface-muted);margin-top:0.25rem">${kit.description}</div>
         </div>
         <div style="margin-left:auto;text-align:right">
-          <div style="font-size:10px;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.1em">Kit a partir de</div>
-          <div style="font-size:1.6rem;font-weight:700;color:var(--color-gold)">R$ ${totalMin.toFixed(2).replace('.',',')}</div>
+          <div style="font-size:10px;color:var(--on-surface-muted);text-transform:uppercase;letter-spacing:0.1em">Kit a partir de</div>
+          <div style="font-size:1.6rem;font-weight:700;color:var(--gold)">R$ ${totalMin.toFixed(2).replace('.',',')}</div>
         </div>
       </div>
 
@@ -219,16 +354,17 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
         <div class="kit-column">
           <div class="kit-column__title">🌸 Perfumes do kit</div>
           <div style="display:flex;flex-direction:column;gap:0.75rem">
-            ${perfumes.map(p => `
-              <div class="layering-item" style="cursor:pointer" onclick="location.href='produto.html?id=${p.id}'">
+            ${perfumes.map((p, i) => `
+              <div class="layering-item selected" data-type="perfume" data-id="${p.id}" onclick="toggleItem(this)">
+                <div class="layering-item__checkbox"></div>
                 <div class="layering-item__icon">
-                  ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '🌸'}
+                  ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">` : '🌸'}
                 </div>
                 <div style="flex:1">
                   <div class="layering-item__name">${p.name}</div>
-                  <div class="layering-item__type">Insp. ${p.inspired_by}</div>
+                  <div class="layering-item__type">Essência 27% · Insp. ${p.inspired_by}</div>
                 </div>
-                <div style="font-size:13px;font-weight:600;color:var(--color-gold)">R$ ${p.variants[0].price.toFixed(2).replace('.',',')}</div>
+                <div class="layering-item__price">R$ ${p.variants[0].price.toFixed(2).replace('.',',')}</div>
               </div>`).join('')}
           </div>
         </div>
@@ -236,49 +372,65 @@ SPOSENCE_DATA.layering.forEach((kit, ki) => {
         <div class="kit-column">
           <div class="kit-column__title">🫧 Complementos</div>
           <div style="display:flex;flex-direction:column;gap:0.75rem">
-            ${skincares.map(s => `
-              <div class="layering-item" style="cursor:pointer" onclick="location.href='produto.html?id=${s.id}'">
-                <div class="layering-item__icon">🫧</div>
+            ${skincares.map((s, i) => {
+              const price = s.price || s.variants?.[0]?.price || 0;
+              return `
+              <div class="layering-item selected" data-type="skincare" data-id="${s.id}" onclick="toggleItem(this)">
+                <div class="layering-item__checkbox"></div>
+                <div class="layering-item__icon">
+                  ${s.image ? `<img src="${s.image}" alt="${s.name}" style="width:100%;height:100%;object-fit:cover">` : '🧴'}
+                </div>
                 <div style="flex:1">
                   <div class="layering-item__name">${s.name}</div>
-                  <div class="layering-item__type">Creme Hidratante</div>
+                  <div class="layering-item__type">Hidratação Profunda</div>
                 </div>
-                <div style="font-size:13px;font-weight:600;color:var(--color-gold)">R$ ${s.price.toFixed(2).replace('.',',')}</div>
-              </div>`).join('')}
-            ${splashes.map(b => `
-              <div class="layering-item" style="cursor:pointer" onclick="location.href='produto.html?id=${b.id}'">
-                <div class="layering-item__icon">💦</div>
+                <div class="layering-item__price">R$ ${price.toFixed(2).replace('.',',')}</div>
+              </div>`;
+            }).join('')}
+            ${splashes.map((b, i) => `
+              <div class="layering-item selected" data-type="splash" data-id="${b.id}" onclick="toggleItem(this)">
+                <div class="layering-item__checkbox"></div>
+                <div class="layering-item__icon">
+                  ${b.image ? `<img src="${b.image}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover">` : '💦'}
+                </div>
                 <div style="flex:1">
                   <div class="layering-item__name">${b.name}</div>
                   <div class="layering-item__type">Body Splash ${b.volume}</div>
                 </div>
-                <div style="font-size:13px;font-weight:600;color:var(--color-gold)">R$ ${b.price.toFixed(2).replace('.',',')}</div>
+                <div class="layering-item__price">R$ ${b.price.toFixed(2).replace('.',',')}</div>
               </div>`).join('')}
           </div>
         </div>
       </div>
 
-      <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
-        <button class="btn btn--primary" onclick="addKit(${ki})">
-          Adicionar kit ao carrinho
-        </button>
-        <a href="produtos.html?profile=${kit.tag}" class="btn btn--outline">Ver fragrâncias ${kit.tag}</a>
+      <div class="kit-actions">
+        <div style="display:flex;flex-direction:column">
+           <span style="font-size:10px;text-transform:uppercase;color:var(--on-surface-muted);letter-spacing:0.15em;font-weight:700">Personalize seu kit</span>
+           <span style="font-size:14px;color:var(--on-surface-var)">Selecione os itens desejados acima</span>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <button class="btn btn--primary" onclick="addSelectedToCart(${ki})">
+            Adicionar Selecionados
+          </button>
+          <a href="produtos.html?profile=${kit.tag}" class="btn btn--outline">Ver tudo de ${kit.tag}</a>
+        </div>
       </div>
     </div>
     ${ki < SPOSENCE_DATA.layering.length - 1 ? `<div class="divider" style="margin-bottom:4rem"></div>` : ''}`;
 });
 
-window.addKit = function(kitIndex) {
-  const kit     = SPOSENCE_DATA.layering[kitIndex];
-  const perfume = SPOSENCE_DATA.perfumes.find(p => p.id === kit.perfume_ids[0]);
-  const skincare = SPOSENCE_DATA.skincare.find(p => p.id === kit.skincare_ids[0]);
-  const splash  = SPOSENCE_DATA.body_splashes.find(p => p.id === kit.splash_ids[0]);
-  if (perfume)  cart.add(perfume, perfume.variants[0]);
-  if (skincare) cart.add(skincare, null);
-  if (splash)   cart.add(splash, null);
-  showToast(`Kit "${kit.title}" adicionado ao carrinho ✦`);
-  openCart();
-};
+// Suporte para rolar até o kit vindo da Home
+window.addEventListener('load', () => {
+  const hash = window.location.hash;
+  if (hash) {
+    setTimeout(() => {
+      const target = document.querySelector(hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100); // Pequeno delay para garantir renderização
+  }
+});
 </script>
 </body>
 </html>

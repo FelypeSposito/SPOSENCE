@@ -35,21 +35,21 @@
             </div>
 
             <h1 class="t-display hero__title">
-              A vivacidade do<br /><em>frescor cítrico.</em>
+              A sofisticação da<br /><em>alta perfumaria.</em>
             </h1>
 
             <p class="hero__description">
-              Perfumes de alta concentração inspirados nos maiores clássicos do mundo — uma composição que permanece na pele e na memória.
+              Fragrâncias atemporais com 27% de essência pura. Criadas para quem busca uma assinatura olfativa marcante e sofisticada.
             </p>
 
             <div class="hero__cta">
-              <a href="produtos.html" class="btn btn--primary btn--lg">
-                Explorar Essências
+              <a href="produto.html?id=coco-mademoiselle" class="btn btn--primary btn--lg">
+                Conhecer Coco Mademoiselle
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
-              <a href="layering.html" class="btn btn--outline">Guia de Layering</a>
+              <a href="produtos.html?profile=elegantes" class="btn btn--outline">Linha Elegante</a>
             </div>
 
             <div class="hero__stats">
@@ -58,12 +58,12 @@
                 <div class="hero__stat-label">Concentração</div>
               </div>
               <div>
-                <div class="hero__stat-value">18+</div>
-                <div class="hero__stat-label">Fragrâncias</div>
+                <div class="hero__stat-value">Icon</div>
+                <div class="hero__stat-label">Mademoiselle</div>
               </div>
               <div>
-                <div class="hero__stat-value">4</div>
-                <div class="hero__stat-label">Perfis olfativos</div>
+                <div class="hero__stat-value">✦</div>
+                <div class="hero__stat-label">Nível Premium</div>
               </div>
             </div>
           </div>
@@ -71,15 +71,15 @@
           <!-- DIREITA / VISUAL -->
           <div class="hero__visual">
             <div class="hero__main-image-wrapper">
-              <img src="img/Light Blue.png" alt="Perfume Sposence" class="hero__main-image">
+              <img src="img/Chanel Coco Mademoseille.png" alt="Chanel Coco Mademoiselle Sposence" class="hero__main-image">
             </div>
 
-            <!-- Floating card (Left only as per design) -->
+            <!-- Floating card -->
             <div class="hero__floating-card hero__float-left">
-              <div class="hero__float-label">FAVORITO DA ESTAÇÃO</div>
-              <div class="hero__float-name">Light Blue</div>
-              <div class="hero__float-desc">50ml · Refrescante · Delicado</div>
-              <a href="produto.html?id=light-blue" class="hero__float-link">CONHECER AGORA</a>
+              <div class="hero__float-label">SELEÇÃO DE LUXO</div>
+              <div class="hero__float-name">Coco Mademoiselle</div>
+              <div class="hero__float-desc">50ml · Floral · Atemporal</div>
+              <a href="produto.html?id=coco-mademoiselle" class="hero__float-link">VER DETALHES</a>
             </div>
           </div>
 
@@ -87,9 +87,7 @@
       </div>
     </section>
 
-    <!-- ============================================================
-       COLEÇÕES EM DESTAQUE (Stitch Style)
-  ============================================================ -->
+    <!-- Outras Coleções -->
     <section class="section--sm" style="background:var(--bg)">
       <div class="container">
         <div class="collections-preview">
@@ -246,7 +244,7 @@
         <div class="grid-4">
           <a href="produtos.html?cat=perfumes" class="product-card reveal" style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <div class="product-card__placeholder">🌸</div>
+              <img src="img/Royal Amber.png" alt="Perfumes Sposence" style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Perfumes</div>
@@ -256,7 +254,7 @@
           <a href="produtos.html?cat=body_splashes" class="product-card reveal reveal-delay-1"
             style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <div class="product-card__placeholder">💦</div>
+              <img src="img/Body Splash Perfumado.png" alt="Body Splashes Sposence" style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Body Splashes</div>
@@ -265,7 +263,7 @@
           </a>
           <a href="produtos.html?cat=skincare" class="product-card reveal reveal-delay-2" style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <div class="product-card__placeholder">🫧</div>
+              <img src="img/Creme Frutado.png" alt="Cuidados Corporais Sposence" style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Cuidados Corporais</div>
@@ -275,7 +273,7 @@
           <a href="produtos.html?cat=merchandise" class="product-card reveal reveal-delay-3"
             style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <div class="product-card__placeholder">✨</div>
+              <img src="img/ecobag.png" alt="Acessórios Sposence" style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Acessórios</div>
@@ -288,28 +286,23 @@
     </section>
 
     <!-- ============================================================
-       CTA FINAL
+       COLEÇÃO ELEGANTE (Abaixo dos destaques)
   ============================================================ -->
-    <section class="section">
+    <section class="section" style="background:var(--surface-container); border-top: 1px solid var(--ghost-border)">
       <div class="container">
-        <div class="reveal" style="
-        text-align:center;
-        padding:5rem 2rem;
-        background:var(--surface-container);
-        border-radius:var(--r-xl);
-      ">
-          <span class="t-label" style="display:inline-block;margin-bottom:1.5rem">Pronto para começar?</span>
-          <h2 class="t-headline" style="margin-bottom:1.25rem">Descubra sua <em
-              style="color:var(--primary-ctn)">fragrância perfeita.</em></h2>
-          <p class="t-body" style="max-width:440px;margin:0 auto 2.5rem">
-            Explore o catálogo completo, filtre por perfil olfativo e monte seu kit de layering ideal.
-          </p>
-          <a href="produtos.html" class="btn btn--primary btn--lg">
-            Ver Catálogo Completo
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
+        <div class="section-header reveal">
+           <div>
+             <div class="eyebrow">
+               <div class="eyebrow-line"></div>
+               <span class="t-label">Premium Selection</span>
+             </div>
+             <h2 class="t-headline">Os Perfumes <em style="color:var(--primary-ctn)">Elegantes.</em></h2>
+           </div>
+           <p class="t-body" style="max-width:400px">Uma curadoria de fragrâncias sofisticadas para quem não abre mão da presença.</p>
+        </div>
+        
+        <div class="grid-3" id="elegant-featured-grid">
+          <!-- Gerado via JS -->
         </div>
       </div>
     </section>
@@ -329,9 +322,33 @@
 
 
 
+    // ---- Elegant Featured ----
+    const elegantGrid = document.getElementById('elegant-featured-grid');
+    SPOSENCE_DATA.perfumes.filter(p => p.profile === 'elegantes').forEach((p, i) => {
+      const delay = i > 0 ? `reveal-delay-${i}` : '';
+      elegantGrid.innerHTML += `
+      <div class="product-card reveal ${delay}" onclick="location.href='produto.html?id=${p.id}'">
+        <div class="product-card__image">
+          ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">✦</div>`}
+          <div class="product-card__badges">
+            <span class="badge badge--elegantes">Elegante</span>
+            <span class="badge badge--gold">27%</span>
+          </div>
+        </div>
+        <div class="product-card__body">
+          <div class="product-card__name">${p.name}</div>
+          <div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>
+          <div class="product-card__footer">
+            <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
+            <button class="product-card__add" onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g, '&quot;')});openCart()">+</button>
+          </div>
+        </div>
+      </div>`;
+    });
+
     // ---- Featured ----
     const featuredGrid = document.getElementById('featured-grid');
-    SPOSENCE_DATA.perfumes.filter(p => p.featured).forEach((p, i) => {
+    SPOSENCE_DATA.perfumes.filter(p => p.featured && p.profile !== 'elegantes').forEach((p, i) => {
       const delay = i > 0 ? `reveal-delay-${i}` : '';
       const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
       featuredGrid.innerHTML += `
@@ -360,7 +377,7 @@
     </div>`;
     });
 
-    // ---- Layering Preview ----    // ---- Teste ----
+    // ---- Layering Preview ----
     const layeringGrid = document.getElementById('layering-preview-grid');
     SPOSENCE_DATA.layering.forEach((kit, i) => {
       const delay = i > 0 ? `reveal-delay-${i}` : '';
@@ -369,7 +386,7 @@
       const splash = SPOSENCE_DATA.body_splashes.find(b => b.id === kit.splash_ids[0]);
 
       layeringGrid.innerHTML += `
-    <a href="layering.html" class="layering-card reveal ${delay}" style="text-decoration:none">
+    <div class="layering-card reveal ${delay}" onclick="location.href='layering.html#kit-${i}'" style="cursor:pointer">
       <div class="layering-card__header">
         <span class="badge badge--${kit.tag}" style="margin-bottom:0.75rem">${kit.tag}</span>
         <div class="layering-card__title">${kit.title}</div>
@@ -386,13 +403,31 @@
               <div class="layering-item__type">Perfume</div>
             </div>
           </div>`).join('')}
-        ${skincare ? `<div class="layering-item"><div class="layering-item__icon">🫧</div><div><div class="layering-item__name">${skincare.name}</div><div class="layering-item__type">Creme</div></div></div>` : ''}
-        ${splash ? `<div class="layering-item"><div class="layering-item__icon">💦</div><div><div class="layering-item__name">${splash.name}</div><div class="layering-item__type">Body Splash</div></div></div>` : ''}
+        ${skincare ? `
+          <div class="layering-item">
+            <div class="layering-item__icon">
+              ${skincare.image ? `<img src="${skincare.image}" alt="${skincare.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '🧴'}
+            </div>
+            <div>
+              <div class="layering-item__name">${skincare.name}</div>
+              <div class="layering-item__type">Creme</div>
+            </div>
+          </div>` : ''}
+        ${splash ? `
+          <div class="layering-item">
+            <div class="layering-item__icon">
+              ${splash.image ? `<img src="${splash.image}" alt="${splash.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '💦'}
+            </div>
+            <div>
+              <div class="layering-item__name">${splash.name}</div>
+              <div class="layering-item__type">Body Splash</div>
+            </div>
+          </div>` : ''}
       </div>
       <div class="layering-card__footer">
-        <span style="font-size:11px;font-weight:600;color:var(--primary-ctn)">Ver kit completo →</span>
+        <div class="btn btn--primary btn--sm" style="width:100%; justify-content:center">Personalizar Kit →</div>
       </div>
-    </a>`;
+    </div>`;
     });
   </script>
 </body>

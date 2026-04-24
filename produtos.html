@@ -379,15 +379,27 @@ function renderGrid() {
 
   grid.innerHTML = products.map(renderProductCard).join('');
 
-  // Re-init reveal
-  document.querySelectorAll('#products-grid .product-card').forEach((el, i) => {
+  // Re-init reveal (staggered & premium)
+  const cardElements = document.querySelectorAll('#products-grid .product-card');
+  cardElements.forEach((el, i) => {
+    // Estado inicial
     el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = `opacity 0.4s ease ${i * 0.04}s, transform 0.4s ease ${i * 0.04}s`;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }));
+    el.style.transform = 'translateY(30px)';
+    el.style.filter = 'blur(10px)';
+    el.style.transition = 'none'; // Reseta transição para aplicar estado inicial
+    
+    requestAnimationFrame(() => {
+      // Aplica a transição suave com stagger
+      el.style.transition = `opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${i * 0.06}s, 
+                             transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${i * 0.06}s, 
+                             filter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) ${i * 0.06}s`;
+      
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        el.style.filter = 'blur(0)';
+      });
+    });
   });
 }
 

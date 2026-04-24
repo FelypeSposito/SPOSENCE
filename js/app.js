@@ -431,7 +431,7 @@ function buildNavbar(activePage) {
   ];
   return `
   <nav class="navbar" id="navbar">
-    <a href="index.html" class="navbar__logo">Sposence</a>
+    <a href="index.html" class="navbar__logo"><img src="img/logo-navbar.png" alt="Sposence" class="navbar__logo-img"></a>
     <ul class="navbar__links">
       ${pages.map(p => `<li><a href="${p.href}" class="${activePage === p.href ? 'active' : ''}">${p.label}</a></li>`).join('')}
     </ul>
@@ -448,7 +448,7 @@ function buildNavbar(activePage) {
   <div class="mobile-menu" id="mobile-menu">
     <div class="mobile-menu__content">
       <div class="mobile-menu__header" style="margin-bottom: 2rem">
-        <div class="navbar__logo">Sposence</div>
+        <div class="navbar__logo"><img src="img/logo-navbar.png" alt="Sposence" class="navbar__logo-img navbar__logo-img--mobile"></div>
       </div>
       <div class="mobile-menu__links">
         ${pages.map((p, i) => `<a href="${p.href}" style="animation-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
@@ -576,7 +576,7 @@ function buildFooter() {
     <div class="container">
       <div class="footer__top">
         <div>
-          <div class="footer__logo">Sposence</div>
+          <div class="footer__logo"><img src="img/logo-navbar.png" alt="Sposence" class="footer__logo-img"></div>
           <p class="footer__tagline">Essências artesanais de alta concentração, criadas para pessoas que valorizam autenticidade.</p>
         </div>
         <div>

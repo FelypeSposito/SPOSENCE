@@ -84,7 +84,6 @@ const SPOSENCE_DATA = {
       ],
       image: "img/Bleu de Chanel.png",
       tags: ["frescos", "amadeirado", "masculino"],
-      featured: true,
     },
     {
       id: "la-vie-est-belle",
@@ -224,6 +223,7 @@ const SPOSENCE_DATA = {
       ],
       image: "img/Royal Amber.png",
       tags: ["noturnos", "oriental", "ambar", "oud", "unissex"],
+      featured: true,
     },
     {
       id: "tobacco-vanille",
@@ -333,10 +333,76 @@ const SPOSENCE_DATA = {
 
   // ---- BODY SPLASHES ----
   body_splashes: [
-    { id: "bs-frutado", name: "Body Splash Frutado", type: "Frutado", concentration: "10%", volume: "200ml", price: 80, description: "Explosão de frutas para o dia todo.", category: "body_splashes", image: "img/Body Splash Frutado.png" },
-    { id: "bs-perfumado", name: "Body Splash Perfumado", type: "Perfumado", concentration: "10%", volume: "200ml", price: 90, description: "Sofisticado e duradouro.", category: "body_splashes", image: "img/Body Splash Perfumado.png" },
-    { id: "bs-perolado-frutado", name: "Body Splash Perolado Frutado", type: "Perolado Frutado", concentration: "10%", volume: "200ml", price: 90, description: "Frutado com brilho sedoso na pele.", category: "body_splashes", image: "img/Body Splash Frutado.png" },
-    { id: "bs-perolado-perf", name: "Body Splash Perolado Perfumado", type: "Perolado Perfumado", concentration: "10%", volume: "200ml", price: 95, description: "Perfumado com acabamento acetinado.", category: "body_splashes", image: "img/Body Splash Perfumado.png" },
+    { 
+      id: "bs-frutado", 
+      name: "Body Splash Frutado", 
+      type: "Frutado", 
+      concentration: "10%", 
+      volume: "200ml", 
+      description: "Explosão de frutas para o dia todo. Escolha seu aroma favorito.", 
+      category: "body_splashes", 
+      image: "img/Body Splash Frutado.png",
+      variants: [
+        { size: "Oceano", price: 80 },
+        { size: "Flor de laranjeira", price: 80 },
+        { size: "Uva", price: 80 },
+        { size: "Vanilla cookie", price: 80 },
+        { size: "Morango", price: 80 },
+        { size: "Baunilha", price: 80 },
+        { size: "Licor de chocolate", price: 80 },
+        { size: "Jabuticaba", price: 80 }
+      ]
+    },
+    { 
+      id: "bs-perfumado", 
+      name: "Body Splash Perfumado", 
+      type: "Perfumado", 
+      concentration: "10%", 
+      volume: "200ml", 
+      description: "Sofisticado e duradouro. Escolha sua fragrância favorita.", 
+      category: "body_splashes", 
+      image: "img/Body Splash Perfumado.png",
+      variants: [
+        { size: "Light Blue", price: 90 },
+        { size: "Royal Amber", price: 90 },
+        { size: "Libre", price: 90 }
+      ]
+    },
+    { 
+      id: "bs-perolado-frutado", 
+      name: "Body Splash Perolado Frutado", 
+      type: "Perolado Frutado", 
+      concentration: "10%", 
+      volume: "200ml", 
+      description: "Fragrâncias frutadas com brilho sedoso na pele.", 
+      category: "body_splashes", 
+      image: "img/Body Splash Frutado.png",
+      variants: [
+        { size: "Oceano", price: 90 },
+        { size: "Flor de laranjeira", price: 90 },
+        { size: "Uva", price: 90 },
+        { size: "Vanilla cookie", price: 90 },
+        { size: "Morango", price: 90 },
+        { size: "Baunilha", price: 90 },
+        { size: "Licor de chocolate", price: 90 },
+        { size: "Jabuticaba", price: 90 }
+      ]
+    },
+    { 
+      id: "bs-perolado-perf", 
+      name: "Body Splash Perolado Perfumado", 
+      type: "Perolado Perfumado", 
+      concentration: "10%", 
+      volume: "200ml", 
+      description: "Fragrâncias icônicas com acabamento acetinado e iluminador.", 
+      category: "body_splashes", 
+      image: "img/Body Splash Perfumado.png",
+      variants: [
+        { size: "Light Blue", price: 95 },
+        { size: "Royal Amber", price: 95 },
+        { size: "Libre", price: 95 }
+      ]
+    },
   ],
 
   // ---- CUIDADOS CORPORAIS ----
@@ -356,17 +422,21 @@ const SPOSENCE_DATA = {
         { size: "Morango", price: 25 },
         { size: "Baunilha", price: 25 },
         { size: "Licor de chocolate", price: 25 },
-        { size: "Jabuticaba - best seller", price: 25 }
+        { size: "Jabuticaba", price: 25 }
       ]
     },
     { 
       id: "sk-hidra-perf", 
       name: "Creme Hidratante Perfumado", 
       type: "Creme Corporal", 
-      price: 35, 
       description: "Pele nutrida com aroma envolvente. Apenas para uso corporal.", 
       category: "skincare",
-      image: "img/Creme Perfumado.png"
+      image: "img/Creme Perfumado.png",
+      variants: [
+        { size: "Italica", price: 35 },
+        { size: "Light Blue", price: 35 },
+        { size: "Libre", price: 35 }
+      ]
     }
   ],
 
@@ -416,9 +486,5 @@ const SPOSENCE_DATA = {
     },
   },
 
-  business: {
-    packaging_note: "Todos os perfumes incluem Mini Sacola de Algodão Cru.",
-    base_cost_30ml: 21.75,
-    special_edition: { name: "Edição Especial 50ml", price: 200, reason: "Essência premium R$35/50ml" },
-  },
+
 };
