@@ -398,6 +398,13 @@ function renderGrid() {
         el.style.opacity = '1';
         el.style.transform = 'translateY(0)';
         el.style.filter = 'blur(0)';
+
+        // Limpa a transição inline após terminar para não bloquear o hover CSS
+        setTimeout(() => {
+          if (el.style.transform === 'translateY(0px)' || el.style.transform === 'translateY(0)') {
+            el.style.transition = '';
+          }
+        }, 1000 + (i * 60));
       });
     });
   });
