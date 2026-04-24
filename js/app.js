@@ -162,7 +162,7 @@ async function processCheckout(e) {
     const waUrl = `https://api.whatsapp.com/send?phone=${myPhone}&text=${encodeURIComponent(waText)}`;
     window.open(waUrl, '_blank');
 
-    // 2. Enviar E-mails via EmailJS (COMENTADO PARA TESTES)
+    // 2. Enviar E-mails via EmailJS
     const emailParams = {
       to_name: "Sposence",
       from_name: name,
@@ -174,12 +174,10 @@ async function processCheckout(e) {
       payment_status: "Aguardando Pagamento" 
     };
 
-    /* CHAVES DO EMAILJS OCULTAS PARA TESTES
     Promise.all([
       emailjs.send("service_0pef7hl", "template_9fbieif", emailParams, "vuRyyPfZQpHshbobj"),
       emailjs.send("service_0pef7hl", "template_098jyr3", emailParams, "vuRyyPfZQpHshbobj")
     ]).catch(err => console.error("Erro no EmailJS:", err));
-    */
 
     // 3. Gerar PIX
     const pixCode = generatePix(cart.total(), "e45ca6dd-c219-45cf-ae50-8ae7bc318cae", "SPOSENCE", "SAO PAULO");
