@@ -3,69 +3,156 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sobre a Sposence</title>
+  <title>Nossa História — Sposence</title>
   <meta name="description" content="A história da Sposence — perfumaria artesanal de alta concentração, 27% essência pura."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/animations.css"/>
   <style>
+    :root {
+      --editorial-bg: #fcf9f5;
+    }
+
+    /* HERO EDITORIAL */
     .sobre-hero {
-      min-height: 70vh;
-      display: flex;
-      align-items: center;
-      padding-top: 6rem;
-      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212,175,55,0.06), transparent 60%);
+      padding: clamp(6rem, 15vw, 10rem) 0 clamp(4rem, 10vw, 6rem);
+      background: var(--editorial-bg);
+      overflow: hidden;
+      position: relative;
     }
-    .tabela-precos {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .tabela-precos th, .tabela-precos td {
-      padding: 0.875rem 1.25rem;
-      border-bottom: 1px solid var(--color-border);
-      text-align: left;
-    }
-    .tabela-precos th {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--color-text-muted);
-      font-weight: 700;
-      background: var(--color-surface-2);
-    }
-    .tabela-precos td:last-child { color: var(--color-gold); font-weight: 700; }
-    .tabela-precos tr:last-child td { border-bottom: none; }
-    .tabela-precos tr:hover td { background: var(--color-surface-2); }
-    .info-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      transition: var(--transition);
-    }
-    .info-card:hover { border-color: var(--color-border-hover); }
-    .info-card__icon { font-size: 1.75rem; margin-bottom: 1rem; }
-    .info-card__title { font-weight: 700; font-size: 15px; margin-bottom: 0.5rem; }
-    .info-card__text  { font-size: 13px; color: var(--color-text-dim); line-height: 1.7; }
-    .special-banner {
-      background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.04));
-      border: 1px solid rgba(212,175,55,0.35);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1.25rem;
-    }
-    .price-grid {
+    .sobre-hero__grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .sobre-hero__visual {
+      position: relative;
+    }
+    .sobre-hero__img-main {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-lifted);
+    }
+    .sobre-hero__float-card {
+      position: absolute;
+      bottom: -2rem;
+      right: -1rem;
+      background: var(--bg);
+      padding: 1.5rem;
+      border-radius: var(--r-lg);
+      border: 1px solid var(--ghost-border);
+      box-shadow: var(--shadow-float);
+      width: 240px;
+      z-index: 2;
+    }
+
+    /* MANIFESTO */
+    .manifesto {
+      padding: clamp(4rem, 12vw, 8rem) 0;
+      background: var(--bg);
+    }
+    .manifesto__quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      line-height: 1.2;
+      color: var(--primary-ctn);
+      font-style: italic;
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+
+    /* PRICE MENU STYLE */
+    .price-menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    .price-group {
+      margin-bottom: 2.5rem;
+    }
+    .price-group__header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .price-group__title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--on-bg);
+    }
+    .price-group__line {
+      flex: 1;
+      height: 1px;
+      background: var(--ghost-border);
+    }
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed var(--ghost-border);
+      transition: all 0.3s var(--ease);
+    }
+    .price-item:hover {
+      padding-left: 0.5rem;
+      border-bottom-color: var(--gold);
+    }
+    .price-item__label {
+      font-size: 14px;
+      color: var(--on-surface-var);
+    }
+    .price-item__val {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--primary-ctn);
+      font-weight: 500;
+    }
+
+    /* VALUES */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
     }
-    @media (max-width: 768px) {
-      .price-grid {
+    .value-card {
+      padding: 2.5rem;
+      border-radius: var(--r-lg);
+      background: var(--surface-container);
+      transition: transform 0.6s var(--ease-spring), box-shadow 0.6s var(--ease);
+      border: 1px solid transparent;
+    }
+    .value-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lifted);
+      border-color: var(--ghost-border);
+    }
+    .value-card__icon {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    .value-card__title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--on-bg);
+      margin-bottom: 1rem;
+    }
+    .value-card__text {
+      font-size: 14px;
+      color: var(--on-surface-muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .sobre-hero__grid, .price-menu, .values-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 3rem;
       }
+      .sobre-hero__visual { order: -1; }
     }
   </style>
 </head>
@@ -80,131 +167,186 @@
   <!-- HERO -->
   <section class="sobre-hero">
     <div class="container">
-      <div style="max-width:700px">
-        <div class="label-gold reveal" style="margin-bottom:1.25rem">Nossa história</div>
-        <h1 class="display-xl reveal reveal-delay-1">Sposence —<br/><span class="text-gold">Essências que</span><br/>contam histórias.</h1>
-        <p class="reveal reveal-delay-2" style="font-size:1.05rem;color:var(--color-text-dim);max-width:540px;margin-top:1.5rem;line-height:1.9">
-          Nascemos da crença de que fragrâncias excepcionais não deveriam ser privilégio de poucos.
-          Com <strong style="color:var(--color-gold)">27% de essência pura</strong>, cada frasco
-          Sposence entrega a intensidade dos grandes clássicos com a autenticidade artesanal de quem
-          se importa com cada gota.
-        </p>
+      <div class="sobre-hero__grid">
+        <div class="sobre-hero__content">
+          <div class="eyebrow reveal">
+            <div class="eyebrow-line"></div>
+            <span class="t-label">Nossa história</span>
+          </div>
+          <h1 class="t-display reveal reveal-delay-1" style="font-size:clamp(2.5rem, 5vw, 4rem); margin: 1.5rem 0;">
+            A sofisticação da<br/><em style="color:var(--primary-ctn)">alta perfumaria</em><br/>ao seu alcance.
+          </h1>
+          <p class="t-body reveal reveal-delay-2" style="max-width:500px; line-height:1.8">
+            Nascemos em 2025 com um propósito claro: democratizar o luxo olfativo sem abrir mão da qualidade técnica. 
+            Com fórmulas autorais de <strong style="color:var(--primary-ctn)">27% de essência pura</strong>, 
+            cada frasco é uma celebração da perfumaria artesanal.
+          </p>
+          <div class="reveal reveal-delay-3" style="margin-top:2.5rem">
+             <a href="#precos" class="btn btn--primary">Explorar Tabela de Preços</a>
+          </div>
+        </div>
+        <div class="sobre-hero__visual reveal">
+          <img src="img/Mockup chaveiro e perfume.png" alt="Sposence Editorial" class="sobre-hero__img-main">
+          <div class="sobre-hero__float-card reveal reveal-delay-3">
+             <div style="font-size:9px; font-weight:800; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem">QUALIDADE ARTESANAL</div>
+             <div style="font-family:var(--font-display); font-size:1.1rem; color:var(--on-bg)">27% de Essência Pura</div>
+             <div style="font-size:12px; color:var(--on-surface-muted); margin-top:0.4rem">Fixação superior e projeção marcante em cada borrifada.</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- TABELA DE PREÇOS -->
-  <section class="section" style="border-top:1px solid var(--color-border)">
+  <!-- MANIFESTO -->
+  <section class="manifesto">
     <div class="container">
-
-      <div class="section-header reveal">
-        <div class="section-header__text">
-          <div class="section-header__eyebrow">
-            <div class="section-header__line"></div>
-            <span class="label-gold">Tabela de Preços</span>
-          </div>
-          <h2 class="display-md">Preços transparentes</h2>
+      <div class="reveal" style="text-align:center; max-width:900px; margin: 0 auto;">
+        <div class="eyebrow" style="justify-content:center">
+          <div class="eyebrow-line"></div>
+          <span class="t-label">A Essência Sposence</span>
+          <div class="eyebrow-line"></div>
         </div>
       </div>
-
-      <div class="price-grid reveal">
-
-        <!-- Perfumes -->
-        <div class="info-card">
-          <div class="info-card__icon">🌸</div>
-          <div class="info-card__title">Perfumes · 27% Essência</div>
-          <div class="info-card__text" style="margin-bottom:1.25rem">Fórmulas de alta performance com matérias-primas selecionadas.</div>
-          <table class="tabela-precos">
-            <thead><tr><th>Tamanho</th><th>Preço</th></tr></thead>
-            <tbody>
-              <tr><td>30ml</td><td>R$ 85,00</td></tr>
-              <tr><td>50ml</td><td>R$ 165,00</td></tr>
-              <tr><td>100ml</td><td>R$ 240,00</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Body Splashes -->
-        <div class="info-card">
-          <div class="info-card__icon">💦</div>
-          <div class="info-card__title">Body Splashes · 10% Essência · 200ml</div>
-          <div class="info-card__text" style="margin-bottom:1.25rem">Leves e refrescantes, ideais para o dia a dia.</div>
-          <table class="tabela-precos">
-            <thead><tr><th>Tipo</th><th>Preço</th></tr></thead>
-            <tbody>
-              <tr><td>Frutado</td><td>R$ 80,00</td></tr>
-              <tr><td>Perfumado</td><td>R$ 90,00</td></tr>
-              <tr><td>Perolado Frutado</td><td>R$ 90,00</td></tr>
-              <tr><td>Perolado Perfumado</td><td>R$ 95,00</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Cremes -->
-        <div class="info-card">
-          <div class="info-card__icon">🫧</div>
-          <div class="info-card__title">Cuidados Corporais</div>
-          <div class="info-card__text" style="margin-bottom:1.25rem">Cremes hidratantes que completam o ritual de layering.</div>
-          <table class="tabela-precos">
-            <thead><tr><th>Produto</th><th>Preço</th></tr></thead>
-            <tbody>
-              <tr><td>Hidratante Frutado</td><td>R$ 25,00</td></tr>
-              <tr><td>Hidratante Perfumado</td><td>R$ 35,00</td></tr>
-              <tr><td>Especial Baunilha</td><td>R$ 45,00</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Acessórios -->
-        <div class="info-card">
-          <div class="info-card__icon">✨</div>
-          <div class="info-card__title">Acessórios</div>
-          <div class="info-card__text" style="margin-bottom:1.25rem">Itens exclusivos da marca para completar sua experiência.</div>
-          <table class="tabela-precos">
-            <thead><tr><th>Produto</th><th>Preço</th></tr></thead>
-            <tbody>
-              <tr><td>Ecobag Sposence</td><td>R$ 45,00</td></tr>
-              <tr><td>Chaveiro Sposence</td><td>R$ 10,00</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-
-
-
     </div>
   </section>
 
-  <!-- NOSSA ESSÊNCIA -->
-  <section class="section" style="border-top:1px solid var(--color-border);background:var(--color-surface)">
+  <!-- TABELA DE PREÇOS (MENU STYLE) -->
+  <section class="section" id="precos" style="background:var(--surface-container-low)">
     <div class="container">
-
       <div class="section-header reveal">
-        <div class="section-header__text">
-          <div class="section-header__eyebrow">
-            <div class="section-header__line"></div>
-            <span class="label-gold">Nossa Essência</span>
+        <div>
+          <div class="eyebrow">
+            <div class="eyebrow-line"></div>
+            <span class="t-label">Transparência</span>
           </div>
-          <h2 class="display-md">O que nos torna únicos</h2>
+          <h2 class="t-headline">Tabela de <em style="color:var(--primary-ctn)">Valores</em></h2>
         </div>
       </div>
 
-      <div class="grid-3">
-        <div class="info-card reveal">
-          <div class="info-card__icon">🧪</div>
-          <div class="info-card__title">Formulação Premium</div>
-          <div class="info-card__text">Ingredientes de altíssima pureza e essências importadas, selecionados para garantir a melhor fixação e cuidado com a pele.</div>
+      <div class="price-menu">
+        <div class="reveal">
+          <!-- Perfumes -->
+          <div class="price-group">
+            <div class="price-group__header">
+              <span class="price-group__title">Perfumes</span>
+              <div class="price-group__line"></div>
+              <span class="badge badge--gold">27% Essência</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Frasco 30ml</span>
+              <span class="price-item__val">R$ 85,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Frasco 50ml</span>
+              <span class="price-item__val">R$ 165,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Frasco 100ml</span>
+              <span class="price-item__val">R$ 240,00</span>
+            </div>
+          </div>
+
+          <!-- Body Splashes -->
+          <div class="price-group">
+            <div class="price-group__header">
+              <span class="price-group__title">Body Splashes</span>
+              <div class="price-group__line"></div>
+              <span class="badge badge--surface">200ml</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Frutado Clássico</span>
+              <span class="price-item__val">R$ 80,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Perfumado Especial</span>
+              <span class="price-item__val">R$ 90,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Perolado Frutado</span>
+              <span class="price-item__val">R$ 90,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Perolado Perfumado</span>
+              <span class="price-item__val">R$ 95,00</span>
+            </div>
+          </div>
         </div>
-        <div class="info-card reveal reveal-delay-1">
-          <div class="info-card__icon">🎁</div>
-          <div class="info-card__title">Brinde Exclusivo</div>
-          <div class="info-card__text">Todo pedido de perfume inclui obrigatoriamente a <strong>Mini Sacola de Algodão Cru</strong> — item de proteção e charme que é marca registrada Sposence.</div>
+
+        <div class="reveal reveal-delay-1">
+          <!-- Skincare -->
+          <div class="price-group">
+            <div class="price-group__header">
+              <span class="price-group__title">Cuidados Corporais</span>
+              <div class="price-group__line"></div>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Hidratante Frutado</span>
+              <span class="price-item__val">R$ 25,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Hidratante Perfumado</span>
+              <span class="price-item__val">R$ 35,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Especial Italica / Vanile</span>
+              <span class="price-item__val">R$ 45,00</span>
+            </div>
+          </div>
+
+          <!-- Acessórios -->
+          <div class="price-group">
+            <div class="price-group__header">
+              <span class="price-group__title">Acessórios</span>
+              <div class="price-group__line"></div>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Ecobag Sposence (Ed. Limitada)</span>
+              <span class="price-item__val">R$ 45,00</span>
+            </div>
+            <div class="price-item">
+              <span class="price-item__label">Chaveiro Sposence</span>
+              <span class="price-item__val">R$ 10,00</span>
+            </div>
+          </div>
         </div>
-        <div class="info-card reveal reveal-delay-2">
-          <div class="info-card__icon">🌍</div>
-          <div class="info-card__title">Inspirações Globais</div>
-          <div class="info-card__text">Nossas 18 fragrâncias são inspiradas nos mais icônicos perfumes do mundo — de Chanel a Tom Ford — tornando o luxo acessível sem perder a autenticidade.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFERENCIAIS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="eyebrow">
+            <div class="eyebrow-line"></div>
+            <span class="t-label">Pilares</span>
+          </div>
+          <h2 class="t-headline">O Padrão Sposence</h2>
+        </div>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card reveal">
+          <span class="value-card__icon">🧪</span>
+          <h3 class="value-card__title">Alta Fixação</h3>
+          <p class="value-card__text">
+            Nossa base de 27% de essência não é apenas um número, é um compromisso com a longevidade da sua fragrância na pele.
+          </p>
+        </div>
+        <div class="value-card reveal reveal-delay-1">
+          <span class="value-card__icon">🎨</span>
+          <h3 class="value-card__title">Arte do Layering</h3>
+          <p class="value-card__text">
+            Fomos pioneiros em trazer o conceito de layering acessível, ensinando você a criar sua própria assinatura misturando produtos.
+          </p>
+        </div>
+        <div class="value-card reveal reveal-delay-2">
+          <span class="value-card__icon">🌍</span>
+          <h3 class="value-card__title">Curadoria Global</h3>
+          <p class="value-card__text">
+            Buscamos as tendências olfativas mais desejadas do mundo para traduzi-las em fórmulas que respeitam o clima e a pele brasileira.
+          </p>
         </div>
       </div>
 
@@ -212,14 +354,13 @@
   </section>
 
   <!-- CTA -->
-  <section class="section">
+  <section class="section--sm" style="background:var(--surface-container)">
     <div class="container">
-      <div class="reveal" style="text-align:center;padding:4rem 2rem;border:1px solid var(--color-border);border-radius:var(--radius-xl);background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.05),transparent 70%)">
-        <div class="label-gold" style="margin-bottom:1.25rem">Pronto para começar?</div>
-        <h2 class="display-md" style="margin-bottom:1.25rem">Encontre sua <span class="text-gold">fragrância perfeita.</span></h2>
-        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2rem">
-          <a href="produtos.html" class="btn btn--primary btn--lg">Ver Catálogo</a>
-          <a href="layering.html" class="btn btn--outline">Guia de Layering</a>
+      <div class="reveal" style="text-align:center; padding: 4rem 0;">
+        <h2 class="t-headline" style="margin-bottom:2rem">Pronta para escolher a sua?</h2>
+        <div style="display:flex; justify-content:center; gap:1.5rem">
+           <a href="produtos.html" class="btn btn--primary btn--lg">Explorar Catálogo</a>
+           <a href="index.html" class="btn btn--outline">Voltar ao Início</a>
         </div>
       </div>
     </div>
@@ -232,10 +373,10 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
-document.getElementById('navbar-mount').innerHTML = buildNavbar('sobre.html');
-document.getElementById('cart-mount').innerHTML   = buildCart();
-document.getElementById('toast-mount').innerHTML  = buildToastContainer();
-document.getElementById('footer-mount').innerHTML = buildFooter();
+  document.getElementById('navbar-mount').innerHTML = buildNavbar('sobre.html');
+  document.getElementById('cart-mount').innerHTML   = buildCart();
+  document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+  document.getElementById('footer-mount').innerHTML = buildFooter();
 </script>
 </body>
 </html>

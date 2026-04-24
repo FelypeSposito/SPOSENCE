@@ -384,6 +384,7 @@ function initNavbar() {
   };
 
   burger?.addEventListener('click', toggleMobileMenu);
+  document.getElementById('menu-close')?.addEventListener('click', toggleMobileMenu);
   // Fechar ao clicar em links ou fora do menu (se necessário)
   mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
     mobileMenu.classList.remove('open');
@@ -447,8 +448,12 @@ function buildNavbar(activePage) {
   </nav>
   <div class="mobile-menu" id="mobile-menu">
     <div class="mobile-menu__content">
-      <div class="mobile-menu__header" style="margin-bottom: 2rem">
-        <div class="navbar__logo"><img src="img/logo-navbar.png" alt="Sposence" class="navbar__logo-img navbar__logo-img--mobile"></div>
+      <div class="mobile-menu__header">
+        <button class="mobile-menu__close" id="menu-close" aria-label="Fechar Menu">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
       <div class="mobile-menu__links">
         ${pages.map((p, i) => `<a href="${p.href}" style="animation-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
