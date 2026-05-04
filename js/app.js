@@ -47,8 +47,19 @@ const cart = {
   render() {
     const countEl = document.querySelectorAll('.navbar__cart-count');
     countEl.forEach(el => {
-      el.textContent = this.count();
-      el.style.display = this.count() > 0 ? 'flex' : 'none';
+      const oldCount = parseInt(el.textContent) || 0;
+      const newCount = this.count();
+      el.textContent = newCount;
+      el.style.display = newCount > 0 ? 'flex' : 'none';
+
+      if (oldCount !== newCount) {
+        const cartBtn = el.closest('.navbar__cart');
+        if (cartBtn) {
+          cartBtn.classList.remove('cart-bump');
+          void cartBtn.offsetWidth; // Trigger reflow
+          cartBtn.classList.add('cart-bump');
+        }
+      }
     });
 
     const body = document.getElementById('cart-body');
@@ -61,7 +72,8 @@ const cart = {
           <div class="cart-empty__icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           </div>
-          <p class="cart-empty__text">Seu carrinho está vazio.<br>Explore nossas essências.</p>
+          <p class="cart-empty__text">Seu carrinho está vazio.</p>
+          <a href="produtos.html" class="btn btn--primary btn--sm" style="margin-top:1rem" onclick="closeCart()">Explorar Fragrâncias</a>
         </div>`;
       if (footer) footer.style.display = 'none';
       return;
@@ -633,7 +645,7 @@ function buildFooter() {
         <div>
           <div class="footer__heading">Informações</div>
           <ul class="footer__links">
-            <li><a href="sobre.html">Concentração 27%</a></li>
+            <li><a href="sobre.html">Nossa Qualidade</a></li>
             <li><a href="mailto:sposence@gmail.com">sposence@gmail.com</a></li>
             <li><a href="https://wa.me/5511933175390" target="_blank">Whatsapp: (11) 93317-5390</a></li>
           </ul>
@@ -641,7 +653,7 @@ function buildFooter() {
       </div>
       <div class="footer__bottom">
         <p class="footer__copy">© 2026 Sposence — Essências que contam histórias.</p>
-        <p class="footer__copy">Concentração: 27%</p>
+        <p class="footer__copy">Artesanal • Alta Fixação</p>
       </div>
     </div>
   </footer>`;
@@ -674,11 +686,44 @@ function initGlobalSearch() {
         return;
       }
       
-      const q = query.toLowerCase();
-      const results = allProducts.filter(p => 
-        p.name.toLowerCase().includes(q) || 
-        (p.inspired_by && p.inspired_by.toLowerCase().includes(q))
-      ).slice(0, 5); // show max 5
+      const normalize = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const q = normalize(query);
+      
+      // Simples algoritmo de Levenshtein para tolerar pequenos erros
+      const isFuzzyMatch = (target, pattern) => {
+        if (target.includes(pattern)) return true;
+        if (pattern.length < 3) return false;
+        
+        const dist = (s1, s2) => {
+          const m = s1.length, n = s2.length;
+          const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+          for (let i = 0; i <= m; i++) dp[i][0] = i;
+          for (let j = 0; j <= n; j++) dp[0][j] = j;
+          for (let i = 1; i <= m; i++) {
+            for (let j = 1; j <= n; j++) {
+              if (s1[i - 1] === s2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+              else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+            }
+          }
+          return dp[m][n];
+        };
+
+        // Verifica se alguma palavra do alvo "quase" bate com o padrão
+        const words = target.split(/\s+/);
+        return words.some(word => {
+          if (word.length < 3) return word === pattern;
+          const maxDist = pattern.length > 6 ? 2 : 1;
+          return dist(word.slice(0, pattern.length), pattern) <= maxDist;
+        });
+      };
+      
+      const results = allProducts.filter(p => {
+        const name = normalize(p.name);
+        const inspired = normalize(p.inspired_by || "");
+        const tags = (p.tags || []).map(t => normalize(t));
+        
+        return isFuzzyMatch(name, q) || isFuzzyMatch(inspired, q) || tags.some(t => isFuzzyMatch(t, q));
+      }).slice(0, 5);
 
       if (results.length === 0) {
         dropdown.innerHTML = `<div class="search-dropdown__empty">Nenhum produto encontrado.</div>`;
@@ -730,4 +775,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initReveal();
   initGlobalSearch();
+  initFloatingUI();
 });
+
+function initFloatingUI() {
+  if (document.querySelector('.float-wa')) return;
+  const wa = document.createElement('a');
+  wa.href = "https://wa.me/5511933175390?text=Olá! Gostaria de tirar uma dúvida sobre as fragrâncias Sposence.";
+  wa.className = "float-wa";
+  wa.target = "_blank";
+  wa.setAttribute('aria-label', 'Contato via WhatsApp');
+  wa.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12.031 6.172c-2.277 0-4.125 1.848-4.125 4.125 0 .736.194 1.425.53 2.02l-.564 2.057 2.106-.552c.57.314 1.226.495 1.924.495 2.277 0 4.125-1.848 4.125-4.125s-1.848-4.125-4.125-4.125zM12 2C6.477 2 2 6.477 2 12c0 1.891.525 3.66 1.438 5.17L2 22l4.997-1.312C8.423 21.574 10.151 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>`;
+  document.body.appendChild(wa);
+}

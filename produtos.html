@@ -88,7 +88,19 @@
     @media (max-width: 1024px) {
       .produtos-layout { grid-template-columns: 1fr; padding-top: 5rem; }
       .sidebar { display: none; }
-      .cat-pills { display: flex; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none; -ms-overflow-style: none; }
+      .cat-pills { 
+        display: flex; 
+        overflow-x: auto; 
+        padding: 0.75rem 1rem; 
+        margin: 0 -1rem 1.5rem -1rem;
+        background: var(--bg);
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        border-bottom: 1px solid var(--inner-border);
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
+      }
       .cat-pills::-webkit-scrollbar { display: none; }
       .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
     }
@@ -254,6 +266,36 @@ let searchQuery    = '';
 // Track selected variant per product
 const selectedVariants = {};
 
+// Helper para busca fuzzy
+const normalizeText = (s) => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const isFuzzyMatch = (target, pattern) => {
+  const t = normalizeText(target);
+  const p = normalizeText(pattern);
+  if (t.includes(p)) return true;
+  if (p.length < 3) return false;
+  
+  const dist = (s1, s2) => {
+    const m = s1.length, n = s2.length;
+    const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (s1[i - 1] === s2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+        else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+    return dp[m][n];
+  };
+
+  const words = t.split(/\s+/);
+  return words.some(word => {
+    if (word.length < 3) return word === p;
+    const maxDist = p.length > 6 ? 2 : 1;
+    return dist(word.slice(0, p.length), p) <= maxDist;
+  });
+};
+
 // ---- Get URL params ----
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('cat'))     activeCategory = urlParams.get('cat');
@@ -311,9 +353,9 @@ function filterProducts() {
   }
   if (activeSize !== 'all')     products = products.filter(p => p.variants?.some(v => v.size === activeSize));
   if (searchQuery)               products = products.filter(p =>
-    p.name.toLowerCase().includes(searchQuery) ||
-    (p.inspired_by || '').toLowerCase().includes(searchQuery) ||
-    (p.tags || []).some(t => t.includes(searchQuery))
+    isFuzzyMatch(p.name, searchQuery) ||
+    isFuzzyMatch(p.inspired_by, searchQuery) ||
+    (p.tags || []).some(t => isFuzzyMatch(t, searchQuery))
   );
   return products;
 }
@@ -347,8 +389,11 @@ function renderProductCard(p) {
 
   return `
     <div class="product-card" id="card-${p.id}" onclick="location.href='produto.html?id=${p.id}'">
-      <div class="product-card__image">
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${displayEmoji}</div>`}
+      <div class="product-card__image" style="position: relative;">
+        ${p.image ? `
+          <div class="skeleton" style="position:absolute; inset:0; border-radius: inherit;"></div>
+          <img src="${p.image}" alt="${p.name}" class="product-card__img-real" style="opacity: 0; transition: opacity 0.5s var(--ease), transform 0.8s var(--ease);" onload="this.style.opacity='1'; if(this.previousElementSibling) this.previousElementSibling.remove()">
+        ` : `<div class="product-card__placeholder">${displayEmoji}</div>`}
         <div class="product-card__badges">
           ${isPerfume ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : ''}
           ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
@@ -469,9 +514,9 @@ function updateSidebarCounts() {
       }
     }
     if (search) p = p.filter(x => 
-      x.name.toLowerCase().includes(search) || 
-      (x.inspired_by||'').toLowerCase().includes(search) ||
-      (x.tags || []).some(t => t.includes(search))
+      isFuzzyMatch(x.name, search) || 
+      isFuzzyMatch(x.inspired_by, search) ||
+      (x.tags || []).some(t => isFuzzyMatch(t, search))
     );
     return p.length;
   };
