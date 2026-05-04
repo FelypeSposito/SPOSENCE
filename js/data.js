@@ -31,7 +31,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Light Blue.png",
-      tags: ["frescos", "dia", "calor", "citrico"],
+      tags: ["frescos", "dia", "calor", "citrico", "compartilhavel"],
       featured: true,
     },
     {
@@ -49,7 +49,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Acqua di Gio.png",
-      tags: ["frescos", "dia", "aquatico", "masculino"],
+      tags: ["frescos", "dia", "aquatico", "compartilhavel"],
     },
     {
       id: "mandarino",
@@ -66,7 +66,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Mandarino.png",
-      tags: ["frescos", "citrico", "calor"],
+      tags: ["frescos", "citrico", "calor", "compartilhavel"],
     },
     {
       id: "bleu-de-chanel",
@@ -118,7 +118,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Devotion.png",
-      tags: ["doces", "floral", "baunilha"],
+      tags: ["doces", "floral", "baunilha", "feminino"],
     },
     {
       id: "italica",
@@ -135,7 +135,8 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Italica.png",
-      tags: ["doces", "amendoa", "gourmand"],
+      tags: ["doces", "amendoa", "gourmand", "compartilhavel"],
+      is_special_edition: true,
     },
     {
       id: "baccarat-rouge",
@@ -152,7 +153,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Baccarat.png",
-      tags: ["doces", "ambar", "premium", "unissex"],
+      tags: ["doces", "ambar", "premium", "compartilhavel"],
       is_special_edition: true,
       featured: true,
     },
@@ -211,7 +212,7 @@ const SPOSENCE_DATA = {
       id: "royal-amber",
       name: "Royal Amber",
       inspired_by: "Referência Oriental Premium",
-      profile: "noturnos",
+      profile: "elegantes",
       notes: { top: "Açafrão, resina olíbano", heart: "Rosa turca, oud", base: "Âmbar real, patchouli, almíscar" },
       description: "Uma experiência oriental profunda. Majestoso e inesquecível.",
       category: "perfumes",
@@ -222,8 +223,9 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Royal Amber.png",
-      tags: ["noturnos", "oriental", "ambar", "oud", "unissex"],
+      tags: ["elegantes", "oriental", "ambar", "oud", "compartilhavel"],
       featured: true,
+      is_special_edition: true,
     },
     {
       id: "tobacco-vanille",
@@ -240,7 +242,7 @@ const SPOSENCE_DATA = {
         { size: "100ml", price: 240 },
       ],
       image: "img/Tobaco Vanile.png",
-      tags: ["noturnos", "amadeirado", "baunilha", "unissex"],
+      tags: ["noturnos", "amadeirado", "baunilha", "compartilhavel"],
       featured: true,
     },
     {
@@ -442,7 +444,7 @@ const SPOSENCE_DATA = {
 
   // ---- ACESSÓRIOS ----
   merchandise: [
-    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence.", category: "merchandise", image: "img/ecobag.png" },
+    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence. (Produção artesanal sob encomenda)", category: "merchandise", image: "img/ecobag.png" },
     { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise", image: "img/Chaveiro.png" },
   ],
 

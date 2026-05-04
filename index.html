@@ -35,7 +35,7 @@
             </div>
 
             <h1 class="t-display hero__title">
-              A sofisticação da<br /><em>alta perfumaria.</em>
+              Sua presença merece<br /><em>uma assinatura única.</em>
             </h1>
 
             <p class="hero__description">
@@ -332,7 +332,9 @@
           ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">✦</div>`}
           <div class="product-card__badges">
             <span class="badge badge--elegantes">Elegante</span>
-            <span class="badge badge--gold">27%</span>
+            ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
+            ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
+            ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
           </div>
         </div>
         <div class="product-card__body">
@@ -357,7 +359,9 @@
         ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${emoji}</div>`}
         <div class="product-card__badges">
           <span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>
-          <span class="badge badge--gold">27%</span>
+          ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
+          ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
+          ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
         </div>
       </div>
       <div class="product-card__body">

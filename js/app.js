@@ -425,7 +425,7 @@ function profileLabel(profileId) {
 function buildNavbar(activePage) {
   const pages = [
     { href: 'index.html', label: 'Início' },
-    { href: 'produtos.html', label: 'Perfumes' },
+    { href: 'produtos.html', label: 'Produtos' },
     { href: 'colecoes.html', label: 'Coleções' },
     { href: 'layering.html', label: 'Layering' },
     { href: 'sobre.html', label: 'Sobre' },
@@ -437,6 +437,15 @@ function buildNavbar(activePage) {
       ${pages.map(p => `<li><a href="${p.href}" class="${activePage === p.href ? 'active' : ''}">${p.label}</a></li>`).join('')}
     </ul>
     <div class="navbar__actions">
+      <div class="navbar__search-wrapper" style="position: relative;">
+        <form class="navbar__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''">
+          <input type="text" id="desk-search-input" name="search" placeholder="Buscar fragrância..." class="navbar__search-input" aria-label="Buscar" autocomplete="off">
+          <button type="submit" class="navbar__search-btn" aria-label="Pesquisar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+        </form>
+        <div class="search-dropdown" id="search-dropdown-desk"></div>
+      </div>
       <button class="navbar__cart" data-open-cart aria-label="Carrinho">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="navbar__cart-count" style="display:none">0</span>
@@ -455,7 +464,16 @@ function buildNavbar(activePage) {
           </svg>
         </button>
       </div>
-      <div class="mobile-menu__links">
+      <form class="mobile-menu__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''" style="padding: 0 1rem; margin-bottom: 2rem;">
+        <div style="position: relative; display: flex; align-items: center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" style="position: absolute; left: 1rem;">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="mob-search-input" name="search" placeholder="Buscar produtos..." aria-label="Pesquisar" autocomplete="off" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border-radius: var(--r-full); border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-family: var(--font-body); font-size: 1rem; outline: none;">
+          <div class="search-dropdown search-dropdown--mobile" id="search-dropdown-mob"></div>
+        </div>
+      </form>
+      <div class="mobile-menu__links" style="padding: 0 1rem;">
         ${pages.map((p, i) => `<a href="${p.href}" style="animation-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
       </div>
       <div class="mobile-menu__footer">
@@ -494,7 +512,7 @@ function buildCart() {
       </button>
       <div class="cart-packaging-note">
         <span class="cart-packaging-note__icon">✦</span>
-        Todos os perfumes incluem a&nbsp;<strong>Mini Sacola</strong> de Algodão Cru como brinde de proteção.
+        <span>Todos os perfumes incluem a <strong>Mini Sacola</strong> de Algodão Cru como brinde de proteção.</span>
       </div>
     </div>
   </aside>
@@ -618,6 +636,72 @@ function buildToastContainer() {
   return `<div class="toast-container" id="toast-container"></div>`;
 }
 
+// ---- Global Search ----
+function initGlobalSearch() {
+  if (typeof SPOSENCE_DATA === 'undefined') return;
+  
+  const allProducts = [
+    ...(SPOSENCE_DATA.perfumes || []).map(p => ({...p, category: 'perfumes'})),
+    ...(SPOSENCE_DATA.body_splashes || []).map(p => ({...p, category: 'body_splashes'})),
+    ...(SPOSENCE_DATA.skincare || []).map(p => ({...p, category: 'skincare'})),
+    ...(SPOSENCE_DATA.merchandise || []).map(p => ({...p, category: 'merchandise'}))
+  ];
+
+  const setupSearch = (inputId, dropdownId) => {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+
+    const renderResults = (query) => {
+      if (!query) {
+        dropdown.classList.remove('show');
+        return;
+      }
+      
+      const q = query.toLowerCase();
+      const results = allProducts.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        (p.inspired_by && p.inspired_by.toLowerCase().includes(q))
+      ).slice(0, 5); // show max 5
+
+      if (results.length === 0) {
+        dropdown.innerHTML = `<div class="search-dropdown__empty">Nenhum produto encontrado.</div>`;
+      } else {
+        dropdown.innerHTML = results.map(p => {
+          const price = p.variants ? p.variants[0].price : (p.price || 0);
+          return `
+            <a href="produto.html?id=${p.id}" class="search-dropdown__item">
+              ${p.image ? `<img src="${p.image}" alt="${p.name}" class="search-dropdown__img">` : `<div class="search-dropdown__img" style="display:flex;align-items:center;justify-content:center;font-size:20px;">✦</div>`}
+              <div class="search-dropdown__info">
+                <div class="search-dropdown__name">${p.name}</div>
+                <div class="search-dropdown__type">${p.category.replace('_', ' ')}</div>
+              </div>
+              <div class="search-dropdown__price">R$ ${price.toFixed(2).replace('.', ',')}</div>
+            </a>
+          `;
+        }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item" style="justify-content:center;color:var(--primary-ctn);font-weight:600;font-size:11px;">Ver todos os resultados →</a>`;
+      }
+      dropdown.classList.add('show');
+    };
+
+    input.addEventListener('input', (e) => renderResults(e.target.value.trim()));
+    input.addEventListener('focus', (e) => renderResults(e.target.value.trim()));
+    
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+  };
+
+  // timeout slightly to ensure DOM is fully ready with navbar
+  setTimeout(() => {
+    setupSearch('desk-search-input', 'search-dropdown-desk');
+    setupSearch('mob-search-input', 'search-dropdown-mob');
+  }, 100);
+}
+
 // ---- Init Global ----
 document.addEventListener('DOMContentLoaded', () => {
   // Injetar EmailJS dinamicamente
@@ -629,4 +713,5 @@ document.addEventListener('DOMContentLoaded', () => {
   cart.render();
   initNavbar();
   initReveal();
+  initGlobalSearch();
 });

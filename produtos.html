@@ -185,6 +185,20 @@
           <div class="sidebar__link" data-size="50ml" onclick="setSize('50ml')">50ml — R$ 165,00</div>
           <div class="sidebar__link" data-size="100ml" onclick="setSize('100ml')">100ml — R$ 240,00</div>
         </div>
+
+        <!-- Edição Especial -->
+        <div class="sidebar__section">
+          <div class="sidebar__title">Edição Especial</div>
+          <div class="sidebar__link" onclick="location.href='produto.html?id=italica'">
+            ✨ Italica
+          </div>
+          <div class="sidebar__link" onclick="location.href='produto.html?id=baccarat-rouge'">
+            💎 Baccarat Rouge
+          </div>
+          <div class="sidebar__link" onclick="location.href='produto.html?id=royal-amber'">
+            👑 Royal Amber
+          </div>
+        </div>
       </aside>
 
       <!-- ===== MAIN ===== -->
@@ -244,6 +258,15 @@ const selectedVariants = {};
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('cat'))     activeCategory = urlParams.get('cat');
 if (urlParams.get('profile')) activeProfile  = urlParams.get('profile');
+if (urlParams.get('search')) {
+  searchQuery = urlParams.get('search').toLowerCase().trim();
+  document.addEventListener('DOMContentLoaded', () => {
+    const dInp = document.getElementById('search-input-desk');
+    const mInp = document.getElementById('search-input-mob');
+    if (dInp) dInp.value = urlParams.get('search');
+    if (mInp) mInp.value = urlParams.get('search');
+  });
+}
 
 // ---- Build profile filters ----
 function buildProfileFilters() {
@@ -256,6 +279,12 @@ function buildProfileFilters() {
   SPOSENCE_DATA.fragrance_profiles.forEach(p => {
     html += `<button class="filter-pill ${activeProfile === p.id ? 'active--' + p.id : ''}" data-profile="${p.id}" onclick="setProfile('${p.id}')">${p.emoji} ${p.label}</button>`;
   });
+
+  html += `<div style="width:1px;height:24px;background:var(--inner-border);margin:0 0.5rem;display:inline-block;vertical-align:middle"></div>`;
+  html += `<button class="filter-pill ${activeProfile === 'masculino' ? 'active--masculino' : ''}" data-profile="masculino" onclick="setProfile('masculino')">👔 Masculino</button>`;
+  html += `<button class="filter-pill ${activeProfile === 'feminino' ? 'active--feminino' : ''}" data-profile="feminino" onclick="setProfile('feminino')">💃 Feminino</button>`;
+  html += `<button class="filter-pill ${activeProfile === 'compartilhavel' ? 'active--compartilhavel' : ''}" data-profile="compartilhavel" onclick="setProfile('compartilhavel')">✨ Unissex</button>`;
+
   container.innerHTML = html;
 }
 
@@ -273,7 +302,13 @@ function getAllProducts() {
 function filterProducts() {
   let products = getAllProducts();
   if (activeCategory !== 'all') products = products.filter(p => p.category === activeCategory);
-  if (activeProfile !== 'all')  products = products.filter(p => p.profile === activeProfile);
+  if (activeProfile !== 'all') {
+    if (['masculino', 'feminino', 'compartilhavel'].includes(activeProfile)) {
+      products = products.filter(p => p.tags && p.tags.includes(activeProfile));
+    } else {
+      products = products.filter(p => p.profile === activeProfile);
+    }
+  }
   if (activeSize !== 'all')     products = products.filter(p => p.variants?.some(v => v.size === activeSize));
   if (searchQuery)               products = products.filter(p =>
     p.name.toLowerCase().includes(searchQuery) ||
@@ -316,7 +351,9 @@ function renderProductCard(p) {
         ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${displayEmoji}</div>`}
         <div class="product-card__badges">
           ${isPerfume ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : ''}
-          ${isPerfume ? `<span class="badge badge--gold">27%</span>` : ''}
+          ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
+          ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
+          ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
           ${p.is_special_edition ? `<span class="badge badge--surface">Edição Especial</span>` : ''}
         </div>
       </div>
@@ -326,13 +363,19 @@ function renderProductCard(p) {
         ${p.type ? `<div class="product-card__notes">${p.type}${p.volume ? ' · ' + p.volume : ''}</div>` : ''}
         ${p.notes ? `<div class="product-card__notes" style="font-size:11px;color:var(--color-text-muted)">🌸 ${p.notes.top}</div>` : ''}
         ${variantHtml}
-        <div class="product-card__footer">
-          <div>
-            ${p.variants ? `<div class="product-card__price-from">a partir de</div>` : ''}
-            <div class="product-card__price" id="price-${p.id}">R$ ${price.toFixed(2).replace('.', ',')}</div>
+          <div class="product-card__footer">
+            <div>
+              ${p.variants ? `<div class="product-card__price-from">a partir de</div>` : ''}
+              <div class="product-card__price" id="price-${p.id}">R$ ${price.toFixed(2).replace('.', ',')}</div>
+            </div>
+            ${p.id === 'acc-ecobag' ? `
+              <button class="product-card__add" onclick="event.stopPropagation(); window.open('https://wa.me/5511933175390?text=Olá! Gostaria de encomendar a Ecobag Sposence.', '_blank')" aria-label="Encomendar via WhatsApp" style="background:var(--secondary)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-7.6 8.38 8.38 0 013.8.9L21 3.5z"/></svg>
+              </button>
+            ` : `
+              <button class="product-card__add" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho">+</button>
+            `}
           </div>
-          <button class="product-card__add" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho">+</button>
-        </div>
       </div>
     </div>`;
 }
@@ -418,8 +461,18 @@ function updateSidebarCounts() {
 
   const countFor = (cat) => {
     let p = cat === 'all' ? all : all.filter(x => x.category === cat);
-    if (profile !== 'all') p = p.filter(x => x.profile === profile);
-    if (search) p = p.filter(x => x.name.toLowerCase().includes(search) || (x.inspired_by||'').toLowerCase().includes(search));
+    if (profile !== 'all') {
+      if (['masculino', 'feminino', 'compartilhavel'].includes(profile)) {
+        p = p.filter(x => x.tags && x.tags.includes(profile));
+      } else {
+        p = p.filter(x => x.profile === profile);
+      }
+    }
+    if (search) p = p.filter(x => 
+      x.name.toLowerCase().includes(search) || 
+      (x.inspired_by||'').toLowerCase().includes(search) ||
+      (x.tags || []).some(t => t.includes(search))
+    );
     return p.length;
   };
 

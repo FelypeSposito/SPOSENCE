@@ -166,7 +166,9 @@ if (!product) {
       <p class="product-detail__desc">${product.description}</p>
 
       ${product.profile ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
-      ${product.category === 'perfumes' ? `<span class="badge badge--gold" style="margin-left:0.5rem">27% Essência Pura</span>` : ''}
+      ${(product.tags && product.tags.includes('masculino')) ? `<span class="badge badge--masculino" style="margin-left:0.5rem">Masculino</span>` : ''}
+      ${(product.tags && product.tags.includes('feminino')) ? `<span class="badge badge--feminino" style="margin-left:0.5rem">Feminino</span>` : ''}
+      ${(product.tags && product.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel" style="margin-left:0.5rem">Compartilhável</span>` : ''}
       ${product.is_special_edition ? `<span class="badge badge--surface" style="margin-left:0.5rem">Edição Especial</span>` : ''}
 
       ${variantBlock}
@@ -178,10 +180,17 @@ if (!product) {
       </div>
 
       <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <button class="btn btn--primary btn--lg btn--full" onclick="addToCartDetail()">
-          Adicionar ao carrinho
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        </button>
+        ${product.id === 'acc-ecobag' ? `
+          <a href="https://wa.me/5511933175390?text=Olá! Gostaria de encomendar a Ecobag Sposence." target="_blank" class="btn btn--primary btn--lg btn--full">
+            Encomendar via WhatsApp
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-7.6 8.38 8.38 0 013.8.9L21 3.5z"/></svg>
+          </a>
+        ` : `
+          <button class="btn btn--primary btn--lg btn--full" onclick="addToCartDetail()">
+            Adicionar ao carrinho
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </button>
+        `}
         <a href="produtos.html" class="btn btn--outline btn--full">← Voltar ao catálogo</a>
       </div>
 
@@ -262,7 +271,9 @@ if (!product) {
         ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦'}</div>`}
         <div class="product-card__badges">
           <span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>
-          <span class="badge badge--gold">27%</span>
+          ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
+          ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
+          ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
         </div>
       </div>
       <div class="product-card__body">
