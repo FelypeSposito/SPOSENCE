@@ -391,6 +391,19 @@ function initNavbar() {
     burger.classList.remove('is-open');
     document.body.style.overflow = '';
   }));
+
+  // Mobile search toggle
+  const mobileSearchBtn = document.getElementById('mobile-search-toggle');
+  if (mobileSearchBtn) {
+    mobileSearchBtn.addEventListener('click', () => {
+      if (!mobileMenu.classList.contains('open')) {
+        toggleMobileMenu();
+      }
+      setTimeout(() => {
+        document.getElementById('mob-search-input')?.focus();
+      }, 400);
+    });
+  }
 }
 
 
@@ -450,6 +463,9 @@ function buildNavbar(activePage) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="navbar__cart-count" style="display:none">0</span>
       </button>
+      <button class="navbar__search-mobile-toggle" id="mobile-search-toggle" aria-label="Pesquisar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
       <button class="navbar__burger" id="menu-toggle" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -464,7 +480,7 @@ function buildNavbar(activePage) {
           </svg>
         </button>
       </div>
-      <form class="mobile-menu__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''" style="padding: 0 1rem; margin-bottom: 2rem;">
+      <form class="mobile-menu__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''" style="padding: 0 1rem; margin-bottom: 2rem; transition-delay: 0.1s;">
         <div style="position: relative; display: flex; align-items: center;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" style="position: absolute; left: 1rem;">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -474,7 +490,7 @@ function buildNavbar(activePage) {
         </div>
       </form>
       <div class="mobile-menu__links" style="padding: 0 1rem;">
-        ${pages.map((p, i) => `<a href="${p.href}" style="animation-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
+        ${pages.map((p, i) => `<a href="${p.href}" style="transition-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
       </div>
       <div class="mobile-menu__footer">
         <div class="mobile-menu__meta">
@@ -679,7 +695,7 @@ function initGlobalSearch() {
               <div class="search-dropdown__price">R$ ${price.toFixed(2).replace('.', ',')}</div>
             </a>
           `;
-        }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item" style="justify-content:center;color:var(--primary-ctn);font-weight:600;font-size:11px;">Ver todos os resultados →</a>`;
+        }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item search-dropdown__all">Ver todos os resultados →</a>`;
       }
       dropdown.classList.add('show');
     };

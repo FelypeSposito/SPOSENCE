@@ -209,6 +209,23 @@ const SPOSENCE_DATA = {
       tags: ["noturnos", "lavanda", "baunilha", "feminino"],
     },
     {
+      id: "libre-flowers-flames",
+      name: "Libre Flowers & Flames",
+      inspired_by: "YSL Libre Flowers & Flames",
+      profile: "elegantes",
+      notes: { top: "Lavanda, Bergamota", heart: "Flor de laranjeira, Lírio-do-deserto", base: "Baunilha, Âmbar" },
+      description: "Uma reinterpretação floral e ardente. O frescor da lavanda encontra a sensualidade do lírio-do-deserto.",
+      category: "perfumes",
+      concentration: "27%",
+      variants: [
+        { size: "30ml", price: 85 },
+        { size: "50ml", price: 165 },
+        { size: "100ml", price: 240 },
+      ],
+      image: "img/Libre Flowers and Flames.png",
+      tags: ["elegantes", "floral", "baunilha", "feminino"],
+    },
+    {
       id: "royal-amber",
       name: "Royal Amber",
       inspired_by: "Referência Oriental Premium",
