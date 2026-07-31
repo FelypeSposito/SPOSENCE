@@ -78,10 +78,22 @@ document.getElementById('footer-mount').innerHTML = buildFooter();
 // ---- Get product from URL ----
 const params  = new URLSearchParams(window.location.search);
 const pid     = params.get('id');
-const product = SPOSENCE_DATA.perfumes.find(p => p.id === pid)
-             || SPOSENCE_DATA.body_splashes.find(p => p.id === pid)
-             || SPOSENCE_DATA.skincare.find(p => p.id === pid)
-             || SPOSENCE_DATA.merchandise.find(p => p.id === pid);
+const clean   = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const target  = clean(pid);
+
+const allProds = typeof getAllProducts === 'function' ? getAllProducts() : [
+  ...(SPOSENCE_DATA.perfumes || []),
+  ...(SPOSENCE_DATA.body_splashes || []),
+  ...(SPOSENCE_DATA.skincare || []),
+  ...(SPOSENCE_DATA.merchandise || [])
+];
+
+const product = allProds.find(p => {
+  if (!target) return false;
+  const pId = clean(p.id);
+  const pName = clean(p.name);
+  return pId === target || pName === target || pId.includes(target) || target.includes(pId);
+});
 
 if (!product) {
   document.getElementById('product-detail-mount').innerHTML = `
