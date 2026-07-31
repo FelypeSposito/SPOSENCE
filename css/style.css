@@ -578,6 +578,49 @@ input, select, textarea { outline: none; -webkit-tap-highlight-color: transparen
   transform: translateY(-1px);
 }
 
+/* Liquid Fill Hover Effect (Sutil & Tonal) */
+.btn-liquid {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  isolation: isolate;
+  transition: border-color 0.5s var(--ease), box-shadow 0.5s var(--ease), transform 0.3s ease;
+}
+
+.btn-liquid::before {
+  content: '';
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  width: 170%;
+  height: 380%;
+  border-radius: 42%;
+  background: rgba(70, 37, 6, 0.08); /* Onda sutil e translúcida */
+  transform: translate(-50%, 0) rotate(0deg);
+  transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.btn-liquid:hover {
+  border-color: var(--primary-ctn) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(70, 37, 6, 0.08);
+}
+
+.btn-liquid:hover::before {
+  top: -120%;
+  transform: translate(-50%, 0) rotate(240deg);
+}
+
+.btn-liquid svg {
+  transition: transform 0.3s var(--ease);
+}
+
+.btn-liquid:hover svg {
+  transform: translateX(3px);
+}
+
 .btn--ghost {
   background: transparent;
   border: none;
@@ -1053,6 +1096,8 @@ input, select, textarea { outline: none; -webkit-tap-highlight-color: transparen
   animation: floatY 5s ease-in-out infinite;
 }
 .hero__float-left { bottom: 15%; left: -12%; animation-delay: -2.5s; }
+.hero__float-right { bottom: 15%; right: -12%; left: auto; animation-delay: -2.5s; }
+.hero__float-top-right { top: 8%; right: -8%; left: auto; animation-delay: -1s; }
 .hero__float-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #a17c38; margin-bottom: 0.75rem; }
 .hero__float-name  { font-size: 1.5rem; font-weight: 500; color: var(--on-bg); line-height: 1.2; margin-bottom: 0.5rem; }
 .hero__float-desc  { font-size: 13px; color: var(--on-surface-muted); line-height: 1.6; margin-bottom: 1.25rem; }
@@ -1080,6 +1125,36 @@ input, select, textarea { outline: none; -webkit-tap-highlight-color: transparen
 }
 .hero__floating-card:hover .hero__float-img {
   transform: scale(1.05) translateY(-5px);
+}
+
+/* Selo Efeito Vidro Desfocado (Frosted Glass) */
+.hero__cherry-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  background: rgba(254, 249, 242, 0.45);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  color: #2b1200;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--r-full);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--dur) var(--ease);
+}
+
+.hero__main-image-wrapper:hover .hero__cherry-badge {
+  background: rgba(254, 249, 242, 0.65);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.04);
 }
 
 @media (max-width: 1024px) {

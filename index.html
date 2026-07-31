@@ -31,39 +31,40 @@
           <div class="hero__left">
             <div class="hero__eyebrow">
               <div class="hero__eyebrow-line"></div>
-              <span class="t-label">Alta Perfumaria · Artesanal</span>
+              <span class="t-label">Lançamento Exclusivo · Cuidados Corporais</span>
             </div>
 
             <h1 class="t-display hero__title">
-              Sua presença merece<br /><em>uma assinatura única.</em>
+              Sua pele merece<br /><em>um toque irresistível.</em>
             </h1>
 
             <p class="hero__description">
-              Fragrâncias atemporais de alta concentração. Criadas para quem busca uma assinatura olfativa marcante e sofisticada.
+              Descubra o novo Creme de Cereja Sposence. Hidratação aveludada, nutrição profunda e um aroma doce e
+              marcante que envolve os sentidos.
             </p>
 
             <div class="hero__cta">
-              <a href="produto.html?id=royal-amber" class="btn btn--primary btn--lg">
-                Conhecer Royal Amber
+              <a href="produto.html?id=creme-cereja" class="btn btn--primary btn--lg">
+                Conhecer Creme de Cereja
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
-              <a href="produtos.html?profile=elegantes" class="btn btn--outline">Linha Elegante</a>
+              <a href="produtos.html?cat=skincare" class="btn btn--outline">Linha de Cuidados</a>
             </div>
 
             <div class="hero__stats">
               <div>
-                <div class="hero__stat-value">27%</div>
-                <div class="hero__stat-label">Concentração</div>
+                <div class="hero__stat-value">100g</div>
+                <div class="hero__stat-label">Peso líquido</div>
               </div>
               <div>
-                <div class="hero__stat-value">Icon</div>
-                <div class="hero__stat-label">Mademoiselle</div>
+                <div class="hero__stat-value">🍒</div>
+                <div class="hero__stat-label">Fragrância Doces</div>
               </div>
               <div>
                 <div class="hero__stat-value">✦</div>
-                <div class="hero__stat-label">Nível Premium</div>
+                <div class="hero__stat-label">Toque Aveludado</div>
               </div>
             </div>
           </div>
@@ -71,15 +72,17 @@
           <!-- DIREITA / VISUAL -->
           <div class="hero__visual">
             <div class="hero__main-image-wrapper">
-              <img src="img/Royal Amber.png" alt="Royal Amber Sposence" class="hero__main-image">
+              <span class="hero__cherry-badge">🍒 Fragrância de Cereja</span>
+              <img src="img/CremeCereja.png" alt="Creme de Cereja Sposence" class="hero__main-image" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div style="display:none; font-size:6rem; text-align:center; align-items:center; justify-content:center; height:100%; width:100%;">🍒</div>
             </div>
 
-            <!-- Floating card -->
-            <div class="hero__floating-card hero__float-left">
-              <div class="hero__float-label">MAJESTOSO & ORIENTAL</div>
-              <div class="hero__float-name">Royal Amber</div>
-              <div class="hero__float-desc">50ml · Âmbar Real · Luxo</div>
-              <a href="produto.html?id=royal-amber" class="hero__float-link">VER DETALHES</a>
+            <!-- Botão com Efeito Líquido Gradativo abaixo da imagem -->
+            <div style="margin-top: 1.25rem; text-align: center;">
+              <a href="produto.html?id=creme-cereja" class="btn btn--outline btn--sm btn-liquid" style="border-radius: var(--r-full); background: var(--surface-low); border-color: var(--outline-var); color: var(--primary-ctn); padding: 0.65rem 1.75rem;">
+                <span>Ver Detalhes do Creme de Cereja</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
             </div>
           </div>
 
@@ -254,7 +257,8 @@
           <a href="produtos.html?cat=body_splashes" class="product-card reveal reveal-delay-1"
             style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/Body Splash Perfumado.png" alt="Body Splashes Sposence" style="width:100%;height:100%;object-fit:cover">
+              <img src="img/Body Splash Perfumado.png" alt="Body Splashes Sposence"
+                style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Body Splashes</div>
@@ -263,7 +267,8 @@
           </a>
           <a href="produtos.html?cat=skincare" class="product-card reveal reveal-delay-2" style="text-decoration:none">
             <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/Creme Frutado.png" alt="Cuidados Corporais Sposence" style="width:100%;height:100%;object-fit:cover">
+              <img src="img/Creme Frutado.png" alt="Cuidados Corporais Sposence"
+                style="width:100%;height:100%;object-fit:cover">
             </div>
             <div class="product-card__body">
               <div class="product-card__name">Cuidados Corporais</div>
@@ -291,16 +296,17 @@
     <section class="section" style="background:var(--surface-container); border-top: 1px solid var(--ghost-border)">
       <div class="container">
         <div class="section-header reveal">
-           <div>
-             <div class="eyebrow">
-               <div class="eyebrow-line"></div>
-               <span class="t-label">Premium Selection</span>
-             </div>
-             <h2 class="t-headline">Os Perfumes <em style="color:var(--primary-ctn)">Elegantes.</em></h2>
-           </div>
-           <p class="t-body" style="max-width:400px">Uma curadoria de fragrâncias sofisticadas para quem não abre mão da presença.</p>
+          <div>
+            <div class="eyebrow">
+              <div class="eyebrow-line"></div>
+              <span class="t-label">Premium Selection</span>
+            </div>
+            <h2 class="t-headline">Os Perfumes <em style="color:var(--primary-ctn)">Elegantes.</em></h2>
+          </div>
+          <p class="t-body" style="max-width:400px">Uma curadoria de fragrâncias sofisticadas para quem não abre mão da
+            presença.</p>
         </div>
-        
+
         <div class="grid-3" id="elegant-featured-grid">
           <!-- Gerado via JS -->
         </div>
@@ -350,15 +356,21 @@
 
     // ---- Featured ----
     const featuredGrid = document.getElementById('featured-grid');
-    SPOSENCE_DATA.perfumes.filter(p => p.featured && p.profile !== 'elegantes').forEach((p, i) => {
+    getAllProducts().filter(p => p.featured && p.profile !== 'elegantes').forEach((p, i) => {
       const delay = i > 0 ? `reveal-delay-${i}` : '';
-      const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
+      const emoji = p.id.includes('cereja') ? '🍒' : p.id.includes('coco') ? '🥥' : p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
+      const priceVal = p.variants ? p.variants[0].price : (p.price || 0);
+      const firstVariant = p.variants ? p.variants[0] : null;
+
       featuredGrid.innerHTML += `
     <div class="product-card reveal ${delay}" onclick="location.href='produto.html?id=${p.id}'">
       <div class="product-card__image">
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${emoji}</div>`}
+        ${p.image ? `
+          <img src="${p.image}" alt="${p.name}" class="product-card__img-real" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="product-card__placeholder" style="display:none">${emoji}</div>
+        ` : `<div class="product-card__placeholder">${emoji}</div>`}
         <div class="product-card__badges">
-          <span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>
+          ${p.profile ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : '<span class="badge badge--surface">Cuidados</span>'}
           ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
           ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
           ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
@@ -366,15 +378,15 @@
       </div>
       <div class="product-card__body">
         <div class="product-card__name">${p.name}</div>
-        <div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>
-        <div class="product-card__notes">${p.notes.top}</div>
+        ${p.inspired_by ? `<div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>` : `<div class="product-card__inspired">${p.type || 'Creme Corporal'}</div>`}
+        <div class="product-card__notes">${p.notes ? p.notes.top : (p.description || '')}</div>
         <div class="product-card__footer">
           <div>
-            <div class="product-card__price-from">a partir de</div>
-            <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
+            <div class="product-card__price-from">${p.variants && p.variants.length > 1 ? 'a partir de' : 'valor'}</div>
+            <div class="product-card__price">R$ ${priceVal.toFixed(2).replace('.', ',')}</div>
           </div>
           <button class="product-card__add"
-            onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g, '&quot;')});openCart()"
+            onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(firstVariant).replace(/"/g, '&quot;')});openCart()"
             aria-label="Adicionar">+</button>
         </div>
       </div>

@@ -442,8 +442,20 @@ function profileClass(profileId) {
 
 // ---- Profile label ----
 function profileLabel(profileId) {
+  if (!SPOSENCE_DATA || !SPOSENCE_DATA.fragrance_profiles) return profileId;
   const profile = SPOSENCE_DATA.fragrance_profiles.find(p => p.id === profileId);
   return profile ? profile.label : profileId;
+}
+
+// ---- Get all products flat ----
+function getAllProducts() {
+  if (typeof SPOSENCE_DATA === 'undefined') return [];
+  return [
+    ...(SPOSENCE_DATA.perfumes || []).map(p => ({ ...p, category: p.category || 'perfumes' })),
+    ...(SPOSENCE_DATA.body_splashes || []).map(p => ({ ...p, category: p.category || 'body_splashes' })),
+    ...(SPOSENCE_DATA.skincare || []).map(p => ({ ...p, category: p.category || 'skincare' })),
+    ...(SPOSENCE_DATA.merchandise || []).map(p => ({ ...p, category: p.category || 'merchandise' }))
+  ];
 }
 
 // ---- Build Navbar HTML (shared) ----

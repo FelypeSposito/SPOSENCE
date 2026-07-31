@@ -427,6 +427,36 @@ const SPOSENCE_DATA = {
   // ---- CUIDADOS CORPORAIS ----
   skincare: [
     { 
+      id: "creme-cereja", 
+      name: "Creme de Cereja", 
+      type: "Creme Corporal", 
+      volume: "100g",
+      description: "Hidratação aveludada com a fragrância marcante e sofisticada de cereja. Deixa a pele macia, perfumada e com toque acetinado.", 
+      category: "skincare",
+      profile: "doces",
+      variants: [
+        { size: "100g", price: 35 }
+      ],
+      image: "img/CremeCereja.png",
+      tags: ["doces", "gourmand", "hidratação", "corpo", "feminino"],
+      featured: true
+    },
+    { 
+      id: "creme-coco", 
+      name: "Creme de Coco", 
+      type: "Creme Corporal", 
+      volume: "100g",
+      description: "Nutrição cremosa e profunda com aroma tropical e aconchegante de coco. Toque macio e sensação de bem-estar o dia todo.", 
+      category: "skincare",
+      profile: "doces",
+      variants: [
+        { size: "100g", price: 35 }
+      ],
+      image: "img/CremeCoco.png",
+      tags: ["doces", "gourmand", "tropical", "hidratação", "corpo"],
+      featured: true
+    },
+    { 
       id: "sk-hidra-frutado", 
       name: "Creme Hidratante Frutado", 
       type: "Creme Corporal", 
