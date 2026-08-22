@@ -983,6 +983,21 @@ input, select, textarea { outline: none; -webkit-tap-highlight-color: transparen
   color: var(--on-primary);
 }
 
+.variant-btn.disabled-variant,
+.card-variant-btn.disabled-variant {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--on-surface-muted, #888);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.badge--indisponivel {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
 /* ============================================================
    HERO
    ============================================================ */

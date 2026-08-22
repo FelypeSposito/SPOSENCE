@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Produto — Sposence</title>
+  <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
   <meta name="description" content="Detalhes do produto Sposence — notas olfativas, variantes de tamanho e kit de layering sugerido."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/animations.css"/>
@@ -109,14 +110,19 @@ if (!product) {
 
   const hasVariants   = !!product.variants;
   const emoji         = product.profile === 'frescos' ? '🌊' : product.profile === 'doces' ? '🍯' : product.profile === 'noturnos' ? '🌙' : product.profile === 'elegantes' ? '✦' : '🌸';
-  let selectedVariant = hasVariants ? product.variants[0] : null;
+  const isProductOutOfStock = product.outOfStock || product.available === false;
+  let selectedVariant = hasVariants ? (product.variants.find(v => !v.outOfStock && v.available !== false) || product.variants[0]) : null;
 
   function renderVariantButtons() {
-    return product.variants.map(v => `
-      <button class="variant-btn ${selectedVariant?.size === v.size ? 'active' : ''}"
-        onclick="selectV(${JSON.stringify(v).replace(/"/g,'&quot;')})">
+    return product.variants.map(v => {
+      const isVOutOfStock = v.outOfStock || v.available === false;
+      return `
+      <button class="variant-btn ${selectedVariant?.size === v.size ? 'active' : ''} ${isVOutOfStock ? 'disabled-variant' : ''}"
+        onclick="selectV(${JSON.stringify(v).replace(/"/g,'&quot;')})"
+        title="${isVOutOfStock ? 'Tamanho Esgotado' : ''}">
         ${v.size}
-      </button>`).join('');
+      </button>`;
+    }).join('');
   }
 
   const ingredientsBlock = product.category === 'perfumes' ? `
@@ -166,7 +172,7 @@ if (!product) {
           <div>
             <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-gold)">Opção selecionada</div>
             <div style="font-size:13px;color:var(--color-text-dim)" id="selected-size-label">
-               ${selectedVariant?.size} ${product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : ''}
+               ${selectedVariant?.size} ${selectedVariant?.outOfStock ? ' — (Esgotado)' : (product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : '')}
             </div>
           </div>
         </div>` : ''}
@@ -178,6 +184,7 @@ if (!product) {
       ${product.inspired_by ? `<div class="product-detail__inspired">Inspirado em ${product.inspired_by}</div>` : ''}
       <p class="product-detail__desc">${product.description}</p>
 
+      ${isProductOutOfStock ? `<span class="badge badge--indisponivel">Esgotado</span>` : ''}
       ${product.profile ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
       ${(product.tags && product.tags.includes('masculino')) ? `<span class="badge badge--masculino" style="margin-left:0.5rem">Masculino</span>` : ''}
       ${(product.tags && product.tags.includes('feminino')) ? `<span class="badge badge--feminino" style="margin-left:0.5rem">Feminino</span>` : ''}
@@ -189,19 +196,23 @@ if (!product) {
       ${ingredientsBlock}
 
       <div class="product-detail__price-display" id="price-display">
-        R$ ${(selectedVariant?.price || product.price).toFixed(2).replace('.', ',')}
+        R$ ${(selectedVariant?.price || product.price).toFixed(2).replace('.', ',')} ${(selectedVariant?.outOfStock || isProductOutOfStock) ? '<span style="font-size:14px; color:#ff6b6b">(Esgotado)</span>' : ''}
       </div>
 
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        ${product.id === 'acc-ecobag' ? `
+      <div style="display:flex;gap:1rem;flex-wrap:wrap" id="detail-action-container">
+        ${isProductOutOfStock ? `
+          <button class="btn btn--outline btn--lg btn--full" disabled style="opacity:0.6; cursor:not-allowed; color:#ff6b6b; border-color:rgba(255,107,107,0.3)">
+            Item Esgotado
+          </button>
+        ` : product.id === 'acc-ecobag' ? `
           <a href="https://wa.me/5511933175390?text=Olá! Gostaria de encomendar a Ecobag Sposence." target="_blank" class="btn btn--primary btn--lg btn--full">
             Encomendar via WhatsApp
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-7.6 8.38 8.38 0 013.8.9L21 3.5z"/></svg>
           </a>
         ` : `
-          <button class="btn btn--primary btn--lg btn--full" onclick="addToCartDetail()">
-            Adicionar ao carrinho
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <button class="btn btn--primary btn--lg btn--full" id="btn-add-detail" onclick="addToCartDetail()" ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : ''}>
+            ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? 'Tamanho Indisponível' : 'Adicionar ao carrinho'}
+            ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? '' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>'}
           </button>
         `}
         <a href="produtos.html" class="btn btn--outline btn--full">← Voltar ao catálogo</a>
@@ -217,27 +228,49 @@ if (!product) {
   // Variant selector logic
   window.selectV = function(variant) {
     selectedVariant = variant;
+    const isVOutOfStock = variant.outOfStock || variant.available === false;
     
     const priceEl = document.getElementById('price-display');
     const labelEl = document.getElementById('selected-size-label');
+    const btnAdd = document.getElementById('btn-add-detail');
     
     // Animate price update
     priceEl.classList.remove('animate-update');
     if(labelEl) labelEl.classList.remove('animate-update');
     void priceEl.offsetWidth; // Trigger reflow
     
-    priceEl.textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
+    priceEl.innerHTML = `R$ ${variant.price.toFixed(2).replace('.', ',')} ${isVOutOfStock ? '<span style="font-size:14px; color:#ff6b6b">(Esgotado)</span>' : ''}`;
     if(labelEl) {
-      labelEl.textContent = `${variant.size} ${product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : ''}`;
+      labelEl.textContent = `${variant.size} ${isVOutOfStock ? ' — (Esgotado)' : (product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : '')}`;
+    }
+
+    if (btnAdd) {
+      if (isVOutOfStock) {
+        btnAdd.disabled = true;
+        btnAdd.style.opacity = '0.6';
+        btnAdd.style.cursor = 'not-allowed';
+        btnAdd.innerHTML = 'Tamanho Indisponível';
+      } else {
+        btnAdd.disabled = false;
+        btnAdd.style.opacity = '1';
+        btnAdd.style.cursor = 'pointer';
+        btnAdd.innerHTML = 'Adicionar ao carrinho <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>';
+      }
     }
     
     priceEl.classList.add('animate-update');
     if(labelEl) labelEl.classList.add('animate-update');
     
-    document.querySelectorAll('.variant-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === variant.size));
+    document.querySelectorAll('.variant-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.trim() === variant.size);
+    });
   };
 
   window.addToCartDetail = function() {
+    if (selectedVariant && (selectedVariant.outOfStock || selectedVariant.available === false)) {
+      if (typeof showToast === 'function') showToast(`O tamanho ${selectedVariant.size} está indisponível no momento.`, 'error');
+      return;
+    }
     cart.add(product, selectedVariant);
     openCart();
   };

@@ -28,7 +28,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Light Blue.png",
       tags: ["frescos", "dia", "calor", "citrico", "compartilhavel"],
@@ -46,7 +46,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Acqua di Gio.png",
       tags: ["frescos", "dia", "aquatico", "compartilhavel"],
@@ -63,7 +63,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Mandarino.png",
       tags: ["frescos", "citrico", "calor", "compartilhavel"],
@@ -80,7 +80,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Bleu de Chanel.png",
       tags: ["frescos", "amadeirado", "masculino"],
@@ -97,7 +97,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/La Vie Est Belle.png",
       tags: ["doces", "baunilha", "gourmand", "feminino"],
@@ -115,7 +115,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Devotion.png",
       tags: ["doces", "floral", "baunilha", "feminino"],
@@ -132,7 +132,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Italica.png",
       tags: ["doces", "amendoa", "gourmand", "compartilhavel"],
@@ -150,7 +150,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Baccarat.png",
       tags: ["doces", "ambar", "premium", "compartilhavel"],
@@ -169,7 +169,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Olympea.png",
       tags: ["doces", "baunilha", "feminino"],
@@ -186,7 +186,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/212 Sexy.png",
       tags: ["noturnos", "sedutor", "ambar", "feminino"],
@@ -203,7 +203,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Libre Intense.png",
       tags: ["noturnos", "lavanda", "baunilha", "feminino"],
@@ -220,7 +220,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Libre Flowers and Flames.png",
       tags: ["elegantes", "floral", "baunilha", "feminino"],
@@ -237,7 +237,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Royal Amber.png",
       tags: ["elegantes", "oriental", "ambar", "oud", "compartilhavel"],
@@ -256,7 +256,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Tobaco Vanile.png",
       tags: ["noturnos", "amadeirado", "baunilha", "compartilhavel"],
@@ -274,7 +274,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/One Million.png",
       tags: ["noturnos", "couro", "especiado", "masculino"],
@@ -291,7 +291,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Invictus Victory.png",
       tags: ["noturnos", "amadeirado", "menta", "masculino"],
@@ -308,7 +308,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Libre.png",
       tags: ["elegantes", "lavanda", "baunilha", "feminino"],
@@ -325,7 +325,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Libre Flowers and Flames.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
@@ -342,7 +342,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "30ml", price: 85 },
         { size: "50ml", price: 165 },
-        { size: "100ml", price: 240 },
+        { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
       image: "img/Chanel Coco Mademoseille.png",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
@@ -491,7 +491,7 @@ const SPOSENCE_DATA = {
 
   // ---- ACESSÓRIOS ----
   merchandise: [
-    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence. (Produção artesanal sob encomenda)", category: "merchandise", image: "img/ecobag.png" },
+    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence. (Esgotado)", category: "merchandise", image: "img/ecobag.png", available: false, outOfStock: true },
     { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise", image: "img/Chaveiro.png" },
   ],
 

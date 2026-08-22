@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Catálogo de Produtos — Sposence</title>
+  <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
   <meta name="description" content="Explore o catálogo completo de perfumes, body splashes e cremes Sposence. Filtre por perfil olfativo e encontre sua essência ideal."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/animations.css"/>
@@ -195,7 +196,7 @@
           <div class="sidebar__link active" data-size="all" onclick="setSize('all')">Todos</div>
           <div class="sidebar__link" data-size="30ml" onclick="setSize('30ml')">30ml — R$ 85,00</div>
           <div class="sidebar__link" data-size="50ml" onclick="setSize('50ml')">50ml — R$ 165,00</div>
-          <div class="sidebar__link" data-size="100ml" onclick="setSize('100ml')">100ml — R$ 240,00</div>
+          <div class="sidebar__link" data-size="100ml" onclick="setSize('100ml')">100ml — R$ 240,00 <span style="font-size:10px; color:#ff6b6b; opacity:0.85">(Esgotado)</span></div>
         </div>
 
         <!-- Edição Especial -->
@@ -364,20 +365,26 @@ function filterProducts() {
 function renderProductCard(p) {
   const isPerfume = p.category === 'perfumes';
   const emoji = p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : p.profile === 'elegantes' ? '✦' : p.category === 'body_splashes' ? '💦' : p.category === 'skincare' ? '🫧' : '✨';
+  const isProductOutOfStock = p.outOfStock || p.available === false;
 
   if (!selectedVariants[p.id]) {
-    selectedVariants[p.id] = p.variants ? p.variants[0] : null;
+    selectedVariants[p.id] = p.variants ? (p.variants.find(v => !v.outOfStock && v.available !== false) || p.variants[0]) : null;
   }
   const selVar = selectedVariants[p.id];
+  const isSelVarOutOfStock = isProductOutOfStock || (selVar && (selVar.outOfStock || selVar.available === false));
   const price  = selVar?.price || p.price || 0;
 
   const variantHtml = p.variants ? `
     <div class="card-variants" id="variants-${p.id}">
-      ${p.variants.map(v => `
-        <button class="card-variant-btn ${selVar?.size === v.size ? 'active' : ''}"
-          onclick="event.stopPropagation();selectVariant('${p.id}',${JSON.stringify(v).replace(/"/g,'&quot;')})" >
+      ${p.variants.map(v => {
+        const isVOutOfStock = v.outOfStock || v.available === false;
+        return `
+        <button class="card-variant-btn ${selVar?.size === v.size ? 'active' : ''} ${isVOutOfStock ? 'disabled-variant' : ''}"
+          onclick="event.stopPropagation();selectVariant('${p.id}',${JSON.stringify(v).replace(/"/g,'&quot;')})"
+          title="${isVOutOfStock ? 'Indisponível no momento' : ''}">
           ${v.size}
-        </button>`).join('')}
+        </button>`;
+      }).join('')}
     </div>` : '';
 
   const addPayload = p.variants
@@ -395,6 +402,7 @@ function renderProductCard(p) {
           <img src="${p.image}" alt="${p.name}" class="product-card__img-real" style="opacity: 0; transition: opacity 0.5s var(--ease), transform 0.8s var(--ease);" onload="this.style.opacity='1'; if(this.previousElementSibling) this.previousElementSibling.remove()">
         ` : `<div class="product-card__placeholder">${displayEmoji}</div>`}
         <div class="product-card__badges">
+          ${isProductOutOfStock ? `<span class="badge badge--indisponivel">Esgotado</span>` : ''}
           ${isPerfume ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : ''}
           ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
           ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
@@ -411,14 +419,20 @@ function renderProductCard(p) {
           <div class="product-card__footer">
             <div>
               ${p.variants ? `<div class="product-card__price-from">a partir de</div>` : ''}
-              <div class="product-card__price" id="price-${p.id}">R$ ${price.toFixed(2).replace('.', ',')}</div>
+              <div class="product-card__price" id="price-${p.id}">
+                R$ ${price.toFixed(2).replace('.', ',')}${isSelVarOutOfStock ? ' <span style="font-size:11px; color:#ff6b6b">(Esgotado)</span>' : ''}
+              </div>
             </div>
-            ${p.id === 'acc-ecobag' ? `
+            ${isProductOutOfStock ? `
+              <button class="product-card__add disabled" disabled style="background:var(--surface-container-high); color:#ff6b6b; border:1px solid rgba(255,107,107,0.3); padding:0.4rem 0.8rem; font-size:11px; width:auto; border-radius:var(--r-full); cursor:not-allowed;" aria-label="Esgotado">
+                Esgotado
+              </button>
+            ` : p.id === 'acc-ecobag' ? `
               <button class="product-card__add" onclick="event.stopPropagation(); window.open('https://wa.me/5511933175390?text=Olá! Gostaria de encomendar a Ecobag Sposence.', '_blank')" aria-label="Encomendar via WhatsApp" style="background:var(--secondary)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-7.6 8.38 8.38 0 013.8.9L21 3.5z"/></svg>
               </button>
             ` : `
-              <button class="product-card__add" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho">+</button>
+              <button class="product-card__add" id="add-btn-${p.id}" onclick="event.stopPropagation();${addPayload}" aria-label="Adicionar ao carrinho" ${isSelVarOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>${isSelVarOutOfStock ? '✕' : '+'}</button>
             `}
           </div>
       </div>
@@ -428,18 +442,45 @@ function renderProductCard(p) {
 // ---- Select variant ----
 window.selectVariant = function(productId, variant) {
   selectedVariants[productId] = variant;
+  const isOutOfStock = variant.outOfStock || variant.available === false;
+  
   // Update price display
   const priceEl = document.getElementById(`price-${productId}`);
-  if (priceEl) priceEl.textContent = `R$ ${variant.price.toFixed(2).replace('.', ',')}`;
+  if (priceEl) {
+    priceEl.innerHTML = `R$ ${variant.price.toFixed(2).replace('.', ',')}${isOutOfStock ? ' <span style="font-size:11px; color:#ff6b6b">(Esgotado)</span>' : ''}`;
+  }
+  
+  // Update add button
+  const addBtn = document.getElementById(`add-btn-${productId}`);
+  if (addBtn) {
+    if (isOutOfStock) {
+      addBtn.disabled = true;
+      addBtn.style.opacity = '0.5';
+      addBtn.style.cursor = 'not-allowed';
+      addBtn.textContent = '✕';
+    } else {
+      addBtn.disabled = false;
+      addBtn.style.opacity = '1';
+      addBtn.style.cursor = 'pointer';
+      addBtn.textContent = '+';
+    }
+  }
+
   // Update button states
   const btns = document.querySelectorAll(`#variants-${productId} .card-variant-btn`);
-  btns.forEach(b => b.classList.toggle('active', b.textContent.trim() === variant.size));
+  btns.forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === variant.size);
+  });
 };
 
 window.selectAndAdd = function(productId) {
   const allProducts = getAllProducts();
   const product = allProducts.find(p => p.id === productId);
   const variant  = selectedVariants[productId] || product.variants[0];
+  if (variant && (variant.outOfStock || variant.available === false)) {
+    if (typeof showToast === 'function') showToast(`O tamanho ${variant.size} está indisponível no momento.`, 'error');
+    return;
+  }
   cart.add(product, variant);
   openCart();
 };
