@@ -3,7 +3,7 @@
    "The Botanical Curator" — editorial, tonal, zero borders
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap');
+/* Fontes: Manrope via <link> no <head> de cada página; Philosopher local (brand.css). */
 
 /* ---- Design Tokens (Stitch Aurelian Earth) ---- */
 :root {
@@ -47,7 +47,7 @@
   --inner-border:     rgba(213, 195, 184, 0.35);
 
   /* Fonts */
-  --font-display: 'Noto Serif', Georgia, serif;
+  --font-display: 'Philosopher', Georgia, serif;
   --font-body:    'Manrope', system-ui, sans-serif;
 
   /* Shape */
@@ -357,10 +357,6 @@ input, select, textarea { outline: none; -webkit-tap-highlight-color: transparen
   overflow: hidden;
   z-index: 1000;
 }
-.search-dropdown--mobile .search-dropdown__item { color: var(--on-surface-var) !important; }
-.search-dropdown--mobile .search-dropdown__name { color: var(--on-bg) !important; }
-.search-dropdown--mobile .search-dropdown__price { color: var(--primary-ctn) !important; }
-.search-dropdown--mobile .search-dropdown__item:hover { background: var(--surface-container); }
 
 @media (max-width: 768px) {
   .navbar__search { display: none; }

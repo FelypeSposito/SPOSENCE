@@ -1,0 +1,380 @@
+/* ============================================================
+   SPOSENCE · Páginas internas
+   Produtos, produto, coleções, layering e sobre. Usa os tokens,
+   a tipografia, os botões e o card de brand.css.
+   ============================================================ */
+
+/* ============================================================
+   ABERTURA (hero das páginas internas)
+   ============================================================ */
+.sp-hero {
+  position: relative; overflow: hidden;
+  padding: clamp(7.5rem, 14vw, 10rem) 0 clamp(3rem, 6vw, 5rem);
+}
+.sp-hero--tight { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+/* marca d'água: símbolo da marca, como na home */
+.sp-hero__mark {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: min(44vw, 560px); aspect-ratio: 1;
+  right: -6%; top: 50%; translate: 0 -50%;
+}
+.sp-hero__mark img { width: 100%; height: 100%; object-fit: contain; opacity: 0.16; }
+.sp-hero .h-wrap { z-index: 1; }
+.sp-hero__grid {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 6vw, 6rem); align-items: center;
+}
+.sp-hero__copy { max-width: 720px; }
+.sp-hero__title {
+  font-family: 'Philosopher', Georgia, serif; font-weight: 400;
+  font-size: clamp(2.5rem, 5.4vw, 4.6rem);
+  line-height: 1.06; letter-spacing: -0.02em;
+  color: var(--h-ink); text-wrap: balance;
+  margin-bottom: 1.5rem;
+}
+.sp-hero__title em { font-style: italic; color: var(--h-accent); }
+.sp-hero__cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+.sp-hero__frame {
+  position: relative; overflow: hidden;
+  border-radius: var(--h-r);
+  aspect-ratio: 4 / 5; max-height: 76dvh;
+  background: var(--h-tint);
+  box-shadow: var(--h-shadow);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.sp-hero__frame img { position: absolute; left: 0; top: -9%; width: 100%; height: 118%; object-fit: cover; }
+
+/* quadro de foto genérico com cortina + parallax */
+.sp-frame {
+  position: relative; overflow: hidden;
+  border-radius: var(--h-r);
+  background: var(--h-tint);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.sp-frame > img { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; }
+
+.sp-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--h-ink-soft); margin-bottom: 1.75rem; }
+.sp-crumbs a { transition: color 0.3s ease; }
+.sp-crumbs a:hover { color: var(--h-ink); }
+.sp-crumbs [aria-current] { color: var(--h-ink); font-weight: 600; }
+
+/* chips de filtro (botões com estado) */
+.sp-chips { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; align-items: center; gap: 0.45rem; }
+.sp-chips::-webkit-scrollbar { display: none; }
+.sp-chip { flex: none; }
+.sp-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.55rem 1rem; border-radius: 999px;
+  border: 1px solid var(--h-line-strong);
+  font-size: 0.82rem; font-weight: 600; color: var(--h-ink-soft);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.sp-chip i { font-size: 0.95rem; }
+.sp-chip:hover { color: var(--h-ink); border-color: var(--h-ink); }
+.sp-chip[aria-pressed="true"] { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }
+.sp-chip:focus-visible, .sp-pick:focus-visible, .sp-search input:focus-visible { outline: 2px solid var(--h-accent); outline-offset: 2px; }
+.sp-chips__sep { width: 1px; height: 22px; background: var(--h-line-strong); margin: 0 0.35rem; }
+
+.sp-cta { text-align: center; }
+.sp-cta .h-title { margin-bottom: 2rem; }
+.sp-cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+
+/* ============================================================
+   CATÁLOGO (produtos.html)
+   ============================================================ */
+.sp-catalog { padding-bottom: clamp(4rem, 8vw, 6rem); }
+.sp-filters {
+  position: sticky; top: calc(var(--nav-h, 72px) - 1px); z-index: 50;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem;
+  padding: 1rem 0 1.1rem;
+  margin-bottom: 1.75rem;
+  background: rgba(245, 240, 234, 0.94);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--h-line);
+}
+.sp-filters__row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.sp-filters .h-tabs { margin-bottom: 0; }
+.sp-filters .h-tab small { font-weight: 600; opacity: 0.6; margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+.sp-search {
+  position: relative; flex: 0 1 320px; min-width: 220px;
+}
+.sp-search i { position: absolute; left: 1rem; top: 50%; translate: 0 -50%; color: var(--h-ink-soft); pointer-events: none; }
+.sp-search input {
+  width: 100%; height: 46px; padding: 0 1rem 0 2.6rem;
+  border-radius: 999px; border: 1px solid var(--h-line-strong);
+  background: var(--h-card); color: var(--h-ink);
+  font: inherit; font-size: 0.9rem;
+}
+.sp-search input::placeholder { color: var(--h-ink-soft); opacity: 0.8; }
+.sp-count { font-size: 0.85rem; color: var(--h-ink-soft); }
+.sp-count strong { color: var(--h-ink); font-variant-numeric: tabular-nums; }
+.sp-empty {
+  grid-column: 1 / -1; text-align: center;
+  padding: 4rem 1.5rem; border: 1px dashed var(--h-line-strong); border-radius: var(--h-r);
+  color: var(--h-ink-soft);
+}
+.sp-empty i { font-size: 2rem; color: var(--h-accent); display: block; margin-bottom: 0.75rem; }
+.sp-empty .h-btn { margin-top: 1.25rem; }
+
+/* ============================================================
+   PRODUTO (produto.html)
+   ============================================================ */
+.sp-product { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+.sp-product__media { position: sticky; top: 6rem; }
+.sp-product__media .sp-hero__frame { aspect-ratio: 1; max-height: none; }
+.sp-product__inspired { font-size: 0.95rem; color: var(--h-ink-soft); margin-top: -0.75rem; margin-bottom: 1.25rem; }
+.sp-product__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+.sp-product__chips .h-chip { margin-bottom: 0; }
+.sp-block { margin-top: 1.75rem; }
+.sp-block__title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--h-accent); margin-bottom: 0.75rem; }
+.sp-product .h-sizes { margin-top: 0; }
+.sp-product .h-size { min-width: 72px; padding: 0.7rem 1.1rem; font-size: 0.875rem; }
+.sp-notes { border-top: 1px solid var(--h-line); }
+.sp-notes > div { display: grid; grid-template-columns: 90px 1fr; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--h-line); }
+.sp-notes dt { font-size: 0.8rem; font-weight: 600; color: var(--h-ink-soft); }
+.sp-notes dd { font-size: 0.95rem; }
+.sp-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sp-tags span { font-size: 0.8rem; padding: 0.35rem 0.8rem; border-radius: 999px; background: var(--h-tint); color: var(--h-ink-soft); }
+.sp-buy {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: 2rem; padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r);
+}
+.sp-buy__price { font-family: 'Philosopher', Georgia, serif; font-weight: 700; font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.sp-buy__price small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 0.78rem; color: var(--h-ink-soft); margin-top: 0.35rem; }
+.sp-buy .h-btn[disabled] { opacity: 0.5; pointer-events: none; }
+.sp-note { display: flex; gap: 0.75rem; align-items: flex-start; margin-top: 1.25rem; font-size: 0.85rem; color: var(--h-ink-soft); }
+.sp-note i { font-size: 1.2rem; color: var(--h-accent); flex: none; }
+.sp-back { margin-top: 1.5rem; }
+
+/* ============================================================
+   COLEÇÕES (colecoes.html) · um capítulo por perfil
+   ============================================================ */
+.sp-chapter {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem); align-items: center;
+}
+.sp-chapter + .sp-chapter { margin-top: clamp(4rem, 9vw, 7rem); }
+.sp-chapter:nth-child(even) .sp-chapter__media { order: 2; }
+.sp-chapter__media { aspect-ratio: 4 / 5; max-height: 72dvh; }
+.sp-chapter__index { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.16em; color: var(--h-accent); }
+.sp-chapter .h-title { font-size: clamp(2.4rem, 4.4vw, 3.6rem); margin: 0.75rem 0 1rem; }
+.sp-chapter .h-lead { margin-bottom: 2rem; }
+.sp-names { display: grid; gap: 0; border-top: 1px solid var(--h-line); margin-bottom: 2rem; }
+.sp-names a {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 1rem;
+  padding: 0.7rem 0; border-bottom: 1px solid var(--h-line);
+  transition: padding 0.45s var(--h-ease), color 0.3s ease;
+}
+.sp-names a:hover { padding-left: 0.5rem; }
+.sp-names img { width: 44px; height: 44px; border-radius: 999px; object-fit: cover; background: var(--h-tint); }
+.sp-names span { font-family: 'Philosopher', Georgia, serif; font-size: 1.15rem; line-height: 1.2; }
+.sp-names small { display: block; font-family: var(--font-body); font-size: 0.78rem; color: var(--h-ink-soft); }
+.sp-names i { color: var(--h-ink-soft); transition: transform 0.45s var(--h-ease); }
+.sp-names a:hover i { transform: translateX(4px); color: var(--h-ink); }
+
+/* ============================================================
+   LAYERING (layering.html)
+   ============================================================ */
+.sp-steps { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; counter-reset: step; }
+.sp-step {
+  position: relative; padding: 1.75rem 1.5rem 1.6rem;
+  background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r);
+}
+.sp-step__num { font-family: 'Philosopher', Georgia, serif; font-size: 3rem; line-height: 1; color: var(--h-accent); opacity: 0.35; position: absolute; right: 1.25rem; top: 1rem; }
+.sp-step i { font-size: 1.75rem; color: var(--h-accent); }
+.sp-step h3 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.45rem; margin: 2rem 0 0.5rem; }
+.sp-step p { font-size: 0.92rem; color: var(--h-ink-soft); line-height: 1.6; }
+.sp-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--h-line); }
+.sp-benefits i { font-size: 1.4rem; color: var(--h-accent); display: block; margin-bottom: 0.6rem; }
+.sp-benefits strong { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+.sp-benefits p { font-size: 0.88rem; color: var(--h-ink-soft); line-height: 1.55; }
+
+.sp-kit {
+  background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r);
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  scroll-margin-top: 6rem;
+}
+.sp-kit + .sp-kit { margin-top: 1.5rem; }
+.sp-kit__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+.sp-kit__title { font-family: 'Philosopher', Georgia, serif; font-size: clamp(1.7rem, 2.6vw, 2.3rem); line-height: 1.12; }
+.sp-kit__desc { color: var(--h-ink-soft); margin-top: 0.4rem; max-width: 52ch; }
+.sp-kit__total { text-align: right; font-size: 0.8rem; color: var(--h-ink-soft); }
+.sp-kit__total strong { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 700; font-size: 1.9rem; color: var(--h-ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.sp-kit__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.sp-kit__label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--h-accent); margin-bottom: 0.75rem; }
+.sp-kit__list { display: grid; gap: 0.6rem; }
+.sp-pick {
+  width: 100%; display: grid; grid-template-columns: 22px 52px 1fr auto; align-items: center; gap: 0.9rem;
+  padding: 0.7rem 1rem 0.7rem 0.85rem; text-align: left;
+  border: 1px solid var(--h-line); border-radius: var(--h-r-in);
+  background: var(--h-bg);
+  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.45s var(--h-ease);
+}
+.sp-pick:hover { border-color: var(--h-line-strong); transform: translateY(-2px); }
+.sp-pick__box {
+  width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--h-line-strong);
+  display: grid; place-items: center; color: transparent; font-size: 0.8rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.sp-pick[aria-checked="true"] { border-color: var(--h-ink); background: var(--h-card); }
+.sp-pick[aria-checked="true"] .sp-pick__box { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }
+.sp-pick img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: var(--h-tint); }
+.sp-pick__name { font-family: 'Philosopher', Georgia, serif; font-size: 1.1rem; line-height: 1.2; display: block; }
+.sp-pick__type { font-size: 0.78rem; color: var(--h-ink-soft); }
+.sp-pick__price { font-weight: 700; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.sp-kit__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--h-line); }
+.sp-kit__hint { font-size: 0.85rem; color: var(--h-ink-soft); }
+.sp-kit__actions { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+
+/* ============================================================
+   SOBRE (sobre.html)
+   ============================================================ */
+.sp-hero__float {
+  position: absolute; z-index: 2; left: -1.5rem; bottom: 2rem;
+  width: min(260px, 70%); padding: 1.1rem 1.25rem;
+  background: rgba(251, 249, 244, 0.92);
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.7); border-radius: var(--h-r);
+  box-shadow: var(--h-shadow-sm);
+}
+.sp-hero__float strong { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.15rem; margin: 0.15rem 0 0.25rem; }
+.sp-hero__float p { font-size: 0.82rem; color: var(--h-ink-soft); line-height: 1.5; }
+.sp-hero__float .h-eyebrow { margin-bottom: 0; font-size: 0.68rem; }
+.sp-hero__stage { position: relative; }
+
+.sp-prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+.sp-price-group { background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r); padding: 1.5rem 1.6rem 0.75rem; }
+.sp-price-group__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.sp-price-group__head h3 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.5rem; }
+.sp-price-group .h-chip { margin-bottom: 0; }
+.sp-price-row {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  padding: 0.85rem 0; border-top: 1px solid var(--h-line);
+  font-size: 0.95rem;
+}
+.sp-price-row::after { content: none; }
+.sp-price-row span:first-child { flex: 1; color: var(--h-ink-soft); }
+.sp-price-row strong { font-variant-numeric: tabular-nums; }
+.sp-price-row.is-off strong { text-decoration: line-through; color: var(--h-ink-soft); font-weight: 500; }
+.sp-price-row em { font-style: normal; font-size: 0.75rem; font-weight: 600; color: var(--h-ink-soft); background: var(--h-tint); padding: 0.15rem 0.55rem; border-radius: 999px; margin-left: 0.4rem; }
+
+.sp-values { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+.sp-value { padding: 1.75rem 1.5rem; background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r); transition: transform 0.55s var(--h-ease), box-shadow 0.55s var(--h-ease); }
+.sp-value:hover { transform: translateY(-6px); box-shadow: var(--h-shadow); }
+.sp-value i { font-size: 1.75rem; color: var(--h-accent); }
+.sp-value h3 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.45rem; margin: 2rem 0 0.5rem; }
+.sp-value p { font-size: 0.92rem; color: var(--h-ink-soft); line-height: 1.6; }
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 1023px) {
+  .sp-hero__grid, .sp-product, .sp-chapter { grid-template-columns: 1fr; }
+  .sp-hero__frame { aspect-ratio: 4 / 3; max-height: none; }
+  .sp-hero__mark { width: 80vw; right: -30vw; }
+  .sp-product__media { position: static; }
+  .sp-chapter:nth-child(even) .sp-chapter__media { order: 0; }
+  .sp-chapter__media { aspect-ratio: 4 / 3; max-height: none; }
+  .sp-steps, .sp-values { grid-template-columns: 1fr; }
+  .sp-hero__float { left: 1rem; bottom: 1rem; }
+}
+@media (max-width: 767px) {
+  .sp-filters { position: static; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .sp-filters .h-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; width: 100%; min-width: 0; }
+  .sp-filters__row > * { min-width: 0; }
+  .sp-filters .h-tabs::-webkit-scrollbar { display: none; }
+  .sp-filters .h-tab { flex: none; }
+  .sp-search { flex: 1 1 100%; }
+  .sp-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -1rem; padding: 0 1rem; }
+  .sp-chips::-webkit-scrollbar { display: none; }
+  .sp-chip { flex: none; }
+  .sp-benefits, .sp-prices, .sp-kit__cols { grid-template-columns: 1fr; }
+  .sp-kit__total { text-align: left; }
+  .sp-kit__actions, .sp-kit__actions .h-btn { width: 100%; justify-content: center; }
+  .sp-buy .h-btn { width: 100%; justify-content: center; }
+  .sp-pick { grid-template-columns: 22px 48px minmax(0, 1fr); column-gap: 0.8rem; row-gap: 0.15rem; }
+  .sp-pick__box, .sp-pick img { grid-row: span 2; }
+  .sp-pick img { width: 48px; height: 48px; }
+  .sp-pick__type { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sp-pick__price { grid-column: 3; font-size: 0.88rem; }
+  .sp-hero__cta .h-btn { flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-value:hover, .sp-pick:hover { transform: none; }
+}
+.sp-product .sp-hero__title { font-size: clamp(2.4rem, 4.2vw, 3.6rem); margin-bottom: 1rem; }
+.sp-note--last { margin: 0 0 0.5rem; padding: 0.85rem 1rem; border-radius: var(--h-r-in); background: rgba(218, 167, 83, 0.16); color: #6b4a12; }
+.sp-note--last i { color: #8a5c14; }
+
+/* foto da coleção: a foto toda leva à lista; o botão leva ao perfume em destaque */
+.sp-chapter__all { position: absolute; inset: 0; z-index: 1; }
+.sp-chapter__pick {
+  position: absolute; z-index: 2; left: 1rem; bottom: 1rem;
+  display: flex; align-items: center; gap: 1rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.7rem 0.7rem 0.7rem 1.1rem;
+  background: rgba(251, 249, 244, 0.9);
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.7); border-radius: var(--h-r);
+  box-shadow: var(--h-shadow-sm);
+  color: var(--h-ink);
+  transition: transform 0.5s var(--h-ease), box-shadow 0.5s var(--h-ease);
+}
+.sp-chapter__pick small { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--h-accent); }
+.sp-chapter__pick strong { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.2rem; line-height: 1.2; }
+.sp-chapter__pick i {
+  flex: none; width: 40px; height: 40px; border-radius: 999px;
+  display: grid; place-items: center; background: var(--h-ink); color: var(--h-bg);
+  transition: transform 0.5s var(--h-ease), background-color 0.3s ease;
+}
+.sp-chapter__pick:hover { transform: translateY(-3px); box-shadow: var(--h-shadow); }
+.sp-chapter__pick:hover i { transform: rotate(45deg); background: var(--brand-moss); }
+.sp-chapter__pick:focus-visible { outline: 2px solid var(--h-accent); outline-offset: 3px; }
+@media (prefers-reduced-transparency: reduce) { .sp-chapter__pick { background: var(--h-card); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* ============================================================
+   MOBILE · revisão
+   ============================================================ */
+/* barra de compra fixa no produto: aparece quando o botão principal sai da tela */
+.sp-buybar {
+  position: fixed; z-index: 900; left: 0; right: 0; bottom: 0;
+  display: none; align-items: center; justify-content: space-between; gap: 0.75rem;
+  padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+  background: rgba(245, 240, 234, 0.96);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--h-line);
+  transform: translateY(100%); transition: transform 0.45s var(--h-ease);
+}
+.sp-buybar.is-on { transform: none; }
+.sp-buybar__info { min-width: 0; }
+.sp-buybar__name { font-family: 'Philosopher', Georgia, serif; font-size: 1.05rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-buybar__price { font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.sp-buybar__price small { font-weight: 500; color: var(--h-ink-soft); }
+.sp-buybar .h-btn { flex: none; padding: 0.85rem 1.2rem; }
+.sp-buybar .h-btn[disabled] { opacity: 0.5; pointer-events: none; }
+
+@media (max-width: 767px) {
+  .sp-hero { padding: 6.5rem 0 2.25rem; }
+  .sp-hero--tight { padding-bottom: 1.25rem; }
+  .sp-hero__title { font-size: clamp(2.2rem, 10vw, 2.75rem); margin-bottom: 1rem; }
+  .sp-chip { min-height: 44px; font-size: 0.85rem; }
+  .sp-crumbs { margin-bottom: 1.25rem; }
+  .sp-crumbs a { min-height: 32px; display: inline-flex; align-items: center; }
+  .sp-product .sp-hero__title { font-size: clamp(2.1rem, 9vw, 2.5rem); }
+  .sp-product .h-size { min-height: 48px; flex: 1 1 0; }
+  .sp-product .h-sizes { flex-wrap: nowrap; }
+  .sp-buybar { display: flex; }
+  body.has-buybar .float-wa { opacity: 0; pointer-events: none; transform: translateY(12px); }
+  .sp-chapter .h-title { font-size: 2.2rem; }
+  .sp-chapter__pick { left: 0.75rem; bottom: 0.75rem; padding: 0.55rem 0.55rem 0.55rem 0.9rem; }
+  .sp-chapter__pick strong { font-size: 1.05rem; }
+  .sp-kit { padding: 1.1rem; }
+  .sp-kit__title { font-size: 1.6rem; }
+  .sp-price-group { padding: 1.25rem 1.1rem 0.5rem; }
+  .sp-value { padding: 1.4rem 1.25rem; }
+  .sp-value h3, .sp-step h3 { margin-top: 1.25rem; }
+  .sp-cta__actions .h-btn { flex: 1 1 100%; justify-content: center; }
+}

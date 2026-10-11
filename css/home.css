@@ -1,0 +1,374 @@
+/* ============================================================
+   SPOSENCE · Home
+   Seções exclusivas da página inicial. Tokens, tipografia, botões
+   e card de produto vêm de brand.css.
+   Camadas (z-index): marca d'água 0, conteúdo 1, card flutuante 2.
+   ============================================================ */
+
+/* ============================================================
+   1. HERO
+   ============================================================ */
+.h-hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex; align-items: center;
+  padding: 6rem 0 3.5rem;
+  overflow: hidden;
+}
+/* marca d'água: símbolo da marca, versão oliva com fundo transparente */
+.h-hero__mark {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: min(48vw, 680px); aspect-ratio: 1;
+  left: 34%; top: 54%; translate: 0 -50%;
+}
+.h-hero__mark > span { position: absolute; inset: 0; display: block; }
+.h-hero__mark img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain;
+  opacity: 0.22;
+}
+.h-hero__grid {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+.h-hero__title {
+  font-family: 'Philosopher', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 4.1vw, 3.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin-bottom: 1.5rem;
+}
+.h-hero__title em { font-style: italic; color: var(--h-accent); }
+/* máscara por palavra para o reveal */
+.h-hero__title .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.h-hero__title .w > span { display: inline-block; will-change: transform; }
+.h-hero__lead { margin-bottom: 2.25rem; max-width: 40ch; }
+.h-hero__cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+.h-hero__stage { position: relative; padding: 0 0 2.5rem 2.5rem; }
+.h-hero__frame {
+  position: relative; display: block;
+  border-radius: var(--h-r);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  max-height: 74dvh;
+  margin-left: auto;
+  background: var(--h-tint);
+  box-shadow: var(--h-shadow);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.h-hero__frame img {
+  width: 100%; height: 118%;
+  object-fit: cover; object-position: 50% 50%;
+  position: absolute; top: -9%; left: 0;
+  will-change: transform;
+}
+.h-hero__float {
+  position: absolute; z-index: 2;
+  left: 0; bottom: 0;
+  width: min(290px, 70%);
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 0.9rem; align-items: center;
+  padding: 0.75rem 0.85rem 0.75rem 0.75rem;
+  background: rgba(251, 249, 244, 0.9);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--h-r);
+  box-shadow: var(--h-shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .h-hero__float { background: var(--h-card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+.h-hero__float img { width: 64px; height: 64px; border-radius: var(--h-r-in); object-fit: cover; }
+.h-hero__float-name { font-family: 'Philosopher', Georgia, serif; font-size: 1.1rem; line-height: 1.15; }
+.h-hero__float-meta { font-size: 0.8rem; color: var(--h-ink-soft); margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
+
+/* estado inicial do intro (só com JS e sem reduced-motion) */
+.js-anim .h-hero__title .w > span { transform: translateY(110%); }
+.js-anim .h-hero [data-intro] { opacity: 0; }
+.js-anim .h-hero__frame img { clip-path: inset(100% 0 0 0); }
+.js-anim .h-hero__mark { opacity: 0; }
+
+/* ============================================================
+   2. LINHAS · bento 4 células
+   ============================================================ */
+.h-bento {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  grid-template-rows: repeat(2, minmax(240px, 30vh));
+  gap: 1rem;
+}
+.h-tile {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: var(--h-r);
+  background: var(--h-tint);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.h-tile--tall { grid-row: span 2; }
+/* Acessórios: faixa compacta abaixo da grade (são só dois itens) */
+.h-acc {
+  display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 1rem;
+  margin-top: 1rem; padding: 0.75rem 1rem 0.75rem 0.75rem;
+  background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r);
+  transition: border-color 0.4s ease, box-shadow 0.55s var(--h-ease), transform 0.55s var(--h-ease);
+}
+.h-acc:hover { border-color: var(--h-line-strong); box-shadow: var(--h-shadow-sm); transform: translateY(-3px); }
+.h-acc img { width: 64px; height: 64px; border-radius: var(--h-r-in); object-fit: cover; object-position: 50% 45%; background: var(--h-tint); }
+.h-acc strong { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.35rem; line-height: 1.15; }
+.h-acc small { display: block; font-size: 0.85rem; color: var(--h-ink-soft); margin-top: 0.1rem; }
+.h-acc__arrow {
+  width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center;
+  border: 1px solid var(--h-line-strong); transition: background-color 0.4s var(--h-ease), color 0.4s var(--h-ease), transform 0.5s var(--h-ease);
+}
+.h-acc:hover .h-acc__arrow { background: var(--h-ink); color: var(--h-bg); transform: rotate(-45deg); }
+.h-acc:focus-visible { outline: 2px solid var(--h-accent); outline-offset: 3px; }
+.h-tile img {
+  position: absolute; left: 0; top: -7%; width: 100%; height: 114%; object-fit: cover; z-index: -2;
+  transition: scale 1.4s var(--h-ease);
+}
+.h-tile::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(to top, rgba(40, 22, 4, 0.66) 0%, rgba(40, 22, 4, 0) 58%);
+}
+.h-tile:hover img { scale: 1.06; }
+.h-tile__body {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1.6rem;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+  color: var(--brand-offwhite);
+}
+.h-tile__name {
+  font-family: 'Philosopher', Georgia, serif;
+  font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.1;
+  transition: transform 0.6s var(--h-ease);
+}
+.h-tile--tall .h-tile__name { font-size: clamp(1.9rem, 2.8vw, 2.7rem); }
+.h-tile:hover .h-tile__name { transform: translateY(-4px); }
+.h-tile__arrow {
+  flex: none; width: 44px; height: 44px; border-radius: 999px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(245, 240, 234, 0.7);
+  color: var(--brand-offwhite);
+  font-size: 1.05rem;
+  transition: background-color 0.4s var(--h-ease), color 0.4s var(--h-ease), transform 0.5s var(--h-ease);
+}
+.h-tile:hover .h-tile__arrow { background: var(--brand-offwhite); color: var(--h-ink); transform: rotate(-45deg); }
+
+/* ============================================================
+   3. EM DESTAQUE · trilho horizontal
+   ============================================================ */
+.h-rail {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: clamp(250px, 22vw, 300px);
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1.5rem;
+  padding: 0.75rem 1.5rem 2rem;
+  margin: 0 -1.5rem;
+  scrollbar-width: none;
+}
+.h-rail::-webkit-scrollbar { display: none; }
+.h-rail > .h-card { scroll-snap-align: start; }
+
+/* ============================================================
+   4. PERFIS OLFATIVOS · quatro cartões que levam ao catálogo filtrado
+   ============================================================ */
+.h-profiles__intro { max-width: 640px; margin-bottom: 2.5rem; }
+.h-profiles__intro .h-lead { margin-top: 1rem; }
+.h-profiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+.h-profile {
+  display: flex; flex-direction: column;
+  padding: 1.75rem 1.5rem 1.5rem;
+  background: var(--h-card);
+  border: 1px solid var(--h-line);
+  border-radius: var(--h-r);
+  color: var(--h-ink);
+  transition: transform 0.55s var(--h-ease), box-shadow 0.55s var(--h-ease), border-color 0.4s ease;
+}
+.h-profile:hover { transform: translateY(-6px); box-shadow: var(--h-shadow); border-color: var(--h-line-strong); }
+.h-profile__icon { font-size: 1.75rem; color: var(--h-accent); margin-bottom: 2.5rem; }
+.h-profile__name { font-family: 'Philosopher', Georgia, serif; font-size: 1.6rem; line-height: 1.1; }
+.h-profile__desc { margin-top: 0.6rem; font-size: 0.95rem; line-height: 1.55; color: var(--h-ink-soft); flex: 1 0 auto; }
+.h-profile__foot {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--h-line);
+}
+.h-profile__thumbs { display: flex; flex: none; }
+.h-profile__thumbs img {
+  width: 34px; height: 34px; border-radius: 999px; object-fit: cover;
+  background: var(--h-tint); border: 2px solid var(--h-card);
+}
+.h-profile__thumbs img + img { margin-left: -10px; }
+.h-profile__count { font-size: 0.8125rem; font-weight: 600; color: var(--h-ink-soft); }
+.h-profile__arrow {
+  margin-left: auto; flex: none; width: 40px; height: 40px; border-radius: 999px;
+  display: grid; place-items: center;
+  border: 1px solid var(--h-line-strong);
+  font-size: 1rem;
+  transition: background-color 0.4s var(--h-ease), color 0.4s var(--h-ease), transform 0.5s var(--h-ease);
+}
+.h-profile:hover .h-profile__arrow { background: var(--h-ink); color: var(--h-bg); transform: rotate(-45deg); }
+.h-profile__names { margin-top: 0.75rem; font-size: 0.8125rem; color: var(--h-ink-soft); }
+
+/* ============================================================
+   5. KITS · abas + painel detalhado
+   ============================================================ */
+.h-kits__intro { max-width: 640px; margin-bottom: 2.5rem; }
+.h-kits__intro .h-lead { margin-top: 1rem; }
+.h-kit {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  background: var(--h-card);
+  border: 1px solid var(--h-line);
+  border-radius: var(--h-r);
+  overflow: hidden;
+  box-shadow: var(--h-shadow-sm);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.h-kit__visual { position: relative; min-height: 460px; background: var(--h-tint); overflow: hidden; }
+.h-kit__visual img {
+  position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover;
+  transition: opacity 0.6s var(--h-ease), scale 1.2s var(--h-ease);
+}
+.h-kit__visual img.is-out { opacity: 0; scale: 1.04; }
+.h-kit__content { padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; }
+.h-kit__content > * { transition: opacity 0.4s var(--h-ease), transform 0.5s var(--h-ease); }
+.h-kit__content.is-swapping > * { opacity: 0; transform: translateY(8px); }
+.h-kit__title { font-family: 'Philosopher', Georgia, serif; font-size: clamp(1.7rem, 2.6vw, 2.3rem); line-height: 1.12; margin-top: 0.15rem; }
+.h-kit__desc { color: var(--h-ink-soft); margin-top: 0.5rem; max-width: 50ch; }
+/* as 3 peças do kit, lado a lado */
+.h-pieces {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem;
+  margin-top: 1.75rem;
+}
+.h-piece__thumb {
+  aspect-ratio: 1; border-radius: var(--h-r-in); overflow: hidden;
+  background: var(--h-tint); margin-bottom: 0.7rem;
+}
+.h-piece__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.h-piece__type { font-family: 'Philosopher', Georgia, serif; font-size: 1.05rem; line-height: 1.2; }
+.h-piece__detail { font-size: 0.8rem; color: var(--h-ink-soft); margin-top: 0.15rem; line-height: 1.4; }
+.h-kit__foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: auto; padding-top: 1.75rem;
+}
+.h-kit__total { font-size: 0.85rem; color: var(--h-ink-soft); }
+.h-kit__total strong { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 700; font-size: 1.9rem; color: var(--h-ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+
+/* ============================================================
+   6. ELEGANTES · destaque + 4
+   ============================================================ */
+.h-elegant__intro { max-width: 640px; margin-bottom: 3rem; }
+.h-elegant__intro .h-lead { margin-top: 1rem; }
+/* Mosaico horizontal: as fotos são paisagem (1376x768), então os quadros
+   também são largos e baixos, sem esticar a imagem. O destaque ocupa 2 colunas. */
+.h-elegant { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.h-elegant .h-card__media { aspect-ratio: auto; height: clamp(240px, 24vw, 340px); }
+.h-elegant .h-card:first-child { grid-column: span 2; }
+.h-elegant .h-card:first-child .h-card__name { font-size: 1.75rem; }
+/* com 4 perfumes, o último também ocupa 2 colunas e o mosaico fecha */
+.h-elegant .h-card:nth-child(4):last-child { grid-column: span 2; }
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 1023px) {
+  .h-hero__grid { grid-template-columns: 1fr; }
+  .h-hero { min-height: auto; padding-top: 6.5rem; }
+  .h-hero__stage { padding: 0 0 2rem 1.5rem; }
+  .h-hero__frame { aspect-ratio: 4 / 3; max-height: none; }
+  .h-hero__mark { width: 90vw; right: -30vw; top: 62%; }
+  .h-profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .h-kit { grid-template-columns: 1fr; }
+  .h-kit__visual { min-height: 0; aspect-ratio: 16 / 9; }
+  .h-elegant { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  /* Abertura: respiro abaixo da navbar, botões lado a lado, foto alinhada ao texto */
+  .h-hero { padding: 5.75rem 0 2rem; }
+  .h-hero__title { font-size: clamp(2.2rem, 10vw, 2.6rem); margin-bottom: 1rem; }
+  .h-hero__lead { margin-bottom: 1.5rem; }
+  .h-hero__cta { flex-wrap: nowrap; gap: 0.5rem; }
+  .h-hero__cta .h-btn { flex: 1 1 0; justify-content: center; padding: 0.95rem 0.75rem; font-size: 0.82rem; }
+  /* um único botão no celular: "Conhecer o creme" */
+  .h-hero__cta .h-btn--ghost, .h-hero__float { display: none; }
+  /* o produto aparece primeiro; o texto vem depois, mais curto */
+  .h-hero__grid { gap: 1.5rem; }
+  .h-hero__stage { order: -1; padding: 0; }
+  .h-hero__frame { aspect-ratio: 5 / 4; }
+  .h-hero__lead { display: none; }
+  .h-hero__title { margin-bottom: 1.25rem; }
+  .h-hero__float { width: calc(100% - 2rem); left: 1rem; }
+
+  /* Linhas: grade 2x2 em vez de 4 fotos empilhadas */
+  /* Linhas: perfumaria em destaque em cima, as outras duas lado a lado */
+  .h-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: 0.75rem; }
+  .h-tile { grid-row: auto; grid-column: auto; aspect-ratio: 4 / 5; }
+  .h-tile--tall { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+  .h-tile__body { padding: 0.9rem; }
+  .h-tile__name { font-size: 1.2rem; }
+  .h-tile--tall .h-tile__name { font-size: 1.6rem; }
+  .h-tile__arrow { width: 34px; height: 34px; font-size: 0.9rem; }
+  .h-acc { margin-top: 0.75rem; grid-template-columns: 56px 1fr auto; gap: 0.85rem; }
+  .h-acc img { width: 56px; height: 56px; }
+  .h-acc strong { font-size: 1.2rem; }
+
+  .h-rail { grid-auto-columns: 72vw; gap: 0.75rem; padding-inline: 1rem; margin: 0 -1rem; scroll-padding-inline: 1rem; }
+
+  /* Perfis: linha compacta (ícone, nome e descrição, seta) */
+  .h-profiles { grid-template-columns: 1fr; gap: 0.6rem; }
+  .h-profile { display: grid; grid-template-columns: auto 1fr; column-gap: 1rem; align-items: center; padding: 1rem 1.1rem; }
+  .h-profile__icon { grid-row: span 2; margin: 0; font-size: 1.6rem; }
+  .h-profile__name { font-size: 1.35rem; }
+  .h-profile__desc { margin-top: 0.15rem; font-size: 0.85rem; }
+  .h-profile__foot { grid-column: 2; margin-top: 0.75rem; padding-top: 0.75rem; }
+  .h-profile__thumbs img { width: 28px; height: 28px; }
+  .h-profile__arrow { width: 36px; height: 36px; }
+  .h-profile__names { display: none; }
+
+  /* Kits: abas numa linha só, com rolagem lateral */
+  .h-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .h-tabs::-webkit-scrollbar { display: none; }
+  .h-tab { flex: none; }
+  /* Kits no celular: foto do perfume grande, as 3 peças e o preço. O texto de apoio sai. */
+  .h-kits__intro .h-lead { display: none; }
+  .h-kits__intro { margin-bottom: 1.5rem; }
+  .h-kit__visual { aspect-ratio: 4 / 3; }
+  .h-kit__content { padding: 1.1rem 1.1rem 1.25rem; }
+  .h-kit__content > div:first-child, .h-kit__desc, .h-piece__detail { display: none; }
+  .h-kit__title { font-size: 1.6rem; margin-top: 0; }
+  .h-pieces { gap: 0.6rem; margin-top: 1rem; }
+  .h-piece__thumb { margin-bottom: 0.45rem; }
+  .h-piece__type { font-size: 0.85rem; text-align: center; }
+  .h-kit__foot { padding-top: 1.25rem; gap: 0.75rem; }
+  .h-kit__foot .h-btn { width: 100%; justify-content: center; }
+
+  /* Elegantes: carrossel lateral, como o "Em destaque" */
+  .h-elegant {
+    display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 72vw;
+    gap: 0.75rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    padding: 0.25rem 1rem 1rem; margin: 0 -1rem; scroll-padding-inline: 1rem;
+  }
+  .h-elegant::-webkit-scrollbar { display: none; }
+  .h-elegant .h-card { scroll-snap-align: start; }
+  .h-elegant .h-card:is(:first-child, :nth-child(4):last-child) { grid-column: auto; }
+  .h-elegant .h-card__media { height: auto; aspect-ratio: 4 / 5; }
+  .h-elegant .h-card:first-child .h-card__name { font-size: 1.3rem; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .h-profile:hover { transform: none; }
+  .h-tile:hover img { scale: none; }
+  .h-acc:hover { transform: none; }
+}

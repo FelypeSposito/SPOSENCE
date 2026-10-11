@@ -1,340 +1,288 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Produto — Sposence</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produto | Sposence</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
-  <meta name="description" content="Detalhes do produto Sposence — notas olfativas, variantes de tamanho e kit de layering sugerido."/>
-  <link rel="stylesheet" href="css/style.css"/>
-  <link rel="stylesheet" href="css/animations.css"/>
-</head>
-<body>
-
-<div id="navbar-mount"></div>
-<div id="cart-mount"></div>
-<div id="toast-mount"></div>
-
-<main>
-  <div class="container">
-
-    <!-- Breadcrumb -->
-    <nav style="padding-top:clamp(6.5rem, 12vw, 8rem);margin-bottom:1.5rem;font-size:11px;color:var(--color-text-muted);display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap">
-      <a href="index.html" style="color:var(--color-text-muted);transition:color 0.3s">Início</a>
-      <span>/</span>
-      <a href="produtos.html" style="color:var(--color-text-muted)">Catálogo</a>
-      <span>/</span>
-      <span id="breadcrumb-name" style="color:var(--color-text);font-weight:600">Produto</span>
-    </nav>
-
-    <div class="product-detail" id="product-detail-mount">
-      <!-- JS vai popular aqui -->
-      <div style="grid-column:1/-1;text-align:center;padding:5rem 2rem;color:var(--color-text-dim)">
-        Carregando produto...
-      </div>
-    </div>
-
-    <!-- Related / Layering suggestion -->
-    <section style="margin-top:5rem;padding-top:4rem;border-top:1px solid var(--color-border)">
-      <div class="section-header">
-        <div class="section-header__text">
-          <div class="section-header__eyebrow">
-            <div class="section-header__line"></div>
-            <span class="label-gold">Layering</span>
-          </div>
-          <h2 class="display-md">Complete sua essência</h2>
-        </div>
-      </div>
-      <div id="layering-suggestion"></div>
-    </section>
-
-    <!-- Related products -->
-    <section style="margin-top:4rem;padding-top:4rem;border-top:1px solid var(--color-border)">
-      <div class="section-header">
-        <div class="section-header__text">
-          <div class="section-header__eyebrow">
-            <div class="section-header__line"></div>
-            <span class="label-gold">Você também pode gostar</span>
-          </div>
-          <h2 class="display-md">Fragrâncias similares</h2>
-        </div>
-        <a href="produtos.html" class="btn btn--ghost">Ver todos →</a>
-      </div>
-      <div class="grid-4" id="related-grid"></div>
-    </section>
-
-  </div>
-</main>
-
-<div id="footer-mount"></div>
-
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script>
-document.getElementById('navbar-mount').innerHTML = buildNavbar('produtos.html');
-document.getElementById('cart-mount').innerHTML   = buildCart();
-document.getElementById('toast-mount').innerHTML  = buildToastContainer();
-document.getElementById('footer-mount').innerHTML = buildFooter();
-
-// ---- Get product from URL ----
-const params  = new URLSearchParams(window.location.search);
-const pid     = params.get('id');
-const clean   = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-const target  = clean(pid);
-
-const allProds = typeof getAllProducts === 'function' ? getAllProducts() : [
-  ...(SPOSENCE_DATA.perfumes || []),
-  ...(SPOSENCE_DATA.body_splashes || []),
-  ...(SPOSENCE_DATA.skincare || []),
-  ...(SPOSENCE_DATA.merchandise || [])
-];
-
-const product = allProds.find(p => {
-  if (!target) return false;
-  const pId = clean(p.id);
-  const pName = clean(p.name);
-  return pId === target || pName === target || pId.includes(target) || target.includes(pId);
-});
-
-if (!product) {
-  document.getElementById('product-detail-mount').innerHTML = `
-    <div style="grid-column:1/-1;text-align:center;padding:5rem 2rem">
-      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
-      <p style="color:var(--color-text-dim)">Produto não encontrado.</p>
-      <a href="produtos.html" class="btn btn--outline btn--sm" style="margin-top:1.5rem;display:inline-flex">Voltar ao catálogo</a>
-    </div>`;
-} else {
-  // ---- Render product detail ----
-  document.title = `${product.name} — Sposence`;
-  document.getElementById('breadcrumb-name').textContent = product.name;
-
-  const hasVariants   = !!product.variants;
-  const emoji         = product.profile === 'frescos' ? '🌊' : product.profile === 'doces' ? '🍯' : product.profile === 'noturnos' ? '🌙' : product.profile === 'elegantes' ? '✦' : '🌸';
-  const isProductOutOfStock = product.outOfStock || product.available === false;
-  let selectedVariant = hasVariants ? (product.variants.find(v => !v.outOfStock && v.available !== false) || product.variants[0]) : null;
-
-  function renderVariantButtons() {
-    return product.variants.map(v => {
-      const isVOutOfStock = v.outOfStock || v.available === false;
-      return `
-      <button class="variant-btn ${selectedVariant?.size === v.size ? 'active' : ''} ${isVOutOfStock ? 'disabled-variant' : ''}"
-        onclick="selectV(${JSON.stringify(v).replace(/"/g,'&quot;')})"
-        title="${isVOutOfStock ? 'Tamanho Esgotado' : ''}">
-        ${v.size}
-      </button>`;
-    }).join('');
-  }
-
-  const ingredientsBlock = product.category === 'perfumes' ? `
-    <div style="margin-top:2rem">
-      <div class="product-detail__section-title">Composição</div>
-      <div class="product-detail__ingredients">
-        ${SPOSENCE_DATA.technical_schema?.inventory_data?.perfumery?.base_ingredients?.map(i => `<span class="ingredient-tag">${i}</span>`).join('') || ''}
-      </div>
-    </div>` : '';
-
-  const notesBlock = product.notes ? `
-    <div style="margin-top:1.5rem">
-      <div class="product-detail__section-title">Pirâmide Olfativa</div>
-      <div class="notes-pyramid">
-        <div class="notes-row">
-          <div class="notes-row__label">Topo</div>
-          <div class="notes-row__items">${product.notes.top}</div>
-        </div>
-        <div class="notes-row">
-          <div class="notes-row__label">Coração</div>
-          <div class="notes-row__items">${product.notes.heart}</div>
-        </div>
-        <div class="notes-row">
-          <div class="notes-row__label">Fundo</div>
-          <div class="notes-row__items">${product.notes.base}</div>
-        </div>
-      </div>
-    </div>` : '';
-
-  const variantBlock = hasVariants ? `
-    <div style="margin-top:1.5rem">
-      <div class="product-detail__section-title">${product.category === 'perfumes' ? 'Escolha o tamanho' : 'Escolha a fragrância'}</div>
-      <div class="variant-selector" id="variant-selector">
-        ${renderVariantButtons()}
-      </div>
-    </div>` : '';
-
-  document.getElementById('product-detail-mount').innerHTML = `
-    <div class="product-detail__gallery reveal">
-      <div class="product-detail__main-img" style="aspect-ratio:1; display:flex; align-items:center; justify-content:center; background:var(--surface-container); border-radius:var(--r-md); overflow:hidden;">
-        ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-        <div class="product-detail__placeholder" style="display:none; font-size:3rem; text-align:center;">${emoji}<br/><span style="font-size:1.5rem;font-style:normal">${product.name}</span></div>` : `<div class="product-detail__placeholder">${emoji}<br/><span style="font-size:2rem;font-style:normal">${product.name}</span></div>`}
-      </div>
-      ${hasVariants ? `
-        <div style="margin-top:1rem;display:flex;align-items:center;gap:0.75rem;padding:1rem;background:var(--color-surface-2);border-radius:var(--radius-md);border:1px solid var(--color-border)">
-          <span style="font-size:1.25rem">${product.category === 'perfumes' ? '📦' : '✨'}</span>
-          <div>
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-gold)">Opção selecionada</div>
-            <div style="font-size:13px;color:var(--color-text-dim)" id="selected-size-label">
-               ${selectedVariant?.size} ${selectedVariant?.outOfStock ? ' — (Esgotado)' : (product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : '')}
-            </div>
-          </div>
-        </div>` : ''}
-    </div>
-
-    <div class="product-detail__info reveal reveal-delay-1">
-      <div class="label-gold">Sposence ${product.profile ? '· ' + profileLabel(product.profile || '') : ''}</div>
-      <h1 class="product-detail__name">${product.name}</h1>
-      ${product.inspired_by ? `<div class="product-detail__inspired">Inspirado em ${product.inspired_by}</div>` : ''}
-      <p class="product-detail__desc">${product.description}</p>
-
-      ${isProductOutOfStock ? `<span class="badge badge--indisponivel">Esgotado</span>` : ''}
-      ${product.profile ? `<span class="badge badge--${product.profile}">${profileLabel(product.profile)}</span>` : ''}
-      ${(product.tags && product.tags.includes('masculino')) ? `<span class="badge badge--masculino" style="margin-left:0.5rem">Masculino</span>` : ''}
-      ${(product.tags && product.tags.includes('feminino')) ? `<span class="badge badge--feminino" style="margin-left:0.5rem">Feminino</span>` : ''}
-      ${(product.tags && product.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel" style="margin-left:0.5rem">Compartilhável</span>` : ''}
-      ${product.is_special_edition ? `<span class="badge badge--surface" style="margin-left:0.5rem">Edição Especial</span>` : ''}
-
-      ${variantBlock}
-      ${notesBlock}
-      ${ingredientsBlock}
-
-      <div class="product-detail__price-display" id="price-display">
-        R$ ${(selectedVariant?.price || product.price).toFixed(2).replace('.', ',')} ${(selectedVariant?.outOfStock || isProductOutOfStock) ? '<span style="font-size:14px; color:#ff6b6b">(Esgotado)</span>' : ''}
-      </div>
-
-      <div style="display:flex;gap:1rem;flex-wrap:wrap" id="detail-action-container">
-        ${isProductOutOfStock ? `
-          <button class="btn btn--outline btn--lg btn--full" disabled style="opacity:0.6; cursor:not-allowed; color:#ff6b6b; border-color:rgba(255,107,107,0.3)">
-            Item Esgotado
-          </button>
-        ` : product.id === 'acc-ecobag' ? `
-          <a href="https://wa.me/5511933175390?text=Olá! Gostaria de encomendar a Ecobag Sposence." target="_blank" class="btn btn--primary btn--lg btn--full">
-            Encomendar via WhatsApp
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-7.6 8.38 8.38 0 013.8.9L21 3.5z"/></svg>
-          </a>
-        ` : `
-          <button class="btn btn--primary btn--lg btn--full" id="btn-add-detail" onclick="addToCartDetail()" ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : ''}>
-            ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? 'Tamanho Indisponível' : 'Adicionar ao carrinho'}
-            ${(selectedVariant?.outOfStock || selectedVariant?.available === false) ? '' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>'}
-          </button>
-        `}
-        <a href="produtos.html" class="btn btn--outline btn--full">← Voltar ao catálogo</a>
-      </div>
-
-      ${product.category === 'perfumes' ? `
-        <div class="packaging-notice">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
-          <span>Acompanha <strong>Mini Sacola de Algodão Cru</strong> como brinde de proteção em todos os pedidos.</span>
-        </div>` : ''}
-    </div>`;
-
-  // Variant selector logic
-  window.selectV = function(variant) {
-    selectedVariant = variant;
-    const isVOutOfStock = variant.outOfStock || variant.available === false;
-    
-    const priceEl = document.getElementById('price-display');
-    const labelEl = document.getElementById('selected-size-label');
-    const btnAdd = document.getElementById('btn-add-detail');
-    
-    // Animate price update
-    priceEl.classList.remove('animate-update');
-    if(labelEl) labelEl.classList.remove('animate-update');
-    void priceEl.offsetWidth; // Trigger reflow
-    
-    priceEl.innerHTML = `R$ ${variant.price.toFixed(2).replace('.', ',')} ${isVOutOfStock ? '<span style="font-size:14px; color:#ff6b6b">(Esgotado)</span>' : ''}`;
-    if(labelEl) {
-      labelEl.textContent = `${variant.size} ${isVOutOfStock ? ' — (Esgotado)' : (product.category === 'perfumes' ? ' — Parfum de Alta Concentração' : '')}`;
+  <meta name="description" content="Detalhes do produto Sposence: notas olfativas, tamanhos e combinações de layering." />
+  <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="img/simbolo-loader.png" />
+  <style>
+    /* Loader da primeira visita: o símbolo da marca girando enquanto a página carrega */
+    html.sp-loading::before, html.sp-loading::after {
+      content: ""; position: fixed; z-index: 9999; pointer-events: none;
+      transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
     }
+    html.sp-loading::before { inset: 0; background: #f5f0ea; }
+    html.sp-loading::after {
+      left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px;
+      background: url(img/simbolo-loader.png) center / contain no-repeat;
+      animation: spSpin 1.6s cubic-bezier(.65,.05,.35,.95) infinite;
+    }
+    html.sp-loading-out::before, html.sp-loading-out::after { opacity: 0; }
+    html.sp-loading-out::after { transform: scale(.7); }
+    @keyframes spSpin { to { rotate: 360deg; } }
+    @media (prefers-reduced-motion: reduce) { html.sp-loading::after { animation-duration: 5s; } }
+  </style>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      // Loader só na primeira página da visita (sessionStorage)
+      var first = false;
+      try { first = !sessionStorage.getItem('sp-visited'); sessionStorage.setItem('sp-visited', '1'); } catch (e) {}
+      var start = Date.now();
+      // A abertura da página (GSAP) espera esta promessa
+      window.spLoaded = new Promise(function (resolve) {
+        if (!first) { resolve(); return; }
+        root.classList.add('sp-loading');
+        var done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          // fica no mínimo 0,8s para o giro ser visto; no máximo 3s no total
+          setTimeout(function () {
+            root.classList.add('sp-loading-out');
+            resolve();
+            setTimeout(function () { root.classList.remove('sp-loading', 'sp-loading-out'); }, 700);
+          }, Math.max(0, 800 - (Date.now() - start)));
+        }
+        window.addEventListener('load', finish);
+        setTimeout(finish, 3000);
+      });
+      // Esconde a abertura até o GSAP montar o intro. Sem JS, sem GSAP ou com reduced-motion, a página aparece normal.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        root.classList.add('js-anim');
+        setTimeout(function () { root.classList.remove('js-anim'); }, first ? 6500 : 3500);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="css/style.css?v=20261012a" />
+  <link rel="stylesheet" href="css/animations.css?v=20261012a" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="css/brand.css?v=20261012a" />
+  <link rel="stylesheet" href="css/pages.css?v=20261012a" />
+</head>
+<body class="sp">
 
-    if (btnAdd) {
-      if (isVOutOfStock) {
-        btnAdd.disabled = true;
-        btnAdd.style.opacity = '0.6';
-        btnAdd.style.cursor = 'not-allowed';
-        btnAdd.innerHTML = 'Tamanho Indisponível';
-      } else {
-        btnAdd.disabled = false;
-        btnAdd.style.opacity = '1';
-        btnAdd.style.cursor = 'pointer';
-        btnAdd.innerHTML = 'Adicionar ao carrinho <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>';
+  <div id="scroll-progress"></div>
+  <div id="navbar-mount"></div>
+  <div id="cart-mount"></div>
+  <div id="toast-mount"></div>
+
+  <main>
+
+    <section class="sp-hero sp-hero--tight">
+      <div class="h-wrap">
+        <nav class="sp-crumbs" aria-label="Você está em" data-intro>
+          <a href="index.html">Início</a><span aria-hidden="true">/</span>
+          <a href="produtos.html">Catálogo</a><span aria-hidden="true">/</span>
+          <span id="crumb-name" aria-current="page">Produto</span>
+        </nav>
+        <div class="sp-product" id="product-mount"></div>
+      </div>
+    </section>
+
+    <section class="h-section h-section--tint" id="kit-section" aria-labelledby="kit-title" hidden>
+      <div class="h-wrap">
+        <div class="h-head">
+          <div>
+            <span class="h-eyebrow">Layering</span>
+            <h2 id="kit-title" class="h-title">Complete <em>sua essência.</em></h2>
+            <p class="h-lead" style="margin-top:1rem" id="kit-desc"></p>
+          </div>
+          <div class="h-head__actions">
+            <a href="layering.html" class="h-link">Como fazer layering <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="h-grid" id="kit-grid" data-stagger></div>
+      </div>
+    </section>
+
+    <section class="h-section" id="related-section" aria-labelledby="related-title" hidden>
+      <div class="h-wrap">
+        <div class="h-head">
+          <div>
+            <span class="h-eyebrow">Você também pode gostar</span>
+            <h2 id="related-title" class="h-title">Fragrâncias <em>parecidas.</em></h2>
+          </div>
+          <div class="h-head__actions">
+            <a href="produtos.html" class="h-link">Ver catálogo completo <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="h-grid" id="related-grid" data-stagger></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/data.js?v=20261012a"></script>
+  <script src="js/app.js?v=20261012a"></script>
+  <script>
+    document.getElementById('navbar-mount').innerHTML = buildNavbar('produtos.html');
+    document.getElementById('cart-mount').innerHTML   = buildCart();
+    document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+    document.getElementById('footer-mount').innerHTML = buildFooter();
+
+    // ---- Produto pela URL (aceita id ou nome aproximado) ----
+    const clean = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const target = clean(new URLSearchParams(location.search).get('id'));
+    const ALL = getAllProducts();
+    const product = target && ALL.find(p => {
+      const id = clean(p.id), name = clean(p.name);
+      return id === target || name === target || id.includes(target) || target.includes(id);
+    });
+    const mount = document.getElementById('product-mount');
+
+    if (!product) {
+      mount.style.display = 'block';
+      mount.innerHTML = `
+        <div class="sp-empty">
+          <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          <h1 class="h-title" style="margin-bottom:0.5rem">Produto não encontrado.</h1>
+          <p>O link pode estar desatualizado. Veja tudo o que temos no catálogo.</p>
+          <a href="produtos.html" class="h-btn h-btn--primary">Ir para o catálogo</a>
+        </div>`;
+    } else {
+      document.title = `${product.name} | Sposence`;
+      document.getElementById('crumb-name').textContent = product.name;
+
+      const isPerfume = product.category === 'perfumes';
+      const tagLabels = { masculino: 'Masculino', feminino: 'Feminino', compartilhavel: 'Unissex' };
+      const chips = [
+        spSoldOut(product) ? '<span class="h-chip h-chip--muted">Esgotado</span>' : '',
+        product.last_units && !spSoldOut(product) ? '<span class="h-chip h-chip--last">Últimas unidades</span>' : '',
+        product.profile ? `<span class="h-chip">${profileLabel(product.profile)}</span>` : '',
+        ...(product.tags || []).filter(t => tagLabels[t]).map(t => `<span class="h-chip">${tagLabels[t]}</span>`),
+        product.is_special_edition ? '<span class="h-chip">Edição especial</span>' : '',
+      ].join('');
+
+      const sizes = product.variants && product.variants.length > 1 ? `
+        <div class="sp-block" data-intro>
+          <div class="sp-block__title">${isPerfume ? 'Escolha o tamanho' : 'Escolha a opção'}</div>
+          <div class="h-sizes" role="group" aria-label="Tamanho">
+            ${product.variants.map((v, i) => `<button class="h-size" type="button" data-pick="${i}" aria-pressed="${spVariant(product) === v}"${spSoldOut(v) ? ' data-soldout title="Esgotado"' : ''}>${v.size}</button>`).join('')}
+          </div>
+        </div>` : '';
+
+      const notes = product.notes ? `
+        <div class="sp-block" data-intro>
+          <div class="sp-block__title">Pirâmide olfativa</div>
+          <dl class="sp-notes">
+            <div><dt>Topo</dt><dd>${product.notes.top}</dd></div>
+            <div><dt>Coração</dt><dd>${product.notes.heart}</dd></div>
+            <div><dt>Fundo</dt><dd>${product.notes.base}</dd></div>
+          </dl>
+        </div>` : '';
+
+      const ingredients = isPerfume ? (SPOSENCE_DATA.technical_schema?.inventory_data?.perfumery?.base_ingredients || []) : [];
+      const composition = ingredients.length ? `
+        <div class="sp-block" data-intro>
+          <div class="sp-block__title">Composição</div>
+          <div class="sp-tags">${ingredients.map(i => `<span>${i}</span>`).join('')}</div>
+        </div>` : '';
+
+      mount.innerHTML = `
+        <div class="sp-product__media">
+          <div class="sp-hero__frame" data-intro-media>
+            ${product.image
+              ? `<img src="${product.image}" alt="${product.name}" fetchpriority="high" loading="eager" decoding="async"
+                   onerror="this.replaceWith(Object.assign(document.createElement('img'), { src: SP_BRAND_MARK, alt: '', style: 'object-fit:contain;padding:25%;opacity:.35' }))">`
+              : `<img src="${SP_BRAND_MARK}" alt="" style="object-fit:contain;padding:25%;opacity:.35">`}
+          </div>
+        </div>
+        <div class="sp-product__info">
+          <span class="h-eyebrow" data-intro>Sposence · ${product.profile ? profileLabel(product.profile) : SP_CATEGORY[product.category] || 'Produto'}</span>
+          <h1 class="sp-hero__title">${product.name}</h1>
+          ${product.inspired_by ? `<p class="sp-product__inspired" data-intro>Inspirado em ${product.inspired_by}</p>` : ''}
+          <div class="sp-product__chips" data-intro>${chips}</div>
+          <p class="h-lead" data-intro>${product.description || ''}</p>
+          ${product.last_units ? `
+          <p class="sp-note sp-note--last" data-intro><i class="ph ph-hourglass-medium" aria-hidden="true"></i><span><strong>Últimas unidades.</strong> Este perfume vai sair de catálogo. Restam: ${product.variants.filter(v => v.stock > 0).map(v => `${v.stock}x ${v.size}`).join(', ') || 'nenhuma'}.</span></p>` : ''}
+          ${sizes}
+          <div class="sp-buy" data-intro id="buy-box"></div>
+          ${notes}
+          ${composition}
+          ${isPerfume ? `<p class="sp-note" data-intro><i class="ph ph-gift" aria-hidden="true"></i><span>Acompanha uma <strong>mini sacola de algodão cru</strong> como brinde de proteção em todos os pedidos.</span></p>` : ''}
+          <a href="produtos.html" class="h-link sp-back" data-intro><i class="ph ph-arrow-left" aria-hidden="true"></i> Voltar ao catálogo</a>
+        </div>`;
+
+      // Preço e botão acompanham o tamanho escolhido
+      function renderBuy() {
+        const v = spVariant(product);
+        const off = spSoldOut(product) || spSoldOut(v);
+        document.getElementById('buy-box').innerHTML = `
+          <div class="sp-buy__price">${formatBRL(v ? v.price : product.price || 0)}<small>${v ? v.size : (product.volume || '')}${off ? ' · esgotado' : spLeftLabel(v) ? ` · ${spLeftLabel(v).toLowerCase()}` : isPerfume ? ' · 27% de essência' : ''}</small></div>
+          <button type="button" class="h-btn h-btn--primary" data-add="${product.id}" ${off ? 'disabled' : ''}>
+            ${off ? 'Indisponível no momento' : 'Adicionar ao carrinho <i class="ph ph-shopping-bag" aria-hidden="true"></i>'}
+          </button>`;
+      }
+      renderBuy();
+
+      // Celular: barra de compra fixa quando o bloco de compra sai da tela
+      const bar = document.createElement('div');
+      bar.className = 'sp-buybar';
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(bar);
+      const renderBar = () => {
+        const v = spVariant(product);
+        const off = spSoldOut(product) || spSoldOut(v);
+        bar.innerHTML = `
+          <div class="sp-buybar__info">
+            <div class="sp-buybar__name">${product.name}</div>
+            <div class="sp-buybar__price">${formatBRL(v ? v.price : product.price || 0)} <small>${v ? v.size : ''}</small></div>
+          </div>
+          <button type="button" class="h-btn h-btn--primary" data-add="${product.id}" tabindex="-1" ${off ? 'disabled' : ''}>${off ? 'Esgotado' : 'Adicionar'}</button>`;
+      };
+      renderBar();
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+          bar.classList.toggle('is-on', show);
+          document.body.classList.toggle('has-buybar', show);
+        }).observe(document.getElementById('buy-box'));
+      }
+
+      mount.addEventListener('click', (e) => {
+        const size = e.target.closest('[data-pick]');
+        if (!size) return;
+        spPicked[product.id] = Number(size.dataset.pick);
+        mount.querySelectorAll('[data-pick]').forEach(b => b.setAttribute('aria-pressed', b === size));
+        renderBuy();
+        renderBar();
+      });
+
+      // ---- Kit de layering do mesmo perfil ----
+      const kit = SPOSENCE_DATA.layering.find(k => k.perfume_ids?.includes(product.id)) || SPOSENCE_DATA.layering.find(k => k.tag === product.profile);
+      if (kit) {
+        const kitItems = [
+          ...kit.perfume_ids.filter(id => id !== product.id).slice(0, 2),
+          ...kit.skincare_ids, ...kit.splash_ids,
+        ].map(id => ALL.find(p => p.id === id)).filter(Boolean);
+        document.getElementById('kit-desc').textContent = `${kit.title}: ${kit.description}`;
+        document.getElementById('kit-grid').innerHTML = kitItems.map(p => spCard(p)).join('');
+        document.getElementById('kit-section').hidden = false;
+      }
+
+      // ---- Parecidos: mesmo perfil ou mesmas tags ----
+      const related = SPOSENCE_DATA.perfumes
+        .filter(p => p.id !== product.id && (p.profile === product.profile || p.tags?.some(t => product.tags?.includes(t))))
+        .slice(0, 4)
+        .map(p => ({ ...p, category: 'perfumes' }));
+      if (related.length) {
+        document.getElementById('related-grid').innerHTML = related.map(p => spCard(p)).join('');
+        document.getElementById('related-section').hidden = false;
       }
     }
-    
-    priceEl.classList.add('animate-update');
-    if(labelEl) labelEl.classList.add('animate-update');
-    
-    document.querySelectorAll('.variant-btn').forEach(b => {
-      b.classList.toggle('active', b.textContent.trim() === variant.size);
-    });
-  };
-
-  window.addToCartDetail = function() {
-    if (selectedVariant && (selectedVariant.outOfStock || selectedVariant.available === false)) {
-      if (typeof showToast === 'function') showToast(`O tamanho ${selectedVariant.size} está indisponível no momento.`, 'error');
-      return;
-    }
-    cart.add(product, selectedVariant);
-    openCart();
-  };
-
-  // ---- Layering suggestion ----
-  const layerKit = SPOSENCE_DATA.layering.find(k => k.tag === product.profile || k.perfume_ids?.includes(product.id));
-  const lContainer = document.getElementById('layering-suggestion');
-  if (layerKit) {
-    const items = [
-      ...layerKit.perfume_ids.slice(0,2).map(id => ({ p: SPOSENCE_DATA.perfumes.find(x => x.id === id), type: 'Perfume', icon:'🌸' })),
-      ...layerKit.skincare_ids.map(id => ({ p: SPOSENCE_DATA.skincare.find(x => x.id === id), type: 'Creme', icon:'🫧' })),
-      ...layerKit.splash_ids.map(id => ({ p: SPOSENCE_DATA.body_splashes.find(x => x.id === id), type: 'Body Splash', icon:'💦' })),
-    ].filter(x => x.p);
-
-    lContainer.innerHTML = `
-      <div style="background:var(--color-surface);border:1px solid var(--color-border-hover);border-radius:var(--radius-lg);padding:2rem">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
-          <span class="badge badge--${layerKit.tag}">${layerKit.tag}</span>
-          <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--color-cream)">${layerKit.title}</div>
-        </div>
-        <p style="font-size:13px;color:var(--color-text-dim);margin-bottom:1.5rem">${layerKit.description}</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem">
-          ${items.map(({ p, type, icon }) => `
-            <div class="layering-item" style="cursor:pointer;padding:1rem" onclick="location.href='produto.html?id=${p.id}'">
-              <div class="layering-item__icon" style="width:44px;height:44px;font-size:1.2rem">
-                ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : icon}
-              </div>
-              <div>
-                <div class="layering-item__name" style="font-size:14px">${p.name}</div>
-                <div class="layering-item__type" style="font-size:11px">${type} — R$ ${((p.variants ? p.variants[0].price : p.price)).toFixed(2).replace('.', ',')}</div>
-              </div>
-            </div>`).join('')}
-        </div>
-      </div>`;
-  } else {
-    lContainer.innerHTML = `<p style="color:var(--color-text-dim);font-size:13px">Explore nosso <a href="layering.html" style="color:var(--color-gold)">guia de layering</a> para combinações personalizadas.</p>`;
-  }
-
-  // ---- Related products ----
-  const related = SPOSENCE_DATA.perfumes.filter(p => p.id !== product.id && (p.profile === product.profile || p.tags?.some(t => product.tags?.includes(t)))).slice(0, 4);
-  document.getElementById('related-grid').innerHTML = related.map(p => `
-    <div class="product-card" onclick="location.href='produto.html?id=${p.id}'">
-      <div class="product-card__image">
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">${p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦'}</div>`}
-        <div class="product-card__badges">
-          <span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>
-          ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
-          ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
-          ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
-        </div>
-      </div>
-      <div class="product-card__body">
-        <div class="product-card__name">${p.name}</div>
-        <div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>
-        <div class="product-card__footer">
-          <div>
-            <div class="product-card__price-from">a partir de</div>
-            <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
-          </div>
-          <button class="product-card__add" onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g,'&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g,'&quot;')});openCart()">+</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-</script>
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/motion.js?v=20261012a"></script>
+  <script>SpMotion.auto();</script>
 </body>
 </html>

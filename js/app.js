@@ -8,6 +8,13 @@ const cart = {
   add(product, variant) {
     const key = `${product.id}-${variant?.size || 'fixed'}`;
     const existing = this.items.find(i => i.key === key);
+    // Últimas unidades: não deixa passar do que resta em estoque
+    if (variant && typeof variant.stock === 'number' && (existing ? existing.qty : 0) >= variant.stock) {
+      showToast(variant.stock
+        ? `Só ${variant.stock === 1 ? 'resta 1 unidade' : `restam ${variant.stock} unidades`} de ${product.name} ${variant.size}.`
+        : `${product.name} ${variant.size} esgotou.`);
+      return false;
+    }
     if (existing) {
       existing.qty++;
     } else {
@@ -24,6 +31,7 @@ const cart = {
     this.save();
     this.render();
     showToast(`${product.name} adicionado ao carrinho`);
+    return true;
   },
   remove(key) {
     this.items = this.items.filter(i => i.key !== key);
@@ -80,16 +88,24 @@ const cart = {
     }
 
     if (footer) footer.style.display = 'block';
-    body.innerHTML = this.items.map(item => `
+    // Cada item leva de volta à página do produto (foto, nome e botão)
+    body.innerHTML = this.items.map(item => {
+      const product = spFindProduct(item.productId);
+      const url = `produto.html?id=${item.productId}`;
+      return `
       <div class="cart-item">
+        <a href="${url}" class="cart-item__thumb" tabindex="-1" aria-hidden="true">
+          <img src="${(product && spThumb(product.image)) || SP_BRAND_MARK}" alt="" loading="lazy" decoding="async">
+        </a>
         <div class="cart-item__info">
-          <div class="cart-item__name">${item.name}</div>
+          <a href="${url}" class="cart-item__name">${item.name}</a>
           <div class="cart-item__variant">${item.variant ? item.variant : item.category} × ${item.qty}</div>
+          <a href="${url}" class="cart-item__link">Ver produto <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
         </div>
         <div class="cart-item__price">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
-        <button class="cart-item__remove" onclick="cart.remove('${item.key}')" aria-label="Remover">×</button>
-      </div>
-    `).join('');
+        <button class="cart-item__remove" onclick="cart.remove('${item.key}')" aria-label="Remover ${item.name}">×</button>
+      </div>`;
+    }).join('');
 
     document.getElementById('cart-total-value').textContent =
       `R$ ${this.total().toFixed(2).replace('.', ',')}`;
@@ -114,8 +130,25 @@ function closeCheckout() {
   document.body.style.overflow = '';
 }
 
+// EmailJS só é baixado quando alguém abre o checkout
+let emailJSPromise = null;
+function loadEmailJS() {
+  if (typeof emailjs !== 'undefined') return Promise.resolve();
+  if (!emailJSPromise) {
+    emailJSPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";
+      script.onload = resolve;
+      script.onerror = () => { emailJSPromise = null; reject(); };
+      document.head.appendChild(script);
+    });
+  }
+  return emailJSPromise;
+}
+
 // Inicia as máscaras quando o modal abre
 function openCheckout() {
+  loadEmailJS().catch(() => {});
   if (cart.items.length === 0) return;
   closeCart();
   document.getElementById('checkout-modal').classList.add('open');
@@ -132,24 +165,35 @@ async function processCheckout(e) {
   btn.disabled = true;
 
   try {
-    if (typeof emailjs === 'undefined') {
-      throw new Error("O sistema de e-mail ainda está carregando. Aguarde um instante.");
-    }
+    const val = (id) => (document.getElementById(id)?.value || '').trim();
+    const name = val('ck-name');
+    const phone = val('ck-phone');
+    const email = val('ck-email');
+    const cpf = val('ck-cpf');
+    const cep = val('ck-cep');
+    const address = val('ck-address');
+    const number = val('ck-number');
+    const comp = val('ck-comp');
+    const deliveryMethod = document.querySelector('input[name="ck-delivery"]:checked')?.value || 'pickup';
 
-    const name = document.getElementById('ck-name').value;
-    const email = document.getElementById('ck-email').value;
-    const phone = document.getElementById('ck-phone').value;
-    const cpf = document.getElementById('ck-cpf').value;
-    const cep = document.getElementById('ck-cep').value;
-    const address = document.getElementById('ck-address').value; // Rua/Bairro/Cidade (preenchido pela API)
-    const number = document.getElementById('ck-number').value;
-    const comp = document.getElementById('ck-comp').value;
-
-    const deliveryMethod = document.querySelector('input[name="ck-delivery"]:checked')?.value || 'shipping';
-    let fullAddress = "Retirada Presencial (a combinar)";
-    
+    // Só o essencial é obrigatório: nome, WhatsApp e, para entrega, CEP + número
+    const missing = [];
+    if (!name) missing.push(['ck-name', 'seu nome']);
+    if (phone.replace(/\D/g, '').length < 10) missing.push(['ck-phone', 'um WhatsApp com DDD']);
     if (deliveryMethod === 'shipping') {
-      fullAddress = `${address}, Nº ${number}${comp ? ' (' + comp + ')' : ''} - CEP: ${cep}`;
+      if (cep.replace(/\D/g, '').length !== 8) missing.push(['ck-cep', 'o CEP']);
+      if (!number) missing.push(['ck-number', 'o número']);
+      if (!isValidCPF(cpf)) missing.push(['ck-cpf', 'um CPF válido']);
+    }
+    if (missing.length) {
+      showCheckoutError(`Falta preencher ${missing.map(m => m[1]).join(', ').replace(/, ([^,]*)$/, ' e $1')}.`, missing.map(m => m[0]));
+      return;
+    }
+    showCheckoutError('');
+
+    let fullAddress = "Retirada presencial (a combinar)";
+    if (deliveryMethod === 'shipping') {
+      fullAddress = `${address || 'Endereço a confirmar'}, Nº ${number}${comp ? ' (' + comp + ')' : ''} - CEP: ${cep}`;
     }
     // Formatar itens do carrinho
     let orderDetails = "ITENS DO PEDIDO:\n\n";
@@ -158,10 +202,10 @@ async function processCheckout(e) {
     });
     orderDetails += `\nTOTAL: R$ ${cart.total().toFixed(2).replace('.', ',')}`;
 
-    // 1. Abrir WhatsApp (Reativado conforme solicitado)
+    // 1. Abrir WhatsApp
     const myPhone = "5511933175390";
     let waText = `Olá Sposence! Acabei de fazer um pedido no site e estou aguardando a confirmação do PIX:\n\n`;
-    waText += `*DADOS DO CLIENTE*\nNome: ${name}\nWhatsApp: ${phone}\n\n`;
+    waText += `*DADOS DO CLIENTE*\nNome: ${name}\nWhatsApp: ${phone}\nRecebimento: ${fullAddress}${deliveryMethod === 'shipping' ? `\nCPF: ${cpf}` : ''}\n\n`;
     waText += `*${orderDetails}*`;
     
     // Extrai apenas os números do telefone preenchido
@@ -180,16 +224,19 @@ async function processCheckout(e) {
       from_name: name,
       reply_to: email,
       phone: cleanPhone, // Agora envia o número limpo para o link do botão no email
-      cpf: cpf,
+      cpf: deliveryMethod === 'shipping' ? cpf : 'não se aplica (retirada)',
       address: fullAddress,
       order_details: orderDetails,
       payment_status: "Aguardando Pagamento" 
     };
 
-    Promise.all([
-      emailjs.send("service_0pef7hl", "template_9fbieif", emailParams, "vuRyyPfZQpHshbobj"),
-      emailjs.send("service_0pef7hl", "template_098jyr3", emailParams, "vuRyyPfZQpHshbobj")
-    ]).catch(err => console.error("Erro no EmailJS:", err));
+    // Sem await antes do window.open acima, para o navegador não bloquear o WhatsApp
+    loadEmailJS()
+      .then(() => Promise.all([
+        emailjs.send("service_0pef7hl", "template_9fbieif", emailParams, "vuRyyPfZQpHshbobj"),
+        emailjs.send("service_0pef7hl", "template_098jyr3", emailParams, "vuRyyPfZQpHshbobj")
+      ]))
+      .catch(err => console.error("Erro no EmailJS:", err));
 
     // 3. Gerar PIX
     const pixCode = generatePix(cart.total(), "e45ca6dd-c219-45cf-ae50-8ae7bc318cae", "SPOSENCE", "SAO PAULO");
@@ -272,7 +319,7 @@ function showPixStep(code) {
       <div class="pix-box">
         <label class="form-label" style="text-align: center; display: block; margin-bottom: 1rem;">Copia e Cola</label>
         <textarea class="pix-box__code" readonly>${code}</textarea>
-        <button class="btn btn--primary btn--full" id="btn-copy-pix">Copiar Código PIX</button>
+        <button class="h-btn h-btn--primary" id="btn-copy-pix">Copiar Código PIX</button>
       </div>
 
       <div class="checkout-success__info">
@@ -281,7 +328,7 @@ function showPixStep(code) {
       </div>
 
       <div class="checkout-modal__actions">
-        <button class="btn btn--outline btn--full" onclick="location.reload()">Concluir e Voltar ao Início</button>
+        <button class="h-btn h-btn--ghost" onclick="location.reload()">Concluir e Voltar ao Início</button>
       </div>
     </div>
   `;
@@ -293,59 +340,85 @@ function showPixStep(code) {
   });
 }
 
-// ---- Máscaras e API de CEP ----
+// ---- CPF: confere os dois dígitos verificadores ----
+function isValidCPF(value) {
+  const d = (value || '').replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const check = (len) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i);
+    const r = (sum * 10) % 11;
+    return (r === 10 ? 0 : r) === Number(d[len]);
+  };
+  return check(9) && check(10);
+}
+
+// ---- Erros do checkout ----
+function showCheckoutError(msg, ids = []) {
+  const box = document.getElementById('ck-error');
+  document.querySelectorAll('#checkout-form [aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+  if (!box) return;
+  box.hidden = !msg;
+  box.textContent = msg;
+  ids.forEach(id => document.getElementById(id)?.setAttribute('aria-invalid', 'true'));
+  if (ids[0]) document.getElementById(ids[0])?.focus();
+}
+
+// ---- Resumo, máscaras e API de CEP (liga uma vez só) ----
+function renderCheckoutSummary() {
+  const box = document.getElementById('ck-summary');
+  if (!box) return;
+  const count = cart.items.reduce((n, i) => n + i.qty, 0);
+  box.innerHTML = `
+    <div class="ck-summary__items">${cart.items.map(i => `<span>${i.qty}x ${i.name}${i.variant ? ' · ' + i.variant : ''}</span>`).join('')}</div>
+    <div class="ck-summary__total"><span>${count} ${count === 1 ? 'item' : 'itens'}</span><strong>${formatBRL(cart.total())}</strong></div>`;
+}
+
 function initCheckoutHelpers() {
+  renderCheckoutSummary();
+  const form = document.getElementById('checkout-form');
+  if (!form || form.dataset.ready) return;
+  form.dataset.ready = '1';
+
   const cpfInput = document.getElementById('ck-cpf');
   const phoneInput = document.getElementById('ck-phone');
   const cepInput = document.getElementById('ck-cep');
   const addressInput = document.getElementById('ck-address');
+  const addressFields = document.getElementById('address-fields');
 
-  if (cpfInput) {
-    cpfInput.addEventListener('input', (e) => {
-      let v = e.target.value.replace(/\D/g, '');
-      if (v.length > 11) v = v.slice(0, 11);
-      v = v.replace(/(\d{3})(\d)/, '$1.$2');
-      v = v.replace(/(\d{3})(\d)/, '$1.$2');
-      v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      e.target.value = v;
-    });
-  }
+  form.querySelectorAll('input[name="ck-delivery"]').forEach(r => r.addEventListener('change', () => {
+    addressFields.hidden = r.value !== 'shipping' || !r.checked;
+    if (!addressFields.hidden) cepInput.focus();
+  }));
+  form.addEventListener('input', (e) => e.target.removeAttribute('aria-invalid'));
 
-  if (phoneInput) {
-    phoneInput.addEventListener('input', (e) => {
-      let v = e.target.value.replace(/\D/g, '');
-      if (v.length > 11) v = v.slice(0, 11);
-      v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
-      v = v.replace(/(\d{5})(\d)/, '$1-$2');
-      e.target.value = v;
-    });
-  }
+  cpfInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    e.target.value = v;
+  });
 
-  if (cepInput) {
-    cepInput.addEventListener('input', async (e) => {
-      let v = e.target.value.replace(/\D/g, '');
-      if (v.length > 8) v = v.slice(0, 8);
-      v = v.replace(/^(\d{5})(\d)/, '$1-$2');
-      e.target.value = v;
+  phoneInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    v = v.replace(/^(\d{2})(\d)/g, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    e.target.value = v;
+  });
 
-      if (v.replace('-', '').length === 8) {
-        addressInput.value = "Buscando endereço...";
-        try {
-          const res = await fetch(`https://viacep.com.br/ws/${v.replace('-', '')}/json/`);
-          const data = await res.json();
-          if (data.erro) {
-            addressInput.value = "";
-            alert("CEP não encontrado.");
-          } else {
-            addressInput.value = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
-            document.getElementById('ck-number').focus();
-          }
-        } catch (err) {
-          addressInput.value = "";
-        }
-      }
-    });
-  }
+  cepInput.addEventListener('input', async (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = v.replace(/^(\d{5})(\d)/, '$1-$2');
+    if (v.length !== 8) return;
+    addressInput.placeholder = 'Buscando endereço...';
+    try {
+      const data = await (await fetch(`https://viacep.com.br/ws/${v}/json/`)).json();
+      if (data.erro) throw new Error();
+      addressInput.value = [data.logradouro, data.bairro].filter(Boolean).join(', ') + ` - ${data.localidade}/${data.uf}`;
+      document.getElementById('ck-number').focus();
+    } catch (err) {
+      // Sem resposta do CEP: a pessoa digita o endereço
+      addressInput.placeholder = 'Não achamos o CEP. Digite o endereço';
+    }
+  });
 }
 
 // ---- Toast ----
@@ -380,6 +453,11 @@ function initNavbar() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // Altura real da navbar (ela encolhe ao rolar), para barras fixas logo abaixo dela
+  const setNavH = () => document.documentElement.style.setProperty('--nav-h', `${navbar.getBoundingClientRect().height}px`);
+  if ('ResizeObserver' in window) new ResizeObserver(setNavH).observe(navbar, { box: 'border-box' });
+  setNavH();
+
   // Cart
   document.querySelectorAll('[data-open-cart]').forEach(btn => btn.addEventListener('click', openCart));
   document.getElementById('cart-overlay')?.addEventListener('click', closeCart);
@@ -391,23 +469,46 @@ function initNavbar() {
 
   const toggleMobileMenu = () => {
     const isOpen = mobileMenu.classList.toggle('open');
+    if (!isOpen) mobileMenu.classList.remove('is-search');
     burger.classList.toggle('is-open', isOpen);
+    burger.setAttribute('aria-expanded', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    // Foco vai para o fechar ao abrir e volta para o hambúrguer ao fechar
+    (isOpen ? document.getElementById('menu-close') : burger)?.focus({ preventScroll: true });
   };
+  burger?.setAttribute('aria-expanded', 'false');
+  burger?.setAttribute('aria-controls', 'mobile-menu');
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu?.classList.contains('open')) toggleMobileMenu();
+  });
 
   burger?.addEventListener('click', toggleMobileMenu);
   document.getElementById('menu-close')?.addEventListener('click', toggleMobileMenu);
   // Fechar ao clicar em links ou fora do menu (se necessário)
   mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
+    mobileMenu.classList.remove('open', 'is-search');
     burger.classList.remove('is-open');
     document.body.style.overflow = '';
   }));
+
+  // Botão de limpar a busca do menu
+  const mobInput = document.getElementById('mob-search-input');
+  const mobClear = mobileMenu?.querySelector('.mobile-menu__clear');
+  if (mobInput && mobClear) {
+    mobInput.addEventListener('input', () => { mobClear.hidden = !mobInput.value; });
+    mobClear.addEventListener('click', () => {
+      mobInput.value = '';
+      mobClear.hidden = true;
+      document.getElementById('search-dropdown-mob')?.classList.remove('show');
+      mobInput.focus();
+    });
+  }
 
   // Mobile search toggle
   const mobileSearchBtn = document.getElementById('mobile-search-toggle');
   if (mobileSearchBtn) {
     mobileSearchBtn.addEventListener('click', () => {
+      // A lupa abre o menu com o cursor já na busca
       if (!mobileMenu.classList.contains('open')) {
         toggleMobileMenu();
       }
@@ -458,6 +559,94 @@ function getAllProducts() {
   ];
 }
 
+// ============================================================
+// Card de produto (compartilhado por todas as páginas)
+// ============================================================
+const SP_BRAND_MARK = 'ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png';
+const SP_CATEGORY = { perfumes: 'Perfume', body_splashes: 'Body Splash', skincare: 'Cuidados', merchandise: 'Acessório' };
+const spSoldOut = (x) => !!x && (x.outOfStock || x.available === false);
+// Miniatura de 720px para cards e listas; a foto inteira fica para a página do produto
+const spThumb = (src) => (src ? src.replace(/^img\//, 'img/thumbs/') : '');
+
+// "Resta 1 unidade" / "Restam 2 unidades" para tamanhos com estoque contado
+const spLeftLabel = (v) => (v && typeof v.stock === 'number' && v.stock > 0
+  ? (v.stock === 1 ? 'Resta 1 unidade' : `Restam ${v.stock} unidades`) : '');
+
+// Variante escolhida em cada card (por padrão, a primeira disponível)
+const spPicked = {};
+function spVariant(p) {
+  if (!p || !p.variants) return null;
+  if (!(p.id in spPicked)) {
+    const i = p.variants.findIndex(v => !spSoldOut(v));
+    spPicked[p.id] = i < 0 ? 0 : i;
+  }
+  return p.variants[spPicked[p.id]];
+}
+const spFindProduct = (id) => getAllProducts().find(p => p.id === id);
+
+function spCardFoot(p, withSizes) {
+  const v = spVariant(p);
+  const off = spSoldOut(p) || spSoldOut(v);
+  const from = p.variants && p.variants.length > 1 && !withSizes ? '<small>a partir de</small>' : '';
+  const button = off
+    ? `<button class="h-add h-add--off" type="button" disabled><span>Esgotado</span></button>`
+    : `<button class="h-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name} ao carrinho"><i class="ph ph-plus" aria-hidden="true"></i><span>Adicionar</span></button>`;
+  const left = !off && spLeftLabel(v) ? `<small class="h-left">${spLeftLabel(v)}</small>` : '';
+  return `<div class="h-card__price">${from}${formatBRL(v ? v.price : (p.price || 0))}${left}</div>${button}`;
+}
+
+// sizes: mostra os tamanhos no card para escolher antes de adicionar
+function spCard(p, { sizes = false } = {}) {
+  const withSizes = sizes && p.variants && p.variants.length > 1;
+  const url = `produto.html?id=${p.id}`;
+  const meta = p.inspired_by ? `Inspirado em ${p.inspired_by}` : [p.type, p.volume].filter(Boolean).join(' · ') || p.description || '';
+  const chip = spSoldOut(p) ? 'Esgotado' : (p.profile ? profileLabel(p.profile) : SP_CATEGORY[p.category] || 'Sposence');
+  const sizeButtons = withSizes ? `
+        <div class="h-sizes" role="group" aria-label="Tamanho">
+          ${p.variants.map((v, i) => `<button class="h-size" type="button" data-size="${p.id}" data-i="${i}" aria-pressed="${spVariant(p) === v}"${spSoldOut(v) ? ' data-soldout title="Esgotado"' : spLeftLabel(v) ? ` title="${spLeftLabel(v)}"` : ''}>${v.size}</button>`).join('')}
+        </div>` : '';
+  return `
+    <article class="h-card${spSoldOut(p) ? ' is-soldout' : ''}" data-card="${p.id}">
+      <a href="${url}" class="h-card__media" aria-label="${p.name}">
+        ${p.image ? `<img src="${spThumb(p.image)}" alt="${p.name}" loading="lazy" decoding="async"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">` : ''}
+        <div class="h-card__fallback" style="display:${p.image ? 'none' : 'grid'}"><img src="${SP_BRAND_MARK}" alt=""></div>
+      </a>
+      <div class="h-card__body">
+        <div class="h-chips"><span class="h-chip${spSoldOut(p) ? ' h-chip--muted' : ''}">${chip}</span>${p.last_units && !spSoldOut(p) ? '<span class="h-chip h-chip--last">Últimas unidades</span>' : ''}</div>
+        <div class="h-card__name">${p.name}</div>
+        <div class="h-card__meta">${meta}</div>
+        ${sizeButtons}
+        <div class="h-card__foot">${spCardFoot(p, withSizes)}</div>
+      </div>
+    </article>`;
+}
+
+// Cliques dos cards: tamanho, adicionar e abrir o produto
+document.addEventListener('click', (e) => {
+  const size = e.target.closest('[data-size]');
+  if (size) {
+    const p = spFindProduct(size.dataset.size);
+    if (!p) return;
+    spPicked[p.id] = Number(size.dataset.i);
+    const card = size.closest('[data-card]');
+    card.querySelectorAll('[data-size]').forEach(b => b.setAttribute('aria-pressed', b === size));
+    card.querySelector('.h-card__foot').innerHTML = spCardFoot(p, true);
+    return;
+  }
+  const add = e.target.closest('[data-add]');
+  if (add) {
+    e.preventDefault();
+    const p = spFindProduct(add.dataset.add);
+    const v = spVariant(p);
+    if (!p || spSoldOut(p) || spSoldOut(v)) { showToast('Esse item está esgotado no momento.'); return; }
+    if (cart.add(p, v)) openCart();
+    return;
+  }
+  const card = e.target.closest('[data-card]');
+  if (card && !e.target.closest('a, button')) location.href = `produto.html?id=${card.dataset.card}`;
+});
+
 // ---- Build Navbar HTML (shared) ----
 function buildNavbar(activePage) {
   const pages = [
@@ -495,33 +684,24 @@ function buildNavbar(activePage) {
       </button>
     </div>
   </nav>
-  <div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="mobile-menu__content">
       <div class="mobile-menu__header">
-        <button class="mobile-menu__close" id="menu-close" aria-label="Fechar Menu">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
+        <button class="mobile-menu__close" id="menu-close" aria-label="Fechar menu"><i class="ph ph-x" aria-hidden="true"></i></button>
       </div>
-      <form class="mobile-menu__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''" style="padding: 0 1rem; margin-bottom: 2rem; transition-delay: 0.1s;">
-        <div style="position: relative; display: flex; align-items: center;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" style="position: absolute; left: 1rem;">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input type="text" id="mob-search-input" name="search" placeholder="Buscar produtos..." aria-label="Pesquisar" autocomplete="off" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border-radius: var(--r-full); border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-family: var(--font-body); font-size: 1rem; outline: none;">
-          <div class="search-dropdown search-dropdown--mobile" id="search-dropdown-mob"></div>
-        </div>
+      <form class="mobile-menu__search" action="produtos.html" method="GET" onsubmit="return this.search.value.trim() !== ''">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="mob-search-input" name="search" placeholder="Buscar produtos..." aria-label="Buscar produtos" autocomplete="off">
+        <button type="button" class="mobile-menu__clear" aria-label="Limpar busca" hidden><i class="ph ph-x" aria-hidden="true"></i></button>
+        <div class="search-dropdown search-dropdown--mobile" id="search-dropdown-mob"></div>
       </form>
-      <div class="mobile-menu__links" style="padding: 0 1rem;">
-        ${pages.map((p, i) => `<a href="${p.href}" style="transition-delay: ${0.1 + i * 0.05}s">${p.label}</a>`).join('')}
-      </div>
+      <nav class="mobile-menu__links" aria-label="Páginas">
+        ${pages.map((p, i) => `<a href="${p.href}" style="--i:${i}"${activePage === p.href ? ' aria-current="page"' : ''}>${p.label}</a>`).join('')}
+      </nav>
       <div class="mobile-menu__footer">
-        <div class="mobile-menu__meta">
-          <div class="t-label" style="margin-bottom:0.5rem">Contato</div>
-          <p>sposence@gmail.com</p>
-          <p>Whatsapp: (11) 93317-5390 - Sposito</p>
-        </div>
+        <span class="mobile-menu__label">Contato</span>
+        <a href="mailto:sposence@gmail.com" class="mobile-menu__contact">sposence@gmail.com</a>
+        <a href="https://wa.me/5511933175390" target="_blank" rel="noopener" class="mobile-menu__contact">WhatsApp: (11) 93317-5390</a>
       </div>
     </div>
   </div>`;
@@ -564,63 +744,64 @@ function buildCart() {
         <h3 class="checkout-modal__title">Finalizar Pedido</h3>
         <button onclick="closeCheckout()" class="btn--ghost" style="font-size:1.4rem">×</button>
       </div>
-      <form id="checkout-form" onsubmit="processCheckout(event)">
+      <form id="checkout-form" onsubmit="processCheckout(event)" novalidate>
+        <div class="ck-summary" id="ck-summary"></div>
+
         <div class="form-group">
-          <label class="form-label">Nome Completo</label>
-          <input type="text" id="ck-name" class="form-input" required placeholder="Ex: João da Silva">
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">E-mail</label>
-            <input type="email" id="ck-email" class="form-input" required placeholder="Ex: joao@email.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label">WhatsApp</label>
-            <input type="text" id="ck-phone" class="form-input" required placeholder="(00) 00000-0000">
-          </div>
+          <label class="form-label" for="ck-name">Seu nome</label>
+          <input type="text" id="ck-name" class="form-input" required autocomplete="name" placeholder="Como podemos te chamar?">
         </div>
         <div class="form-group">
-          <label class="form-label">CPF</label>
-          <input type="text" id="ck-cpf" class="form-input" required placeholder="000.000.000-00">
+          <label class="form-label" for="ck-phone">WhatsApp</label>
+          <input type="tel" id="ck-phone" class="form-input" required autocomplete="tel-national" inputmode="numeric" placeholder="(11) 90000-0000">
+          <small class="ck-hint">É por aqui que confirmamos o pedido e o pagamento.</small>
         </div>
-        <div class="form-group" style="margin-bottom: 1.5rem;">
-          <label class="form-label" style="margin-bottom: 0.75rem;">Método de Recebimento</label>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <label style="font-size: 14px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-              <input type="radio" name="ck-delivery" value="shipping" checked onchange="document.getElementById('address-fields').style.display='block';"> 
-              Entrega (Correios/Transportadora)
-            </label>
-            <label style="font-size: 14px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-              <input type="radio" name="ck-delivery" value="pickup" onchange="document.getElementById('address-fields').style.display='none';"> 
-              Receber Presencialmente (Data e local a combinar)
-            </label>
+
+        <fieldset class="form-group ck-choice">
+          <legend class="form-label">Como quer receber?</legend>
+          <label><input type="radio" name="ck-delivery" value="pickup" checked><span><strong>Combinar retirada</strong><small>Data e local pelo WhatsApp</small></span></label>
+          <label><input type="radio" name="ck-delivery" value="shipping"><span><strong>Receber em casa</strong><small>Correios ou transportadora</small></span></label>
+        </fieldset>
+
+        <div id="address-fields" hidden>
+          <div class="ck-row">
+            <div class="form-group">
+              <label class="form-label" for="ck-cep">CEP</label>
+              <input type="text" id="ck-cep" class="form-input" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ck-number">Número</label>
+              <input type="text" id="ck-number" class="form-input" placeholder="123">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ck-address">Endereço</label>
+            <input type="text" id="ck-address" class="form-input" autocomplete="street-address" placeholder="Preenchido pelo CEP">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ck-cpf">CPF</label>
+            <input type="text" id="ck-cpf" class="form-input" inputmode="numeric" placeholder="000.000.000-00">
+            <small class="ck-hint">Os Correios exigem o CPF do destinatário.</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ck-comp">Complemento <span>(opcional)</span></label>
+            <input type="text" id="ck-comp" class="form-input" placeholder="Apto, bloco, referência">
           </div>
         </div>
 
-        <div id="address-fields">
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">CEP</label>
-              <input type="text" id="ck-cep" class="form-input" placeholder="00000-000">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Número da Casa</label>
-              <input type="text" id="ck-number" class="form-input" placeholder="Ex: 123">
-            </div>
-          </div>
+        <details class="ck-more">
+          <summary>Adicionar e-mail <span>(opcional)</span></summary>
           <div class="form-group">
-            <label class="form-label">Endereço (Autocompletado pelo CEP)</label>
-            <input type="text" id="ck-address" class="form-input" readonly placeholder="Rua, Bairro, Cidade - UF" style="background:var(--surface-container); opacity: 0.8; cursor: not-allowed;">
+            <label class="form-label" for="ck-email">E-mail</label>
+            <input type="email" id="ck-email" class="form-input" autocomplete="email" placeholder="Para receber o resumo do pedido">
           </div>
-          <div class="form-group">
-            <label class="form-label">Complemento (Opcional)</label>
-            <input type="text" id="ck-comp" class="form-input" placeholder="Ex: Apto 4, Bloco B">
-          </div>
-        </div>
+        </details>
+
+        <p class="ck-error" id="ck-error" role="alert" hidden></p>
 
         <div class="checkout-modal__actions">
-          <button type="button" class="btn btn--outline btn--full" onclick="closeCheckout()">Voltar</button>
-          <button type="submit" class="btn btn--primary btn--full" id="ck-submit">Confirmar e Gerar PIX</button>
+          <button type="button" class="h-btn h-btn--ghost" onclick="closeCheckout()">Voltar</button>
+          <button type="submit" class="h-btn h-btn--primary" id="ck-submit">Gerar PIX</button>
         </div>
       </form>
     </div>
@@ -659,12 +840,12 @@ function buildFooter() {
           <ul class="footer__links">
             <li><a href="sobre.html">Nossa Qualidade</a></li>
             <li><a href="mailto:sposence@gmail.com">sposence@gmail.com</a></li>
-            <li><a href="https://wa.me/5511933175390" target="_blank">Whatsapp: (11) 93317-5390</a></li>
+            <li><a href="https://wa.me/5511933175390" target="_blank" rel="noopener">WhatsApp (11) 93317-5390</a></li>
           </ul>
         </div>
       </div>
       <div class="footer__bottom">
-        <p class="footer__copy">© 2026 Sposence — Essências que contam histórias.</p>
+        <p class="footer__copy">© 2026 Sposence. Essências que contam histórias.</p>
         <p class="footer__copy">Artesanal • Alta Fixação</p>
       </div>
     </div>
@@ -741,18 +922,18 @@ function initGlobalSearch() {
         dropdown.innerHTML = `<div class="search-dropdown__empty">Nenhum produto encontrado.</div>`;
       } else {
         dropdown.innerHTML = results.map(p => {
-          const price = p.variants ? p.variants[0].price : (p.price || 0);
+          const price = p.variants ? spVariant(p).price : (p.price || 0);
           return `
             <a href="produto.html?id=${p.id}" class="search-dropdown__item">
-              ${p.image ? `<img src="${p.image}" alt="${p.name}" class="search-dropdown__img">` : `<div class="search-dropdown__img" style="display:flex;align-items:center;justify-content:center;font-size:20px;">✦</div>`}
+              <img src="${spThumb(p.image) || SP_BRAND_MARK}" alt="" class="search-dropdown__img" loading="lazy" decoding="async">
               <div class="search-dropdown__info">
                 <div class="search-dropdown__name">${p.name}</div>
-                <div class="search-dropdown__type">${p.category.replace('_', ' ')}</div>
+                <div class="search-dropdown__type">${[SP_CATEGORY[p.category], p.profile ? profileLabel(p.profile) : ''].filter(Boolean).join(' · ')}</div>
               </div>
               <div class="search-dropdown__price">R$ ${price.toFixed(2).replace('.', ',')}</div>
             </a>
           `;
-        }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item search-dropdown__all">Ver todos os resultados →</a>`;
+        }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item search-dropdown__all">Ver todos os resultados <i class="ph ph-arrow-right" aria-hidden="true"></i></a>`;
       }
       dropdown.classList.add('show');
     };
@@ -777,11 +958,6 @@ function initGlobalSearch() {
 
 // ---- Init Global ----
 document.addEventListener('DOMContentLoaded', () => {
-  // Injetar EmailJS dinamicamente
-  const script = document.createElement('script');
-  script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";
-  document.head.appendChild(script);
-
   cart.load();
   cart.render();
   initNavbar();

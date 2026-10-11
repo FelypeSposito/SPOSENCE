@@ -30,7 +30,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Light Blue.png",
+      image: "img/Light Blue.jpg",
       tags: ["frescos", "dia", "calor", "citrico", "compartilhavel"],
       featured: true,
     },
@@ -48,7 +48,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Acqua di Gio.png",
+      image: "img/Acqua di Gio.jpg",
       tags: ["frescos", "dia", "aquatico", "compartilhavel"],
     },
     {
@@ -60,12 +60,13 @@ const SPOSENCE_DATA = {
       description: "Vitalidade cítrica com um final quente e envolvente.",
       category: "perfumes",
       concentration: "27%",
+      last_units: true, // sai de catálogo: vende só o que resta em "stock"
       variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
+        { size: "30ml", price: 85, stock: 1 },
+        { size: "50ml", price: 165, stock: 0, available: false, outOfStock: true },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Mandarino.png",
+      image: "img/Mandarino.jpg",
       tags: ["frescos", "citrico", "calor", "compartilhavel"],
     },
     {
@@ -82,7 +83,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Bleu de Chanel.png",
+      image: "img/Bleu de Chanel.jpg",
       tags: ["frescos", "amadeirado", "masculino"],
     },
     {
@@ -94,12 +95,13 @@ const SPOSENCE_DATA = {
       description: "A felicidade em forma de perfume. Doce, floral e absolutamente feminino.",
       category: "perfumes",
       concentration: "27%",
+      last_units: true, // sai de catálogo: vende só o que resta em "stock"
       variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
+        { size: "30ml", price: 85, stock: 1 },
+        { size: "50ml", price: 165, stock: 2 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/La Vie Est Belle.png",
+      image: "img/La Vie Est Belle.jpg",
       tags: ["doces", "baunilha", "gourmand", "feminino"],
       featured: true,
     },
@@ -117,7 +119,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Devotion.png",
+      image: "img/Devotion.jpg",
       tags: ["doces", "floral", "baunilha", "feminino"],
     },
     {
@@ -134,7 +136,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Italica.png",
+      image: "img/Italica.jpg",
       tags: ["doces", "amendoa", "gourmand", "compartilhavel"],
       is_special_edition: true,
     },
@@ -152,7 +154,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Baccarat.png",
+      image: "img/Baccarat.jpg",
       tags: ["doces", "ambar", "premium", "compartilhavel"],
       is_special_edition: true,
       featured: true,
@@ -171,7 +173,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Olympea.png",
+      image: "img/Olympea.jpg",
       tags: ["doces", "baunilha", "feminino"],
     },
     {
@@ -183,12 +185,13 @@ const SPOSENCE_DATA = {
       description: "Sedução urbana. Quente, floral e absolutamente irresistível à noite.",
       category: "perfumes",
       concentration: "27%",
+      last_units: true, // sai de catálogo: vende só o que resta em "stock"
       variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
+        { size: "30ml", price: 85, stock: 0, available: false, outOfStock: true },
+        { size: "50ml", price: 165, stock: 2 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/212 Sexy.png",
+      image: "img/212 Sexy.jpg",
       tags: ["noturnos", "sedutor", "ambar", "feminino"],
     },
     {
@@ -200,12 +203,13 @@ const SPOSENCE_DATA = {
       description: "Liberdade e intensidade. Para a mulher que não pede permissão.",
       category: "perfumes",
       concentration: "27%",
+      last_units: true, // sai de catálogo: vende só o que resta em "stock"
       variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
+        { size: "30ml", price: 85, stock: 0, available: false, outOfStock: true },
+        { size: "50ml", price: 165, stock: 3 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Libre Intense.png",
+      image: "img/Libre Intense.jpg",
       tags: ["noturnos", "lavanda", "baunilha", "feminino"],
     },
     {
@@ -217,12 +221,13 @@ const SPOSENCE_DATA = {
       description: "Uma reinterpretação floral e ardente. O frescor da lavanda encontra a sensualidade do lírio-do-deserto.",
       category: "perfumes",
       concentration: "27%",
+      last_units: true, // sai de catálogo: vende só o que resta em "stock"
       variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
+        { size: "30ml", price: 85, stock: 1 },
+        { size: "50ml", price: 165, stock: 2 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Libre Flowers and Flames.png",
+      image: "img/Libre Flowers and Flames.jpg",
       tags: ["elegantes", "floral", "baunilha", "feminino"],
     },
     {
@@ -239,7 +244,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Royal Amber.png",
+      image: "img/Royal Amber.jpg",
       tags: ["elegantes", "oriental", "ambar", "oud", "compartilhavel"],
       featured: true,
       is_special_edition: true,
@@ -258,7 +263,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Tobaco Vanile.png",
+      image: "img/Tobaco Vanile.jpg",
       tags: ["noturnos", "amadeirado", "baunilha", "compartilhavel"],
       featured: true,
     },
@@ -276,7 +281,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/One Million.png",
+      image: "img/One Million.jpg",
       tags: ["noturnos", "couro", "especiado", "masculino"],
     },
     {
@@ -293,7 +298,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Invictus Victory.png",
+      image: "img/Invictus Victory.jpg",
       tags: ["noturnos", "amadeirado", "menta", "masculino"],
     },
     {
@@ -310,25 +315,8 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Libre.png",
+      image: "img/Libre.jpg",
       tags: ["elegantes", "lavanda", "baunilha", "feminino"],
-    },
-    {
-      id: "libre-flowers-flames",
-      name: "Libre Flowers & Flames",
-      inspired_by: "YSL Libre Flowers & Flames",
-      profile: "elegantes",
-      notes: { top: "Framboesa, lavanda fumê", heart: "Rosa turca, flor de laranjeira", base: "Baunilha torrada, âmbar, almíscar" },
-      description: "O drama de flores e o calor das chamas. Emocionante e sofisticado.",
-      category: "perfumes",
-      concentration: "27%",
-      variants: [
-        { size: "30ml", price: 85 },
-        { size: "50ml", price: 165 },
-        { size: "100ml", price: 240, available: false, outOfStock: true },
-      ],
-      image: "img/Libre Flowers and Flames.png",
-      tags: ["elegantes", "floral", "amadeirado", "feminino"],
     },
     {
       id: "coco-mademoiselle",
@@ -344,7 +332,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Chanel Coco Mademoseille.png",
+      image: "img/Chanel Coco Mademoseille.jpg",
       tags: ["elegantes", "floral", "amadeirado", "feminino"],
       featured: true,
     },
@@ -360,7 +348,7 @@ const SPOSENCE_DATA = {
       volume: "200ml", 
       description: "Explosão de frutas para o dia todo. Escolha seu aroma favorito.", 
       category: "body_splashes", 
-      image: "img/Body Splash Frutado.png",
+      image: "img/Body Splash Frutado.jpg",
       variants: [
         { size: "Oceano", price: 80 },
         { size: "Flor de laranjeira", price: 80 },
@@ -380,7 +368,7 @@ const SPOSENCE_DATA = {
       volume: "200ml", 
       description: "Sofisticado e duradouro. Escolha sua fragrância favorita.", 
       category: "body_splashes", 
-      image: "img/Body Splash Perfumado.png",
+      image: "img/Body Splash Perfumado.jpg",
       variants: [
         { size: "Light Blue", price: 90 },
         { size: "Royal Amber", price: 90 },
@@ -395,7 +383,7 @@ const SPOSENCE_DATA = {
       volume: "200ml", 
       description: "Fragrâncias frutadas com brilho sedoso na pele.", 
       category: "body_splashes", 
-      image: "img/Body Splash Frutado.png",
+      image: "img/Body Splash Frutado.jpg",
       variants: [
         { size: "Oceano", price: 90 },
         { size: "Flor de laranjeira", price: 90 },
@@ -415,7 +403,7 @@ const SPOSENCE_DATA = {
       volume: "200ml", 
       description: "Fragrâncias icônicas com acabamento acetinado e iluminador.", 
       category: "body_splashes", 
-      image: "img/Body Splash Perfumado.png",
+      image: "img/Body Splash Perfumado.jpg",
       variants: [
         { size: "Light Blue", price: 95 },
         { size: "Royal Amber", price: 95 },
@@ -437,7 +425,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "100g", price: 35 }
       ],
-      image: "img/CremeCereja.png",
+      image: "img/CremeCereja.jpg",
       tags: ["doces", "gourmand", "hidratação", "corpo", "feminino"],
       featured: true
     },
@@ -452,7 +440,7 @@ const SPOSENCE_DATA = {
       variants: [
         { size: "100g", price: 35 }
       ],
-      image: "img/CremeCoco.png",
+      image: "img/CremeCoco.jpg",
       tags: ["doces", "gourmand", "tropical", "hidratação", "corpo"],
       featured: true
     },
@@ -462,7 +450,7 @@ const SPOSENCE_DATA = {
       type: "Creme Corporal", 
       description: "Hidratação intensa e exclusiva para o corpo. Não recomendado para o rosto devido à alta concentração de essências.", 
       category: "skincare",
-      image: "img/Creme Frutado.png",
+      image: "img/Creme Frutado.jpg",
       variants: [
         { size: "Oceano", price: 25 },
         { size: "Flor de laranjeira", price: 25 },
@@ -480,7 +468,7 @@ const SPOSENCE_DATA = {
       type: "Creme Corporal", 
       description: "Pele nutrida com aroma envolvente. Apenas para uso corporal.", 
       category: "skincare",
-      image: "img/Creme Perfumado.png",
+      image: "img/Creme Perfumado.jpg",
       variants: [
         { size: "Italica", price: 35 },
         { size: "Light Blue", price: 35 },
@@ -491,8 +479,8 @@ const SPOSENCE_DATA = {
 
   // ---- ACESSÓRIOS ----
   merchandise: [
-    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence. (Esgotado)", category: "merchandise", image: "img/ecobag.png", available: false, outOfStock: true },
-    { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise", image: "img/Chaveiro.png" },
+    { id: "acc-ecobag", name: "Ecobag Sposence", price: 45, description: "Ecobag de algodão cru premium com logo Sposence. (Esgotado)", category: "merchandise", image: "img/ecobag.jpg", available: false, outOfStock: true },
+    { id: "acc-chaveiro", name: "Chaveiro Sposence", price: 10, description: "Chaveiro dourado com pingente Sposence.", category: "merchandise", image: "img/Chaveiro.jpg" },
   ],
 
   // ---- LAYERING SUGGESTIONS ----

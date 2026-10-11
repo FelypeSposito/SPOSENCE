@@ -4,16 +4,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sposence — Essências que contam histórias</title>
+  <title>Sposence | Essências que contam histórias</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
-  <link rel="preload" as="image" href="img/CremeCereja.png" fetchpriority="high" />
+  <link rel="preload" as="image" href="img/CremeCereja.jpg" fetchpriority="high"
+    imagesrcset="img/CremeCereja-1000.jpg 1000w, img/CremeCereja.jpg 2000w" imagesizes="(max-width: 1023px) 100vw, 46vw" />
+  <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <meta name="description"
-    content="Perfumes artesanais de alta concentração (27% essência pura). Frescos, doces, noturnos e elegantes — encontre sua essência." />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/animations.css" />
+    content="Perfumes artesanais de alta concentração (27% essência pura). Frescos, doces, noturnos e elegantes: encontre sua essência." />
+  <link rel="preload" as="image" href="img/simbolo-loader.png" />
+  <style>
+    /* Loader da primeira visita: o símbolo da marca girando enquanto a página carrega */
+    html.sp-loading::before, html.sp-loading::after {
+      content: ""; position: fixed; z-index: 9999; pointer-events: none;
+      transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+    }
+    html.sp-loading::before { inset: 0; background: #f5f0ea; }
+    html.sp-loading::after {
+      left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px;
+      background: url(img/simbolo-loader.png) center / contain no-repeat;
+      animation: spSpin 1.6s cubic-bezier(.65,.05,.35,.95) infinite;
+    }
+    html.sp-loading-out::before, html.sp-loading-out::after { opacity: 0; }
+    html.sp-loading-out::after { transform: scale(.7); }
+    @keyframes spSpin { to { rotate: 360deg; } }
+    @media (prefers-reduced-motion: reduce) { html.sp-loading::after { animation-duration: 5s; } }
+  </style>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      // Loader só na primeira página da visita (sessionStorage)
+      var first = false;
+      try { first = !sessionStorage.getItem('sp-visited'); sessionStorage.setItem('sp-visited', '1'); } catch (e) {}
+      var start = Date.now();
+      // A abertura da página (GSAP) espera esta promessa
+      window.spLoaded = new Promise(function (resolve) {
+        if (!first) { resolve(); return; }
+        root.classList.add('sp-loading');
+        var done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          // fica no mínimo 0,8s para o giro ser visto; no máximo 3s no total
+          setTimeout(function () {
+            root.classList.add('sp-loading-out');
+            resolve();
+            setTimeout(function () { root.classList.remove('sp-loading', 'sp-loading-out'); }, 700);
+          }, Math.max(0, 800 - (Date.now() - start)));
+        }
+        window.addEventListener('load', finish);
+        setTimeout(finish, 3000);
+      });
+      // Esconde a abertura até o GSAP montar o intro. Sem JS, sem GSAP ou com reduced-motion, a página aparece normal.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        root.classList.add('js-anim');
+        setTimeout(function () { root.classList.remove('js-anim'); }, first ? 6500 : 3500);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="css/style.css?v=20261012a" />
+  <link rel="stylesheet" href="css/animations.css?v=20261012a" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="css/brand.css?v=20261012a" />
+  <link rel="stylesheet" href="css/home.css?v=20261012a" />
 </head>
 
-<body>
+<body class="sp home">
 
   <div id="scroll-progress"></div>
   <div id="navbar-mount"></div>
@@ -22,302 +80,121 @@
 
   <main>
 
-    <!-- ============================================================
-       HERO — Editorial assimétrico
-  ============================================================ -->
-    <section class="hero" id="hero">
-      <div class="container">
-        <div class="hero__content">
-
-          <!-- ESQUERDA -->
-          <div class="hero__left">
-            <div class="hero__eyebrow">
-              <div class="hero__eyebrow-line"></div>
-              <span class="t-label">Lançamento Exclusivo · Cuidados Corporais</span>
-            </div>
-
-            <h1 class="t-display hero__title">
-              Sua pele merece<br /><em>um toque irresistível.</em>
-            </h1>
-
-            <p class="hero__description">
-              Descubra o novo Creme de Cereja Sposence. Hidratação aveludada, nutrição profunda e um aroma doce e
-              marcante que envolve os sentidos.
-            </p>
-
-            <div class="hero__cta">
-              <a href="produto.html?id=creme-cereja" class="btn btn--primary btn--lg">
-                Conhecer Creme de Cereja
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
-              <a href="produtos.html?cat=skincare" class="btn btn--outline">Linha de Cuidados</a>
-            </div>
-
-            <div class="hero__stats">
-              <div>
-                <div class="hero__stat-value">100g</div>
-                <div class="hero__stat-label">Peso líquido</div>
-              </div>
-              <div>
-                <div class="hero__stat-value">🍒</div>
-                <div class="hero__stat-label">Fragrância Doces</div>
-              </div>
-              <div>
-                <div class="hero__stat-value">✦</div>
-                <div class="hero__stat-label">Toque Aveludado</div>
-              </div>
-            </div>
+    <!-- 1. HERO -->
+    <section class="h-hero" id="hero">
+      <div class="h-hero__mark" aria-hidden="true"><span><img src="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-14.png" alt="" decoding="async"></span></div>
+      <div class="h-wrap h-hero__grid">
+        <div class="h-hero__copy">
+          <span class="h-eyebrow" data-intro>Lançamento</span>
+          <h1 class="h-hero__title" aria-label="Sua pele merece um toque irresistível.">
+            <span aria-hidden="true">
+              <span class="w"><span>Sua</span></span> <span class="w"><span>pele</span></span> <span class="w"><span>merece</span></span><br />
+              <span class="w"><span>um</span></span> <span class="w"><span>toque</span></span> <span class="w"><span><em>irresistível.</em></span></span>
+            </span>
+          </h1>
+          <p class="h-lead h-hero__lead" data-intro>Creme de Cereja Sposence: hidratação aveludada e um aroma doce que fica na pele o dia todo.</p>
+          <div class="h-hero__cta" data-intro>
+            <a href="produto.html?id=creme-cereja" class="h-btn h-btn--primary" data-magnetic>Conhecer o creme <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+            <a href="produtos.html?cat=skincare" class="h-btn h-btn--ghost" data-magnetic>Linha de cuidados</a>
           </div>
+        </div>
 
-          <!-- DIREITA / VISUAL -->
-          <div class="hero__visual">
-            <div class="hero__main-image-wrapper">
-              <span class="hero__cherry-badge">🍒 Fragrância de Cereja</span>
-              <img src="img/CremeCereja.png" alt="Creme de Cereja Sposence" class="hero__main-image" fetchpriority="high" loading="eager" decoding="async"
-                onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-              <div
-                style="display:none; font-size:6rem; text-align:center; align-items:center; justify-content:center; height:100%; width:100%;">
-                🍒</div>
-            </div>
-
-            <!-- Botão com Efeito Líquido Gradativo abaixo da imagem -->
-            <div style="margin-top: 1.25rem; text-align: center;">
-              <a href="produto.html?id=creme-cereja" class="btn btn--outline btn--sm btn-liquid"
-                style="border-radius: var(--r-full); background: var(--surface-low); border-color: var(--outline-var); color: var(--primary-ctn); padding: 0.65rem 1.75rem;">
-                <span>Ver Detalhes do Creme de Cereja</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-
+        <div class="h-hero__stage">
+          <a href="produto.html?id=creme-cereja" class="h-hero__frame" aria-label="Ver Creme de Cereja">
+            <img src="img/CremeCereja.jpg" alt="Bisnaga do Creme de Cereja Sposence entre cerejas e flores de cerejeira"
+              srcset="img/CremeCereja-1000.jpg 1000w, img/CremeCereja.jpg 2000w" sizes="(max-width: 1023px) 100vw, 46vw"
+              width="2000" height="1117" fetchpriority="high" loading="eager" decoding="async" id="hero-img">
+          </a>
+          <div class="h-hero__float" data-intro id="hero-float"></div>
         </div>
       </div>
     </section>
 
-    <!-- Outras Coleções -->
-    <section class="section--sm" style="background:var(--bg)">
-      <div class="container">
-        <div class="collections-preview">
-
-          <!-- CARD 1: Perfumes -->
-          <a href="produtos.html?cat=perfumes" class="collection-card reveal">
-            <img src="img/Alta Perfumaria.png" alt="Coleção de Perfumes" class="collection-card__img">
-            <div class="collection-card__overlay">
-              <span class="collection-card__label">Alta Fixação</span>
-              <h3 class="collection-card__title">Alta Perfumaria</h3>
-              <div class="collection-card__btn">
-                Explorar Perfumes
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
+    <!-- 2. LINHAS -->
+    <section class="h-section" style="padding-top:clamp(1rem, 3vw, 2rem)" aria-labelledby="linhas-title">
+      <div class="h-wrap">
+        <h2 id="linhas-title" class="h-sr-only">Nossas linhas</h2>
+        <div class="h-bento">
+          <a href="produtos.html?cat=perfumes" class="h-tile h-tile--tall reveal">
+            <img src="img/Alta Perfumaria.jpg" alt="" loading="lazy" decoding="async">
+            <div class="h-tile__body">
+              <span class="h-tile__name">Alta Perfumaria</span>
+              <span class="h-tile__arrow"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
             </div>
           </a>
-
-          <!-- CARD 2: Body Splashes -->
-          <a href="produtos.html?cat=body_splashes" class="collection-card reveal reveal-delay-1">
-            <img src="img/Body Splashes.png" alt="Coleção Body Splashes" class="collection-card__img">
-            <div class="collection-card__overlay">
-              <span class="collection-card__label">Leveza & Frescor</span>
-              <h3 class="collection-card__title">Body Splashes</h3>
-              <div class="collection-card__btn">
-                Ver Coleção
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
+          <a href="produtos.html?cat=body_splashes" class="h-tile reveal reveal-delay-1">
+            <img src="img/Body Splashes.jpg" alt="" loading="lazy" decoding="async">
+            <div class="h-tile__body">
+              <span class="h-tile__name">Body Splashes</span>
+              <span class="h-tile__arrow"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
             </div>
           </a>
-
-          <!-- CARD 3: Skincare -->
-          <a href="produtos.html?cat=skincare" class="collection-card reveal reveal-delay-2">
-            <img src="img/Cuidados Corporais.png" alt="Coleção Cuidados Corporais" class="collection-card__img">
-            <div class="collection-card__overlay">
-              <span class="collection-card__label">Ritual de Bem-estar</span>
-              <h3 class="collection-card__title">Cuidados Corporais</h3>
-              <div class="collection-card__btn">
-                Descobrir mais
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
+          <a href="produtos.html?cat=skincare" class="h-tile reveal reveal-delay-2">
+            <img src="img/Cuidados Corporais.jpg" alt="" loading="lazy" decoding="async">
+            <div class="h-tile__body">
+              <span class="h-tile__name">Cuidados Corporais</span>
+              <span class="h-tile__arrow"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
             </div>
           </a>
+        </div>
+        <!-- Acessórios: só dois itens, então uma faixa compacta em vez de uma foto grande -->
+        <a href="produtos.html?cat=merchandise" class="h-acc" data-reveal>
+          <img src="img/thumbs/Chaveiro.jpg" alt="" loading="lazy" decoding="async">
+          <span class="h-acc__text"><strong>Acessórios</strong><small>Chaveiro e ecobag Sposence</small></span>
+          <span class="h-acc__arrow"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+        </a>
+      </div>
+    </section>
 
+    <!-- 3. EM DESTAQUE -->
+    <section class="h-section h-section--tint" aria-labelledby="destaque-title">
+      <div class="h-wrap">
+        <div class="h-head reveal">
+          <h2 id="destaque-title" class="h-title">Em destaque</h2>
+          <div class="h-head__actions">
+            <button class="h-icon-btn" type="button" data-rail="featured-rail" data-dir="-1" aria-label="Anterior"><i class="ph ph-caret-left" aria-hidden="true"></i></button>
+            <button class="h-icon-btn" type="button" data-rail="featured-rail" data-dir="1" aria-label="Próximo"><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+            <a href="produtos.html" class="h-link" style="margin-left:0.75rem">Ver catálogo completo <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="h-rail" id="featured-rail"></div>
+      </div>
+    </section>
+
+    <!-- 4. PERFIS OLFATIVOS -->
+    <section class="h-section" aria-labelledby="perfis-title">
+      <div class="h-wrap">
+        <div class="h-profiles__intro reveal">
+          <span class="h-eyebrow">Guia de fragrâncias</span>
+          <h2 id="perfis-title" class="h-title">Qual é o seu <em>perfil olfativo?</em></h2>
+          <p class="h-lead">Comece pelo clima que você quer levar na pele. Cada perfil reúne as fragrâncias da mesma família.</p>
+        </div>
+        <div class="h-profiles" id="profiles-grid"></div>
+      </div>
+    </section>
+
+    <!-- 5. KITS DE LAYERING -->
+    <section class="h-section h-section--tint" aria-labelledby="kits-title">
+      <div class="h-wrap">
+        <div class="h-kits__intro reveal">
+          <h2 id="kits-title" class="h-title">Kits de layering: <em>3 peças, uma fragrância.</em></h2>
+          <p class="h-lead">Cada kit junta um perfume, um creme e um body splash da mesma família olfativa. Juntos, fazem o aroma durar mais na pele.</p>
+        </div>
+        <div class="reveal" id="kits-mount"></div>
+        <div style="margin-top:2rem" class="reveal">
+          <a href="layering.html" class="h-link">Ver guia completo de layering <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-       DESTAQUES
-  ============================================================ -->
-    <section class="section">
-      <div class="container">
-
-        <div class="section-header reveal">
-          <div>
-            <div class="eyebrow">
-              <div class="eyebrow-line"></div>
-              <span class="t-label">Mais Desejados</span>
-            </div>
-            <h2 class="t-headline">Em Destaque</h2>
-          </div>
-          <a href="produtos.html" class="btn btn--outline btn--sm">Ver catálogo completo</a>
+    <!-- 6. ELEGANTES -->
+    <section class="h-section" aria-labelledby="elegant-title">
+      <div class="h-wrap">
+        <div class="h-elegant__intro reveal">
+          <h2 id="elegant-title" class="h-title">Os perfumes <em>elegantes.</em></h2>
+          <p class="h-lead">Uma curadoria de fragrâncias sofisticadas para quem não abre mão da presença.</p>
         </div>
-
-        <div class="grid-4" id="featured-grid"></div>
-
-      </div>
-    </section>
-
-    <!-- ============================================================
-       CONCENTRAÇÃO — banner editorial
-  ============================================================ -->
-    <section class="section--sm" style="background:var(--surface-container)">
-      <div class="container">
-        <div class="conc-banner reveal">
-          <div>
-            <div class="eyebrow">
-              <div class="eyebrow-line"></div>
-              <span class="t-label">Por que 27%?</span>
-            </div>
-            <h2 class="t-headline" style="margin-bottom:1rem">A concentração que <em
-                style="color:var(--primary-ctn)">faz a diferença.</em></h2>
-            <p class="t-body" style="max-width:500px">
-              Enquanto perfumes de massa usam entre 10–18% de essência, cada frasco Sposence contém
-              <strong>27% de essência pura</strong>. Maior projeção, fixação duradoura e experiência única.
-            </p>
-            <div class="conc-ingredients">
-              <div>
-                <div class="conc-ing__label">Qualidade</div>
-                <div class="conc-ing__value">Essência Premium</div>
-              </div>
-              <div>
-                <div class="conc-ing__label">Diferencial</div>
-                <div class="conc-ing__value">Alta Fixação</div>
-              </div>
-              <div>
-                <div class="conc-ing__label">Resultado</div>
-                <div class="conc-ing__value">Sillage Marcante</div>
-              </div>
-            </div>
-          </div>
-          <div class="conc-circle">
-            <div class="conc-circle__val">27%</div>
-            <div class="conc-circle__lbl">ESSÊNCIA</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-       LAYERING PREVIEW
-  ============================================================ -->
-    <section class="section">
-      <div class="container">
-
-        <div class="section-header reveal">
-          <div>
-            <div class="eyebrow">
-              <div class="eyebrow-line"></div>
-              <span class="t-label">Técnica Sposence</span>
-            </div>
-            <h2 class="t-headline">Combine e amplifique <em style="color:var(--primary-ctn)">sua essência</em></h2>
-          </div>
-          <a href="layering.html" class="btn btn--outline btn--sm">Ver guia completo</a>
-        </div>
-
-        <div class="grid-3" id="layering-preview-grid"></div>
-
-      </div>
-    </section>
-
-    <!-- ============================================================
-       LINHA COMPLETA — categorias
-  ============================================================ -->
-    <section class="section" style="background:var(--surface-container)">
-      <div class="container">
-
-        <div class="section-header reveal">
-          <div>
-            <div class="eyebrow">
-              <div class="eyebrow-line"></div>
-              <span class="t-label">Linha Completa</span>
-            </div>
-            <h2 class="t-headline">Além dos perfumes</h2>
-          </div>
-        </div>
-
-        <div class="grid-4">
-          <a href="produtos.html?cat=perfumes" class="product-card reveal" style="text-decoration:none">
-            <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/Royal Amber.png" alt="Perfumes Sposence" style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="product-card__body">
-              <div class="product-card__name">Perfumes</div>
-              <div class="product-card__notes">18 fragrâncias exclusivas · 30ml e 50ml</div>
-            </div>
-          </a>
-          <a href="produtos.html?cat=body_splashes" class="product-card reveal reveal-delay-1"
-            style="text-decoration:none">
-            <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/Body Splash Perfumado.png" alt="Body Splashes Sposence"
-                style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="product-card__body">
-              <div class="product-card__name">Body Splashes</div>
-              <div class="product-card__notes">4 tipos · 200ml · 10% essência</div>
-            </div>
-          </a>
-          <a href="produtos.html?cat=skincare" class="product-card reveal reveal-delay-2" style="text-decoration:none">
-            <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/Creme Frutado.png" alt="Cuidados Corporais Sposence"
-                style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="product-card__body">
-              <div class="product-card__name">Cuidados Corporais</div>
-              <div class="product-card__notes">Cremes hidratantes e especiais — R$ 25 a R$ 45</div>
-            </div>
-          </a>
-          <a href="produtos.html?cat=merchandise" class="product-card reveal reveal-delay-3"
-            style="text-decoration:none">
-            <div class="product-card__image" style="aspect-ratio:1">
-              <img src="img/ecobag.png" alt="Acessórios Sposence" style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="product-card__body">
-              <div class="product-card__name">Acessórios</div>
-              <div class="product-card__notes">Ecobag e Chaveiro Sposence</div>
-            </div>
-          </a>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ============================================================
-       COLEÇÃO ELEGANTE (Abaixo dos destaques)
-  ============================================================ -->
-    <section class="section" style="background:var(--surface-container); border-top: 1px solid var(--ghost-border)">
-      <div class="container">
-        <div class="section-header reveal">
-          <div>
-            <div class="eyebrow">
-              <div class="eyebrow-line"></div>
-              <span class="t-label">Premium Selection</span>
-            </div>
-            <h2 class="t-headline">Os Perfumes <em style="color:var(--primary-ctn)">Elegantes.</em></h2>
-          </div>
-          <p class="t-body" style="max-width:400px">Uma curadoria de fragrâncias sofisticadas para quem não abre mão da
-            presença.</p>
-        </div>
-
-        <div class="grid-3" id="elegant-featured-grid">
-          <!-- Gerado via JS -->
-        </div>
+        <div class="h-elegant" id="elegant-grid"></div>
       </div>
     </section>
 
@@ -325,135 +202,12 @@
 
   <div id="footer-mount"></div>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    // ---- Mount ----
-    document.getElementById('navbar-mount').innerHTML = buildNavbar('index.html');
-    document.getElementById('cart-mount').innerHTML = buildCart();
-    document.getElementById('toast-mount').innerHTML = buildToastContainer();
-    document.getElementById('footer-mount').innerHTML = buildFooter();
-
-
-
-    // ---- Elegant Featured ----
-    const elegantGrid = document.getElementById('elegant-featured-grid');
-    SPOSENCE_DATA.perfumes.filter(p => p.profile === 'elegantes').forEach((p, i) => {
-      const delay = i > 0 ? `reveal-delay-${i}` : '';
-      elegantGrid.innerHTML += `
-      <div class="product-card reveal ${delay}" onclick="location.href='produto.html?id=${p.id}'">
-        <div class="product-card__image">
-          ${p.image ? `<img src="${p.image}" alt="${p.name}" class="product-card__img-real">` : `<div class="product-card__placeholder">✦</div>`}
-          <div class="product-card__badges">
-            <span class="badge badge--elegantes">Elegante</span>
-            ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
-            ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
-            ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
-          </div>
-        </div>
-        <div class="product-card__body">
-          <div class="product-card__name">${p.name}</div>
-          <div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>
-          <div class="product-card__footer">
-            <div class="product-card__price">R$ ${p.variants[0].price.toFixed(2).replace('.', ',')}</div>
-            <button class="product-card__add" onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(p.variants[0]).replace(/"/g, '&quot;')});openCart()">+</button>
-          </div>
-        </div>
-      </div>`;
-    });
-
-    // ---- Featured ----
-    const featuredGrid = document.getElementById('featured-grid');
-    getAllProducts().filter(p => p.featured && p.profile !== 'elegantes').forEach((p, i) => {
-      const delay = i > 0 ? `reveal-delay-${i}` : '';
-      const emoji = p.id.includes('cereja') ? '🍒' : p.id.includes('coco') ? '🥥' : p.profile === 'frescos' ? '🌊' : p.profile === 'doces' ? '🍯' : p.profile === 'noturnos' ? '🌙' : '✦';
-      const priceVal = p.variants ? p.variants[0].price : (p.price || 0);
-      const firstVariant = p.variants ? p.variants[0] : null;
-
-      featuredGrid.innerHTML += `
-    <div class="product-card reveal ${delay}" onclick="location.href='produto.html?id=${p.id}'">
-      <div class="product-card__image">
-        ${p.image ? `
-          <img src="${p.image}" alt="${p.name}" class="product-card__img-real" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <div class="product-card__placeholder" style="display:none">${emoji}</div>
-        ` : `<div class="product-card__placeholder">${emoji}</div>`}
-        <div class="product-card__badges">
-          ${p.profile ? `<span class="badge badge--${p.profile}">${profileLabel(p.profile)}</span>` : '<span class="badge badge--surface">Cuidados</span>'}
-          ${(p.tags && p.tags.includes('masculino')) ? `<span class="badge badge--masculino">Masculino</span>` : ''}
-          ${(p.tags && p.tags.includes('feminino')) ? `<span class="badge badge--feminino">Feminino</span>` : ''}
-          ${(p.tags && p.tags.includes('compartilhavel')) ? `<span class="badge badge--compartilhavel">Compartilhável</span>` : ''}
-        </div>
-      </div>
-      <div class="product-card__body">
-        <div class="product-card__name">${p.name}</div>
-        ${p.inspired_by ? `<div class="product-card__inspired">Inspirado em ${p.inspired_by}</div>` : `<div class="product-card__inspired">${p.type || 'Creme Corporal'}</div>`}
-        <div class="product-card__notes">${p.notes ? p.notes.top : (p.description || '')}</div>
-        <div class="product-card__footer">
-          <div>
-            <div class="product-card__price-from">${p.variants && p.variants.length > 1 ? 'a partir de' : 'valor'}</div>
-            <div class="product-card__price">R$ ${priceVal.toFixed(2).replace('.', ',')}</div>
-          </div>
-          <button class="product-card__add"
-            onclick="event.stopPropagation();cart.add(${JSON.stringify(p).replace(/"/g, '&quot;')},${JSON.stringify(firstVariant).replace(/"/g, '&quot;')});openCart()"
-            aria-label="Adicionar">+</button>
-        </div>
-      </div>
-    </div>`;
-    });
-
-    // ---- Layering Preview ----
-    const layeringGrid = document.getElementById('layering-preview-grid');
-    SPOSENCE_DATA.layering.forEach((kit, i) => {
-      const delay = i > 0 ? `reveal-delay-${i}` : '';
-      const perfumes = kit.perfume_ids.slice(0, 2).map(id => SPOSENCE_DATA.perfumes.find(p => p.id === id)).filter(Boolean);
-      const skincare = SPOSENCE_DATA.skincare.find(s => s.id === kit.skincare_ids[0]);
-      const splash = SPOSENCE_DATA.body_splashes.find(b => b.id === kit.splash_ids[0]);
-
-      layeringGrid.innerHTML += `
-    <div class="layering-card reveal ${delay}" onclick="location.href='layering.html#kit-${i}'" style="cursor:pointer">
-      <div class="layering-card__header">
-        <span class="badge badge--${kit.tag}" style="margin-bottom:0.75rem">${kit.tag}</span>
-        <div class="layering-card__title">${kit.title}</div>
-        <div class="layering-card__desc">${kit.description}</div>
-      </div>
-      <div class="layering-card__products">
-        ${perfumes.map(p => `
-          <div class="layering-item">
-            <div class="layering-item__icon">
-              ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '🌸'}
-            </div>
-            <div>
-              <div class="layering-item__name">${p.name}</div>
-              <div class="layering-item__type">Perfume</div>
-            </div>
-          </div>`).join('')}
-        ${skincare ? `
-          <div class="layering-item">
-            <div class="layering-item__icon">
-              ${skincare.image ? `<img src="${skincare.image}" alt="${skincare.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '🧴'}
-            </div>
-            <div>
-              <div class="layering-item__name">${skincare.name}</div>
-              <div class="layering-item__type">Creme</div>
-            </div>
-          </div>` : ''}
-        ${splash ? `
-          <div class="layering-item">
-            <div class="layering-item__icon">
-              ${splash.image ? `<img src="${splash.image}" alt="${splash.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : '💦'}
-            </div>
-            <div>
-              <div class="layering-item__name">${splash.name}</div>
-              <div class="layering-item__type">Body Splash</div>
-            </div>
-          </div>` : ''}
-      </div>
-      <div class="layering-card__footer">
-        <div class="btn btn--primary btn--sm" style="width:100%; justify-content:center">Personalizar Kit →</div>
-      </div>
-    </div>`;
-    });
-  </script>
+  <script src="js/data.js?v=20261012a"></script>
+  <script src="js/app.js?v=20261012a"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/motion.js?v=20261012a"></script>
+  <script src="js/home.js?v=20261012a"></script>
 </body>
 
 </html>

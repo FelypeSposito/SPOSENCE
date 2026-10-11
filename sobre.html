@@ -1,372 +1,193 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nossa História — Sposence</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre a Sposence | Nossa história</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
-  <meta name="description" content="A história da Sposence — perfumaria artesanal de alta concentração, 27% essência pura."/>
-  <link rel="stylesheet" href="css/style.css"/>
-  <link rel="stylesheet" href="css/animations.css"/>
+  <meta name="description" content="Conheça a Sposence: perfumaria artesanal de alta concentração, tabela de valores e o que nos guia." />
+  <link rel="preload" as="image" href="img/Mockup chaveiro e perfume.jpg" fetchpriority="high" />
+  <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="img/simbolo-loader.png" />
   <style>
-    :root {
-      --editorial-bg: #fcf9f5;
+    /* Loader da primeira visita: o símbolo da marca girando enquanto a página carrega */
+    html.sp-loading::before, html.sp-loading::after {
+      content: ""; position: fixed; z-index: 9999; pointer-events: none;
+      transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
     }
-
-    /* HERO EDITORIAL */
-    .sobre-hero {
-      padding: clamp(6rem, 15vw, 10rem) 0 2rem;
-      background: var(--editorial-bg);
-      overflow: hidden;
-      position: relative;
+    html.sp-loading::before { inset: 0; background: #f5f0ea; }
+    html.sp-loading::after {
+      left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px;
+      background: url(img/simbolo-loader.png) center / contain no-repeat;
+      animation: spSpin 1.6s cubic-bezier(.65,.05,.35,.95) infinite;
     }
-    .sobre-hero__grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-    .sobre-hero__visual {
-      position: relative;
-    }
-    .sobre-hero__img-main {
-      width: 100%;
-      aspect-ratio: 4/5;
-      object-fit: cover;
-      border-radius: var(--r-xl);
-      box-shadow: var(--shadow-lifted);
-    }
-    .sobre-hero__float-card {
-      position: absolute;
-      bottom: -2rem;
-      right: -1rem;
-      background: var(--bg);
-      padding: 1.5rem;
-      border-radius: var(--r-lg);
-      border: 1px solid var(--ghost-border);
-      box-shadow: var(--shadow-float);
-      width: 240px;
-      z-index: 2;
-    }
-
-    /* MANIFESTO */
-    .manifesto {
-      padding: clamp(4rem, 12vw, 8rem) 0;
-      background: var(--bg);
-    }
-    .manifesto__quote {
-      font-family: var(--font-display);
-      font-size: clamp(1.75rem, 4vw, 2.75rem);
-      line-height: 1.2;
-      color: var(--primary-ctn);
-      font-style: italic;
-      margin-bottom: 2rem;
-      max-width: 800px;
-    }
-
-    /* PRICE MENU STYLE */
-    .price-menu {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 3rem;
-      margin-top: 3rem;
-    }
-    .price-group {
-      margin-bottom: 2.5rem;
-    }
-    .price-group__header {
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-    .price-group__title {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: var(--on-bg);
-    }
-    .price-group__line {
-      flex: 1;
-      height: 1px;
-      background: var(--ghost-border);
-    }
-    .price-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 0;
-      border-bottom: 1px dashed var(--ghost-border);
-      transition: all 0.3s var(--ease);
-    }
-    .price-item:hover {
-      padding-left: 0.5rem;
-      border-bottom-color: var(--gold);
-    }
-    .price-item__label {
-      font-size: 14px;
-      color: var(--on-surface-var);
-    }
-    .price-item__val {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      color: var(--primary-ctn);
-      font-weight: 500;
-    }
-
-    /* VALUES */
-    .values-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-    }
-    .value-card {
-      padding: 2.5rem;
-      border-radius: var(--r-lg);
-      background: var(--surface-container);
-      transition: transform 0.6s var(--ease-spring), box-shadow 0.6s var(--ease);
-      border: 1px solid transparent;
-    }
-    .value-card:hover {
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lifted);
-      border-color: var(--ghost-border);
-    }
-    .value-card__icon {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      display: block;
-    }
-    .value-card__title {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      color: var(--on-bg);
-      margin-bottom: 1rem;
-    }
-    .value-card__text {
-      font-size: 14px;
-      color: var(--on-surface-muted);
-      line-height: 1.7;
-    }
-
-    @media (max-width: 900px) {
-      .sobre-hero__grid, .price-menu, .values-grid {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-      }
-      .sobre-hero__visual { order: -1; }
-    }
+    html.sp-loading-out::before, html.sp-loading-out::after { opacity: 0; }
+    html.sp-loading-out::after { transform: scale(.7); }
+    @keyframes spSpin { to { rotate: 360deg; } }
+    @media (prefers-reduced-motion: reduce) { html.sp-loading::after { animation-duration: 5s; } }
   </style>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      // Loader só na primeira página da visita (sessionStorage)
+      var first = false;
+      try { first = !sessionStorage.getItem('sp-visited'); sessionStorage.setItem('sp-visited', '1'); } catch (e) {}
+      var start = Date.now();
+      // A abertura da página (GSAP) espera esta promessa
+      window.spLoaded = new Promise(function (resolve) {
+        if (!first) { resolve(); return; }
+        root.classList.add('sp-loading');
+        var done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          // fica no mínimo 0,8s para o giro ser visto; no máximo 3s no total
+          setTimeout(function () {
+            root.classList.add('sp-loading-out');
+            resolve();
+            setTimeout(function () { root.classList.remove('sp-loading', 'sp-loading-out'); }, 700);
+          }, Math.max(0, 800 - (Date.now() - start)));
+        }
+        window.addEventListener('load', finish);
+        setTimeout(finish, 3000);
+      });
+      // Esconde a abertura até o GSAP montar o intro. Sem JS, sem GSAP ou com reduced-motion, a página aparece normal.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        root.classList.add('js-anim');
+        setTimeout(function () { root.classList.remove('js-anim'); }, first ? 6500 : 3500);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="css/style.css?v=20261012a" />
+  <link rel="stylesheet" href="css/animations.css?v=20261012a" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="css/brand.css?v=20261012a" />
+  <link rel="stylesheet" href="css/pages.css?v=20261012a" />
 </head>
-<body>
+<body class="sp">
 
-<div id="navbar-mount"></div>
-<div id="cart-mount"></div>
-<div id="toast-mount"></div>
+  <div id="scroll-progress"></div>
+  <div id="navbar-mount"></div>
+  <div id="cart-mount"></div>
+  <div id="toast-mount"></div>
 
-<main>
+  <main>
 
-  <!-- HERO -->
-  <section class="sobre-hero">
-    <div class="container">
-      <div class="sobre-hero__grid">
-        <div class="sobre-hero__content">
-          <div class="eyebrow reveal">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Nossa história</span>
-          </div>
-          <h1 class="t-display reveal reveal-delay-1" style="font-size:clamp(2.5rem, 5vw, 4rem); margin: 1.5rem 0;">
-            A sofisticação da<br/><em style="color:var(--primary-ctn)">alta perfumaria</em><br/>ao seu alcance.
-          </h1>
-          <p class="t-body reveal reveal-delay-2" style="max-width:500px; line-height:1.8">
-            Nascemos em 2025 com um propósito claro: democratizar o luxo olfativo sem abrir mão da qualidade técnica. 
-            Com fórmulas autorais de <strong style="color:var(--primary-ctn)">alta concentração</strong>, 
-            cada frasco é uma celebração da perfumaria artesanal.
-          </p>
-          <div class="reveal reveal-delay-3" style="margin-top:2.5rem">
-             <a href="#precos" class="btn btn--primary">Explorar Tabela de Preços</a>
+    <section class="sp-hero">
+      <div class="h-wrap sp-hero__grid">
+        <div class="sp-hero__copy">
+          <span class="h-eyebrow" data-intro>Nossa história</span>
+          <h1 class="sp-hero__title">A sofisticação da <em>alta perfumaria</em> ao seu alcance.</h1>
+          <p class="h-lead" data-intro>Nascemos em 2025 com um propósito claro: democratizar o luxo olfativo sem abrir mão da qualidade técnica. Com fórmulas autorais de <strong>alta concentração</strong>, cada frasco é uma celebração da perfumaria artesanal.</p>
+          <div class="sp-hero__cta" data-intro>
+            <a href="#precos" class="h-btn h-btn--primary" data-magnetic>Ver tabela de valores <i class="ph ph-arrow-down" aria-hidden="true"></i></a>
+            <a href="produtos.html" class="h-btn h-btn--ghost" data-magnetic>Catálogo</a>
           </div>
         </div>
-        <div class="sobre-hero__visual reveal">
-          <img src="img/Mockup chaveiro e perfume.png" alt="Sposence Editorial" class="sobre-hero__img-main">
-          <div class="sobre-hero__float-card reveal reveal-delay-3">
-             <div style="font-size:9px; font-weight:800; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem">QUALIDADE ARTESANAL</div>
-             <div style="font-family:var(--font-display); font-size:1.1rem; color:var(--on-bg)">Pureza e Intensidade</div>
-             <div style="font-size:12px; color:var(--on-surface-muted); margin-top:0.4rem">Fixação superior e projeção marcante em cada borrifada.</div>
+        <div class="sp-hero__stage">
+          <div class="sp-hero__frame" data-intro-media>
+            <img src="img/Mockup chaveiro e perfume.jpg" alt="Perfume Sposence no bolso de uma calça jeans, com o chaveiro da marca"
+              width="1290" height="1600" fetchpriority="high" loading="eager" decoding="async">
+          </div>
+          <div class="sp-hero__float" data-intro>
+            <span class="h-eyebrow">Qualidade artesanal</span>
+            <strong>Pureza e intensidade</strong>
+            <p>Fixação superior e projeção marcante em cada borrifada.</p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
+    <section class="h-section h-section--tint" id="precos" aria-labelledby="precos-title" style="scroll-margin-top:4rem">
+      <div class="h-wrap">
+        <span class="h-eyebrow">Transparência</span>
+        <h2 id="precos-title" class="h-title">Tabela de <em>valores.</em></h2>
 
-
-  <!-- TABELA DE PREÇOS (MENU STYLE) -->
-  <section class="section" id="precos" style="background:var(--surface-container-low)">
-    <div class="container">
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Transparência</span>
-          </div>
-          <h2 class="t-headline">Tabela de <em style="color:var(--primary-ctn)">Valores</em></h2>
-        </div>
-      </div>
-
-      <div class="price-menu">
-        <div class="reveal">
-          <!-- Perfumes -->
-          <div class="price-group">
-            <div class="price-group__header">
-              <span class="price-group__title">Perfumes</span>
-              <div class="price-group__line"></div>
-              <span class="badge badge--gold">Alta Concentração</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Frasco 30ml</span>
-              <span class="price-item__val">R$ 85,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Frasco 50ml</span>
-              <span class="price-item__val">R$ 165,00</span>
-            </div>
-            <div class="price-item" style="opacity: 0.7;">
-              <span class="price-item__label">Frasco 100ml <span style="font-size:11px; color:#ff6b6b; font-weight:normal">(Esgotado)</span></span>
-              <span class="price-item__val" style="text-decoration: line-through; opacity:0.6;">R$ 240,00</span>
-            </div>
+        <div class="sp-prices" data-stagger>
+          <div class="sp-price-group">
+            <div class="sp-price-group__head"><h3>Perfumes</h3><span class="h-chip">Alta concentração</span></div>
+            <div class="sp-price-row"><span>Frasco 30ml</span><strong>R$ 85,00</strong></div>
+            <div class="sp-price-row"><span>Frasco 50ml</span><strong>R$ 165,00</strong></div>
+            <div class="sp-price-row is-off"><span>Frasco 100ml<em>Esgotado</em></span><strong>R$ 240,00</strong></div>
           </div>
 
-          <!-- Body Splashes -->
-          <div class="price-group">
-            <div class="price-group__header">
-              <span class="price-group__title">Body Splashes</span>
-              <div class="price-group__line"></div>
-              <span class="badge badge--surface">200ml</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Frutado Clássico</span>
-              <span class="price-item__val">R$ 80,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Perfumado Especial</span>
-              <span class="price-item__val">R$ 90,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Perolado Frutado</span>
-              <span class="price-item__val">R$ 90,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Perolado Perfumado</span>
-              <span class="price-item__val">R$ 95,00</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="reveal reveal-delay-1">
-          <!-- Skincare -->
-          <div class="price-group">
-            <div class="price-group__header">
-              <span class="price-group__title">Cuidados Corporais</span>
-              <div class="price-group__line"></div>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Hidratante Frutado</span>
-              <span class="price-item__val">R$ 25,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Hidratante Perfumado</span>
-              <span class="price-item__val">R$ 35,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Especial Italica / Vanile</span>
-              <span class="price-item__val">R$ 45,00</span>
-            </div>
+          <div class="sp-price-group">
+            <div class="sp-price-group__head"><h3>Body Splashes</h3><span class="h-chip">200ml</span></div>
+            <div class="sp-price-row"><span>Frutado Clássico</span><strong>R$ 80,00</strong></div>
+            <div class="sp-price-row"><span>Perfumado Especial</span><strong>R$ 90,00</strong></div>
+            <div class="sp-price-row"><span>Perolado Frutado</span><strong>R$ 90,00</strong></div>
+            <div class="sp-price-row"><span>Perolado Perfumado</span><strong>R$ 95,00</strong></div>
           </div>
 
-          <!-- Acessórios -->
-          <div class="price-group">
-            <div class="price-group__header">
-              <span class="price-group__title">Acessórios</span>
-              <div class="price-group__line"></div>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Ecobag Sposence (Ed. Limitada)</span>
-              <span class="price-item__val">R$ 45,00</span>
-            </div>
-            <div class="price-item">
-              <span class="price-item__label">Chaveiro Sposence</span>
-              <span class="price-item__val">R$ 10,00</span>
-            </div>
+          <div class="sp-price-group">
+            <div class="sp-price-group__head"><h3>Cuidados Corporais</h3></div>
+            <div class="sp-price-row"><span>Hidratante Frutado</span><strong>R$ 25,00</strong></div>
+            <div class="sp-price-row"><span>Hidratante Perfumado</span><strong>R$ 35,00</strong></div>
+            <div class="sp-price-row"><span>Especial Italica / Vanile</span><strong>R$ 45,00</strong></div>
+          </div>
+
+          <div class="sp-price-group">
+            <div class="sp-price-group__head"><h3>Acessórios</h3></div>
+            <div class="sp-price-row is-off"><span>Ecobag Sposence<em>Esgotado</em></span><strong>R$ 45,00</strong></div>
+            <div class="sp-price-row"><span>Chaveiro Sposence</span><strong>R$ 10,00</strong></div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- DIFERENCIAIS -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow">
-            <div class="eyebrow-line"></div>
-            <span class="t-label">Pilares</span>
+    <section class="h-section" aria-labelledby="pilares-title">
+      <div class="h-wrap">
+        <span class="h-eyebrow">Pilares</span>
+        <h2 id="pilares-title" class="h-title">O padrão <em>Sposence.</em></h2>
+
+        <div class="sp-values" data-stagger>
+          <div class="sp-value">
+            <i class="ph ph-drop" aria-hidden="true"></i>
+            <h3>Alta fixação</h3>
+            <p>Nossa base de 27% de essência não é só um número: é um compromisso com a duração da fragrância na pele.</p>
           </div>
-          <h2 class="t-headline">O Padrão Sposence</h2>
+          <div class="sp-value">
+            <i class="ph ph-stack" aria-hidden="true"></i>
+            <h3>Arte do layering</h3>
+            <p>Trazemos o layering para o dia a dia e ensinamos você a criar sua assinatura combinando produtos.</p>
+          </div>
+          <div class="sp-value">
+            <i class="ph ph-globe-hemisphere-west" aria-hidden="true"></i>
+            <h3>Curadoria global</h3>
+            <p>Buscamos as tendências olfativas mais desejadas do mundo e as traduzimos em fórmulas pensadas para o clima e a pele brasileira.</p>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="values-grid">
-        <div class="value-card reveal">
-          <span class="value-card__icon">🧪</span>
-          <h3 class="value-card__title">Alta Fixação</h3>
-          <p class="value-card__text">
-            Nossa base de 27% de essência não é apenas um número, é um compromisso com a longevidade da sua fragrância na pele.
-          </p>
-        </div>
-        <div class="value-card reveal reveal-delay-1">
-          <span class="value-card__icon">🎨</span>
-          <h3 class="value-card__title">Arte do Layering</h3>
-          <p class="value-card__text">
-            Fomos pioneiros em trazer o conceito de layering acessível, ensinando você a criar sua própria assinatura misturando produtos.
-          </p>
-        </div>
-        <div class="value-card reveal reveal-delay-2">
-          <span class="value-card__icon">🌍</span>
-          <h3 class="value-card__title">Curadoria Global</h3>
-          <p class="value-card__text">
-            Buscamos as tendências olfativas mais desejadas do mundo para traduzi-las em fórmulas que respeitam o clima e a pele brasileira.
-          </p>
+    <section class="h-section h-section--tint">
+      <div class="h-wrap sp-cta">
+        <h2 class="h-title">Pronta para escolher <em>a sua?</em></h2>
+        <div class="sp-cta__actions" data-reveal>
+          <a href="produtos.html" class="h-btn h-btn--primary" data-magnetic>Explorar catálogo <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+          <a href="colecoes.html" class="h-btn h-btn--ghost" data-magnetic>Ver coleções</a>
         </div>
       </div>
+    </section>
 
-    </div>
-  </section>
+  </main>
 
-  <!-- CTA -->
-  <section class="section--sm" style="background:var(--surface-container)">
-    <div class="container">
-      <div class="reveal" style="text-align:center; padding: 4rem 0;">
-        <h2 class="t-headline" style="margin-bottom:2rem">Pronta para escolher a sua?</h2>
-        <div style="display:flex; justify-content:center; gap:1.5rem">
-           <a href="produtos.html" class="btn btn--primary btn--lg">Explorar Catálogo</a>
-           <a href="index.html" class="btn btn--outline">Voltar ao Início</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div id="footer-mount"></div>
 
-</main>
-
-<div id="footer-mount"></div>
-
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script>
-  document.getElementById('navbar-mount').innerHTML = buildNavbar('sobre.html');
-  document.getElementById('cart-mount').innerHTML   = buildCart();
-  document.getElementById('toast-mount').innerHTML  = buildToastContainer();
-  document.getElementById('footer-mount').innerHTML = buildFooter();
-</script>
+  <script src="js/data.js?v=20261012a"></script>
+  <script src="js/app.js?v=20261012a"></script>
+  <script>
+    document.getElementById('navbar-mount').innerHTML = buildNavbar('sobre.html');
+    document.getElementById('cart-mount').innerHTML   = buildCart();
+    document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+    document.getElementById('footer-mount').innerHTML = buildFooter();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/motion.js?v=20261012a"></script>
+  <script>SpMotion.auto();</script>
 </body>
 </html>
