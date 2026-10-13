@@ -700,6 +700,14 @@ function spCard(p, { sizes = false } = {}) {
     </article>`;
 }
 
+// Logo SPOSENCE do topo: sempre volta para a home com a abertura (ver js/intro.js).
+// Só no clique simples; ctrl/cmd/meio abrem outra aba sem forçar nada.
+document.addEventListener('click', (e) => {
+  if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+  if (!e.target.closest('[data-intro-home]')) return;
+  try { sessionStorage.setItem('sp-intro-force', '1'); } catch (_) {}
+});
+
 // Cliques dos cards: tamanho, adicionar e abrir o produto
 document.addEventListener('click', (e) => {
   const size = e.target.closest('[data-size]');
@@ -737,7 +745,7 @@ function buildNavbar(activePage) {
   ];
   return `
   <nav class="navbar" id="navbar">
-    <a href="index.html" class="navbar__logo"><img src="img/logo-navbar.png" alt="Sposence" class="navbar__logo-img"></a>
+    <a href="index.html" class="navbar__logo" data-intro-home><img src="img/logo-navbar.png" alt="Sposence" class="navbar__logo-img"></a>
     <ul class="navbar__links">
       ${pages.map(p => `<li><a href="${p.href}" class="${activePage === p.href ? 'active' : ''}">${p.label}</a></li>`).join('')}
     </ul>
