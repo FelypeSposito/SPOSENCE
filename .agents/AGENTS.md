@@ -8,4 +8,4 @@ Sempre que for criar uma nova página HTML no projeto, é **obrigatório** inclu
 ```
 
 ## Otimização de Imagens de Destaque
-Para a página inicial (`index.html`), garanta sempre a tag `<link rel="preload" as="image" href="img/CremeCereja.jpg" fetchpriority="high" />` no `<head>` e as propriedades `fetchpriority="high" loading="eager" decoding="async"` na tag `<img>` principal do Creme de Cereja.
+Para a página inicial (`index.html`), o hero usa as versões otimizadas em `img/hero/` (AVIF/WebP em 640–1600w e JPG de fallback) dentro de um `<picture>`. Garanta sempre o `<link rel="preload" as="image" type="image/avif" imagesrcset="..." imagesizes="..." fetchpriority="high" />` no `<head>`, com o mesmo `srcset`/`sizes` do `<source>` AVIF, e as propriedades `fetchpriority="high" loading="eager" decoding="async"` na tag `<img>` principal do Creme de Cereja.

@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sposence | Essências que contam histórias</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
-  <link rel="preload" as="image" href="img/CremeCereja.jpg" fetchpriority="high"
-    imagesrcset="img/CremeCereja-1000.jpg 1000w, img/CremeCereja.jpg 2000w" imagesizes="(max-width: 1023px) 100vw, 46vw" />
+  <link rel="preload" as="image" type="image/avif" fetchpriority="high"
+    imagesrcset="img/hero/creme-cereja-640.avif 640w, img/hero/creme-cereja-960.avif 960w, img/hero/creme-cereja-1280.avif 1280w, img/hero/creme-cereja-1600.avif 1600w"
+    imagesizes="(max-width: 1023px) 125vw, min(90vw, 1300px)" />
   <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -101,9 +102,15 @@
 
         <div class="h-hero__stage">
           <a href="produto.html?id=creme-cereja" class="h-hero__frame" aria-label="Ver Creme de Cereja">
-            <img src="img/CremeCereja.jpg" alt="Bisnaga do Creme de Cereja Sposence entre cerejas e flores de cerejeira"
-              srcset="img/CremeCereja-1000.jpg 1000w, img/CremeCereja.jpg 2000w" sizes="(max-width: 1023px) 100vw, 46vw"
-              width="2000" height="1117" fetchpriority="high" loading="eager" decoding="async" id="hero-img">
+            <!-- Versões otimizadas do Creme de Cereja (recortadas na bisnaga, sem marca d'água); 'sizes' cobre o object-fit: cover do quadro -->
+            <picture>
+              <source type="image/avif" sizes="(max-width: 1023px) 125vw, min(90vw, 1300px)"
+                srcset="img/hero/creme-cereja-640.avif 640w, img/hero/creme-cereja-960.avif 960w, img/hero/creme-cereja-1280.avif 1280w, img/hero/creme-cereja-1600.avif 1600w">
+              <source type="image/webp" sizes="(max-width: 1023px) 125vw, min(90vw, 1300px)"
+                srcset="img/hero/creme-cereja-640.webp 640w, img/hero/creme-cereja-960.webp 960w, img/hero/creme-cereja-1280.webp 1280w, img/hero/creme-cereja-1600.webp 1600w">
+              <img src="img/hero/creme-cereja-1280.jpg" alt="Bisnaga do Creme de Cereja Sposence entre cerejas e flores de cerejeira"
+                width="2150" height="1536" fetchpriority="high" loading="eager" decoding="async" id="hero-img">
+            </picture>
           </a>
           <div class="h-hero__float" data-intro id="hero-float"></div>
         </div>

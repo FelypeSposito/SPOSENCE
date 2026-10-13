@@ -24,7 +24,7 @@
   const hero = PRODUCTS.get('creme-cereja');
   if (hero) {
     document.getElementById('hero-float').innerHTML = `
-      <img src="${hero.image}" alt="" decoding="async">
+      <img src="img/hero/creme-cereja-thumb.webp" alt="" width="64" height="64" decoding="async">
       <div>
         <div class="h-hero__float-name">${hero.name}</div>
         <div class="h-hero__float-meta">${hero.volume || ''} ${hero.volume ? '|' : ''} ${price(priceOf(hero))}</div>
