@@ -549,3 +549,17 @@ body.sp .footer__tagline { font-size: 0.92rem; color: var(--h-ink-soft); }
 /* A entrada da navbar é feita pelo GSAP junto com a abertura da página.
    A animação CSS antiga (slideDown, em animations.css) fazia ela entrar duas vezes. */
 body.sp .navbar { animation: none; }
+
+/* carrinho: remover item */
+.cart-item__remove { transition: color 0.25s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
+.cart-item__remove:hover { transform: rotate(90deg); }
+.cart-item__remove:active { transform: rotate(90deg) scale(0.82); }
+.cart-empty { animation: sp-cart-empty-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes sp-cart-empty-in { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) {
+  .cart-item__remove:hover, .cart-item__remove:active { transform: none; }
+  .cart-empty { animation: none; }
+}
+
+/* produto esgotado: sem preço, só o aviso */
+.h-card__price--off { font-weight: 500; font-size: 0.9rem; color: var(--h-ink-soft); }

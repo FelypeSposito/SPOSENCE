@@ -60,11 +60,11 @@
     })();
   </script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="css/style.css?v=20261012a" />
-  <link rel="stylesheet" href="css/animations.css?v=20261012a" />
+  <link rel="stylesheet" href="css/style.css?v=20261013p" />
+  <link rel="stylesheet" href="css/animations.css?v=20261013p" />
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" href="css/brand.css?v=20261012a" />
-  <link rel="stylesheet" href="css/pages.css?v=20261012a" />
+  <link rel="stylesheet" href="css/brand.css?v=20261013p" />
+  <link rel="stylesheet" href="css/pages.css?v=20261013p" />
 </head>
 <body class="sp">
 
@@ -145,10 +145,10 @@
           <div>
             <span class="h-eyebrow">Kits sugeridos</span>
             <h2 id="kits-title" class="h-title">Combinações <em>prontas.</em></h2>
-            <p class="h-lead" style="margin-top:1rem">Todos os itens vêm marcados. Desmarque o que você já tem e adicione o resto de uma vez.</p>
+            <p class="h-lead" style="margin-top:1rem">Escolha o perfume do kit e os complementos. Desmarque o que você já tem e adicione o resto de uma vez.</p>
           </div>
         </div>
-        <div id="kits-mount" data-stagger></div>
+        <div id="kits-mount"></div>
       </div>
     </section>
 
@@ -156,105 +156,11 @@
 
   <div id="footer-mount"></div>
 
-  <script src="js/data.js?v=20261012a"></script>
-  <script src="js/app.js?v=20261012a"></script>
-  <script>
-    document.getElementById('navbar-mount').innerHTML = buildNavbar('layering.html');
-    document.getElementById('cart-mount').innerHTML   = buildCart();
-    document.getElementById('toast-mount').innerHTML  = buildToastContainer();
-    document.getElementById('footer-mount').innerHTML = buildFooter();
-
-    const byId = (list, id) => (SPOSENCE_DATA[list] || []).find(p => p.id === id);
-    const variantOf = (p) => (p.variants ? p.variants.find(v => !spSoldOut(v)) || p.variants[0] : null);
-    const priceOf = (p) => (variantOf(p)?.price ?? p.price) || 0;
-
-    // Uma linha selecionável do kit
-    const pick = (p, type, label) => `
-      <button type="button" class="sp-pick" role="checkbox" aria-checked="true" data-list="${type}" data-id="${p.id}" data-price="${priceOf(p)}">
-        <span class="sp-pick__box" aria-hidden="true"><i class="ph ph-check"></i></span>
-        <img src="${spThumb(p.image) || SP_BRAND_MARK}" alt="" loading="lazy" decoding="async">
-        <span><span class="sp-pick__name">${p.name}</span><span class="sp-pick__type">${label}${variantOf(p) ? ` · ${variantOf(p).size}` : ''}</span></span>
-        <span class="sp-pick__price">${formatBRL(priceOf(p))}</span>
-      </button>`;
-
-    document.getElementById('kits-mount').innerHTML = SPOSENCE_DATA.layering.map((kit, ki) => {
-      const perfumes  = kit.perfume_ids.map(id => byId('perfumes', id)).filter(Boolean);
-      const skincares = kit.skincare_ids.map(id => byId('skincare', id)).filter(Boolean);
-      const splashes  = kit.splash_ids.map(id => byId('body_splashes', id)).filter(Boolean);
-      return `
-      <article class="sp-kit" id="kit-${ki}">
-        <div class="sp-kit__head">
-          <div>
-            <span class="h-chip">${profileLabel(kit.tag)}</span>
-            <h3 class="sp-kit__title">${kit.title}</h3>
-            <p class="sp-kit__desc">${kit.description}</p>
-          </div>
-          <div class="sp-kit__total">Total selecionado<strong data-total>${formatBRL(0)}</strong></div>
-        </div>
-        <div class="sp-kit__cols">
-          <div>
-            <div class="sp-kit__label">Perfumes do kit</div>
-            <div class="sp-kit__list">${perfumes.map(p => pick(p, 'perfumes', `Inspirado em ${p.inspired_by}`)).join('')}</div>
-          </div>
-          <div>
-            <div class="sp-kit__label">Complementos</div>
-            <div class="sp-kit__list">
-              ${skincares.map(s => pick(s, 'skincare', 'Creme hidratante')).join('')}
-              ${splashes.map(b => pick(b, 'body_splashes', `Body splash ${b.volume || ''}`)).join('')}
-            </div>
-          </div>
-        </div>
-        <div class="sp-kit__foot">
-          <span class="sp-kit__hint" data-hint></span>
-          <div class="sp-kit__actions">
-            <a href="produtos.html?cat=perfumes&profile=${kit.tag}" class="h-link">Ver tudo de ${profileLabel(kit.tag).toLowerCase()} <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-            <button type="button" class="h-btn h-btn--primary" data-kit-add data-magnetic>Adicionar selecionados <i class="ph ph-shopping-bag" aria-hidden="true"></i></button>
-          </div>
-        </div>
-      </article>`;
-    }).join('');
-
-    // Total e contagem acompanham a seleção
-    function syncKit(kitEl) {
-      const picked = [...kitEl.querySelectorAll('.sp-pick[aria-checked="true"]')];
-      const total = picked.reduce((sum, el) => sum + Number(el.dataset.price), 0);
-      kitEl.querySelector('[data-total]').textContent = formatBRL(total);
-      kitEl.querySelector('[data-hint]').textContent = picked.length
-        ? `${picked.length} ${picked.length === 1 ? 'item selecionado' : 'itens selecionados'}`
-        : 'Nenhum item selecionado';
-      kitEl.querySelector('[data-kit-add]').disabled = !picked.length;
-    }
-    document.querySelectorAll('.sp-kit').forEach(syncKit);
-
-    document.getElementById('kits-mount').addEventListener('click', (e) => {
-      const item = e.target.closest('.sp-pick');
-      if (item) {
-        item.setAttribute('aria-checked', item.getAttribute('aria-checked') !== 'true');
-        syncKit(item.closest('.sp-kit'));
-        return;
-      }
-      const add = e.target.closest('[data-kit-add]');
-      if (!add) return;
-      const picked = add.closest('.sp-kit').querySelectorAll('.sp-pick[aria-checked="true"]');
-      if (!picked.length) { showToast('Selecione ao menos um item ✧'); return; }
-      picked.forEach((el) => {
-        const p = byId(el.dataset.list, el.dataset.id);
-        if (p) cart.add({ ...p, category: p.category || el.dataset.list }, variantOf(p));
-      });
-      openCart();
-    });
-
-    // Vindo da home com #kit-N: rola até o kit depois que a página monta
-    if (location.hash) {
-      window.addEventListener('load', () => {
-        const target = document.querySelector(location.hash);
-        if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
-      });
-    }
-  </script>
+  <script src="js/data.js?v=20261013p"></script>
+  <script src="js/app.js?v=20261013p"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/motion.js?v=20261012a"></script>
-  <script>SpMotion.auto();</script>
+  <script src="js/motion.js?v=20261013p"></script>
+  <script src="js/layering.js?v=20261013p"></script>
 </body>
 </html>

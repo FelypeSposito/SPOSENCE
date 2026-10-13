@@ -21,13 +21,13 @@
   const productCard = (p) => spCard(p);
 
   // ---- Card flutuante do hero ----
-  const hero = PRODUCTS.get('creme-cereja');
+  const hero = PRODUCTS.get('royal-amber');
   if (hero) {
     document.getElementById('hero-float').innerHTML = `
-      <img src="img/hero/creme-cereja-thumb.webp" alt="" width="64" height="64" decoding="async">
+      <img src="img/hero/sacola-thumb.webp" alt="" width="64" height="64" decoding="async">
       <div>
         <div class="h-hero__float-name">${hero.name}</div>
-        <div class="h-hero__float-meta">${hero.volume || ''} ${hero.volume ? '|' : ''} ${price(priceOf(hero))}</div>
+        <div class="h-hero__float-meta">${(spVariant(hero) || {}).size || hero.volume || ''} | ${price(priceOf(hero))}</div>
       </div>
       <button class="h-add" type="button" data-add="${hero.id}" aria-label="Adicionar ${hero.name} ao carrinho"><i class="ph ph-plus" aria-hidden="true"></i></button>`;
   }
@@ -52,6 +52,11 @@
   window.addEventListener('resize', syncRailBtns);
   syncRailBtns();
 
+  // ---- Cremes corporais ----
+  const creams = document.getElementById('creams-grid');
+  if (creams) creams.innerHTML = (SPOSENCE_DATA.skincare || [])
+    .map(p => spCard({ ...p, category: p.category || 'skincare' }, { sizes: true })).join('');
+
   // ---- Elegantes ----
   // O primeiro card é o destaque grande da seção
   const ELEGANT_HIGHLIGHT = 'royal-amber';
@@ -68,17 +73,21 @@
     kit,
     perfumes: kit.perfume_ids.map(id => findIn('perfumes', id)).filter(Boolean),
     creme: findIn('skincare', kit.skincare_ids[0]),
-    splash: findIn('body_splashes', kit.splash_ids[0]),
+    splash: [findIn('body_splashes', kit.splash_ids[0])].filter(p => p && !spSoldOut(p))[0] || null,
   }));
   const state = { kit: 0, perfume: 0 };
   const kitsMount = document.getElementById('kits-mount');
 
   // Uma peça do kit: foto, o que é e um detalhe curto
-  function piece(img, type, detail) {
+  // Cada peça leva à página do produto; o detalhe pode trazer links próprios
+  const productUrl = (p, size) => `produto.html?id=${p.id}${size ? `&v=${encodeURIComponent(size)}` : ''}`;
+  function piece(href, img, type, detail, label) {
     return `
       <div class="h-piece">
-        <div class="h-piece__thumb"><img src="${img || BRAND_MARK}" alt="" loading="lazy" decoding="async"></div>
-        <div class="h-piece__type">${type}</div>
+        <a href="${href}" class="h-piece__link" aria-label="${label}">
+          <div class="h-piece__thumb"><img src="${img || BRAND_MARK}" alt="" loading="lazy" decoding="async"></div>
+          <div class="h-piece__type">${type}</div>
+        </a>
         <div class="h-piece__detail">${detail}</div>
       </div>`;
   }
@@ -87,17 +96,19 @@
     const perf = k.perfumes[perfumeIdx];
     const perfVar = spVariant(perf);
     const total = priceOf(perf) + priceOf(k.creme) + priceOf(k.splash);
-    const names = k.perfumes.map(p => p.name);
+    // cada perfume do kit é um link próprio
+    const names = k.perfumes.map(p => `<a href="${productUrl(p)}">${p.name}</a>`);
     const perfumeDetail = names.length > 1 ? `${names.slice(0, -1).join(', ')} ou ${names[names.length - 1]}` : names[0];
     const shortName = (p, prefix) => (p ? p.name.replace(prefix, '').trim() : '');
+    const splashDetail = k.splash ? [shortName(k.splash, /^Body Splash\s+/i), k.kit.splash_variant].filter(Boolean).join(' · ') : '';
     return `
       <div><span class="h-chip">${profileLabel(k.kit.tag)}</span></div>
       <div class="h-kit__title">${k.kit.title}</div>
       <p class="h-kit__desc">${k.kit.description}</p>
       <div class="h-pieces">
-        ${piece(perf.image, `Perfume ${perfVar ? perfVar.size : ''}`, perfumeDetail)}
-        ${k.creme ? piece(k.creme.image, 'Creme corporal', shortName(k.creme, /^Creme\s+/i)) : ''}
-        ${k.splash ? piece(k.splash.image, `Body splash ${k.splash.volume || ''}`, shortName(k.splash, /^Body Splash\s+/i)) : ''}
+        ${piece(productUrl(perf), perf.image, `Perfume ${perfVar ? perfVar.size : ''}`, perfumeDetail, `Ver ${perf.name}`)}
+        ${k.creme ? piece(productUrl(k.creme), k.creme.image, 'Creme corporal', shortName(k.creme, /^Creme\s+/i), `Ver ${k.creme.name}`) : ''}
+        ${k.splash ? piece(productUrl(k.splash, k.kit.splash_variant), k.splash.image, `Body splash ${k.splash.volume || ''}`, splashDetail, `Ver ${k.splash.name}${k.kit.splash_variant ? ' ' + k.kit.splash_variant : ''}`) : ''}
       </div>
       <div class="h-kit__foot">
         <div class="h-kit__total">Total do kit, a partir de<strong>${price(total)}</strong></div>
@@ -130,15 +141,19 @@
     }, 280);
   }
 
+  // Com GSAP ativo, a troca de kit repete a entrada (cortina + peças); ver MOTION
+  let kitSwap = null;
   function renderKit(animate) {
     const k = KITS[state.kit];
+    const src = k.perfumes[state.perfume].image || BRAND_MARK;
     const paint = () => {
       kitBody.innerHTML = kitContent(k, state.perfume);
       kitBody.classList.remove('is-swapping');
     };
-    setVisual(k.perfumes[state.perfume].image || BRAND_MARK);
     kitTabs.forEach((t, i) => { t.setAttribute('aria-selected', i === state.kit); t.tabIndex = i === state.kit ? 0 : -1; });
     kitPanel.setAttribute('aria-labelledby', `kit-tab-${state.kit}`);
+    if (animate && kitSwap) { kitSwap(src, paint); return; }
+    setVisual(src);
     if (animate && !REDUCE) { kitBody.classList.add('is-swapping'); setTimeout(paint, 260); } else { paint(); }
   }
 
@@ -272,6 +287,40 @@
       .from('.h-kit__content', { autoAlpha: 0, x: 30, duration: 1.1, ease: EASE }, 0.45)
       .from('.h-kit .h-piece', { autoAlpha: 0, y: 24, duration: 0.9, ease: EASE, stagger: 0.1 }, 0.7);
     parallax(q('.h-kit__visual img'), 5);
+
+    // Trocar de kit: passagem vertical com profundidade. A máscara corre mais rápido
+    // que a foto dentro dela (como no parallax da rolagem); texto e peças sobem em
+    // sequência. Usa 'y' em px para não brigar com o yPercent do parallax. Cliques rápidos interrompem.
+    const kVisual = q('.h-kit__visual');
+    const kImg = q('.h-kit__visual img');
+    const kBody = q('.h-kit__content');
+    let swapTl = null, swapId = 0;
+    kitSwap = (src, paint) => {
+      if (swapTl) swapTl.kill();
+      const id = ++swapId; // só a troca mais recente chega a entrar
+      const enter = () => {
+        paint();
+        const h = kVisual.offsetHeight || 400;
+        swapTl = gsap.timeline()
+          // a nova foto sobe de baixo; a imagem vem atrasada em relação à máscara
+          .fromTo(kVisual, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'expo.inOut' }, 0)
+          .fromTo(kImg, { y: h * 0.28, scale: 1.12 }, { y: 0, scale: 1, duration: 1.5, ease: EASE }, 0)
+          .fromTo(kBody, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: EASE }, 0.35)
+          .from(kBody.querySelectorAll('.h-piece'), { autoAlpha: 0, y: 36, scale: 0.96, duration: 1, ease: EASE, stagger: 0.09 }, 0.55);
+      };
+      const h = kVisual.offsetHeight || 400;
+      swapTl = gsap.timeline()
+        // a foto atual é recolhida para cima; a imagem sobe mais devagar que a máscara
+        .fromTo(kVisual, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.6, ease: 'power3.in' }, 0)
+        .to(kImg, { y: -h * 0.12, duration: 0.6, ease: 'power3.in' }, 0)
+        .to(kBody, { autoAlpha: 0, y: -16, duration: 0.4, ease: 'power2.in' }, 0)
+        .add(() => {
+          // espera a foto nova decodificar para a cortina não abrir sobre o vazio
+          kImg.src = src;
+          const go = () => { if (id === swapId) enter(); };
+          kImg.decode ? kImg.decode().then(go, go) : go();
+        });
+    };
   }
 
   // ---- PONTEIRO ----

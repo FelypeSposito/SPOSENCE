@@ -38,6 +38,41 @@ const cart = {
     this.save();
     this.render();
   },
+  // Remove com animação: o item desliza para fora, o espaço dele se fecha
+  // e os de baixo sobem. Os outros itens não são redesenhados (não piscam).
+  removeAnimated(btn, key) {
+    const el = btn.closest('.cart-item');
+    if (!el || el.dataset.removing) return;
+    el.dataset.removing = '1';
+    this.items = this.items.filter(i => i.key !== key);
+    this.save();
+    this.renderBadge();
+    this.renderTotal(true);
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cs = getComputedStyle(el);
+    const gap = parseFloat(getComputedStyle(el.parentElement).rowGap) || 0;
+    // o vão do flex entre itens também precisa fechar junto
+    const absorb = el.nextElementSibling ? 'marginBottom' : el.previousElementSibling ? 'marginTop' : null;
+    const open = { height: `${el.offsetHeight}px`, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, marginTop: '0px', marginBottom: '0px' };
+    const shut = { height: '0px', paddingTop: '0px', paddingBottom: '0px', marginTop: '0px', marginBottom: '0px' };
+    if (absorb) shut[absorb] = `${-gap}px`;
+    el.style.overflow = 'hidden';
+    el.style.pointerEvents = 'none';
+
+    const anim = reduce
+      ? el.animate([{ opacity: 1, ...open }, { opacity: 0, ...shut }], { duration: 160, fill: 'forwards' })
+      : el.animate([
+          { opacity: 1, transform: 'translateX(0) scale(1)', ...open, easing: 'cubic-bezier(0.4, 0, 1, 1)' },
+          { offset: 0.42, opacity: 0, transform: 'translateX(36px) scale(0.97)', ...open, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' },
+          { opacity: 0, transform: 'translateX(36px) scale(0.97)', ...shut },
+        ], { duration: 520, fill: 'forwards' });
+    const done = () => {
+      el.remove();
+      if (!this.items.length) this.render();
+    };
+    anim.finished.then(done, done);
+  },
   total() {
     return this.items.reduce((s, i) => s + i.price * i.qty, 0);
   },
@@ -53,6 +88,12 @@ const cart = {
     } catch (_) { this.items = []; }
     // usa sempre o preço atual do catálogo, não o do dia em que o item entrou no carrinho
     const all = getAllProducts();
+    // itens que esgotaram depois de entrar no carrinho saem dele
+    this.items = this.items.filter(item => {
+      const p = all.find(x => x.id === item.productId);
+      const v = p && p.variants ? p.variants.find(x => x.size === item.variant) : null;
+      return p && !spSoldOut(p) && !spSoldOut(v);
+    });
     this.items.forEach(item => {
       const p = all.find(x => x.id === item.productId);
       const v = p && p.variants ? p.variants.find(x => x.size === item.variant) : null;
@@ -60,7 +101,32 @@ const cart = {
       if (typeof price === 'number') item.price = price;
     });
   },
+  // Total: com animate, o valor rola do antigo para o novo
+  renderTotal(animate = false) {
+    const el = document.getElementById('cart-total-value');
+    if (!el) return;
+    const fmt = (v) => `R$ ${v.toFixed(2).replace('.', ',')}`;
+    const to = this.total();
+    const from = typeof this._shownTotal === 'number' ? this._shownTotal : to;
+    this._shownTotal = to;
+    cancelAnimationFrame(this._totalRaf);
+    if (!animate || from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = fmt(to);
+      return;
+    }
+    const t0 = performance.now(), dur = 480;
+    const step = (now) => {
+      const k = Math.min((now - t0) / dur, 1);
+      el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) this._totalRaf = requestAnimationFrame(step);
+    };
+    this._totalRaf = requestAnimationFrame(step);
+  },
   render() {
+    this.renderBadge();
+    this.renderBody();
+  },
+  renderBadge() {
     const countEl = document.querySelectorAll('.navbar__cart-count');
     countEl.forEach(el => {
       const oldCount = parseInt(el.textContent) || 0;
@@ -77,7 +143,8 @@ const cart = {
         }
       }
     });
-
+  },
+  renderBody() {
     const body = document.getElementById('cart-body');
     const footer = document.getElementById('cart-footer');
     if (!body) return;
@@ -101,7 +168,7 @@ const cart = {
       const product = spFindProduct(item.productId);
       const url = `produto.html?id=${item.productId}`;
       return `
-      <div class="cart-item">
+      <div class="cart-item" data-key="${item.key}">
         <a href="${url}" class="cart-item__thumb" tabindex="-1" aria-hidden="true">
           <img src="${(product && spThumb(product.image)) || SP_BRAND_MARK}" alt="" loading="lazy" decoding="async">
         </a>
@@ -111,12 +178,11 @@ const cart = {
           <a href="${url}" class="cart-item__link">Ver produto <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
         </div>
         <div class="cart-item__price">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
-        <button class="cart-item__remove" onclick="cart.remove('${item.key}')" aria-label="Remover ${item.name}">×</button>
+        <button class="cart-item__remove" onclick="cart.removeAnimated(this, '${item.key}')" aria-label="Remover ${item.name}">×</button>
       </div>`;
     }).join('');
 
-    document.getElementById('cart-total-value').textContent =
-      `R$ ${this.total().toFixed(2).replace('.', ',')}`;
+    this.renderTotal();
   }
 };
 
@@ -573,6 +639,8 @@ function getAllProducts() {
 const SP_BRAND_MARK = 'ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png';
 const SP_CATEGORY = { perfumes: 'Perfume', body_splashes: 'Body Splash', skincare: 'Cuidados', merchandise: 'Acessório' };
 const spSoldOut = (x) => !!x && (x.outOfStock || x.available === false);
+// Produto esgotado não mostra preço em lugar nenhum do site
+const spPriceText = (p, value) => (spSoldOut(p) ? 'Indisponível' : formatBRL(value));
 // Miniatura de 720px para cards e listas; a foto inteira fica para a página do produto
 const spThumb = (src) => (src ? src.replace(/^img\//, 'img/thumbs/') : '');
 
@@ -602,7 +670,7 @@ function spCardFoot(p, withSizes) {
     ? `<button class="h-add h-add--off" type="button" disabled><span>Esgotado</span></button>`
     : `<button class="h-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name} ao carrinho"><i class="ph ph-plus" aria-hidden="true"></i><span>Adicionar</span></button>`;
   const left = !off && spLeftLabel(v) ? `<small class="h-left">${spLeftLabel(v)}</small>` : '';
-  return `<div class="h-card__price">${from}${formatBRL(v ? v.price : (p.price || 0))}${left}</div>${button}`;
+  return `<div class="h-card__price${spSoldOut(p) ? ' h-card__price--off' : ''}">${spSoldOut(p) ? '' : from}${spPriceText(p, v ? v.price : (p.price || 0))}${left}</div>${button}`;
 }
 
 // sizes: mostra os tamanhos no card para escolher antes de adicionar
@@ -941,7 +1009,7 @@ function initGlobalSearch() {
                 <div class="search-dropdown__name">${p.name}</div>
                 <div class="search-dropdown__type">${[SP_CATEGORY[p.category], p.profile ? profileLabel(p.profile) : ''].filter(Boolean).join(' · ')}</div>
               </div>
-              <div class="search-dropdown__price">R$ ${price.toFixed(2).replace('.', ',')}</div>
+              <div class="search-dropdown__price">${spPriceText(p, price)}</div>
             </a>
           `;
         }).join('') + `<a href="produtos.html?search=${encodeURIComponent(query)}" class="search-dropdown__item search-dropdown__all">Ver todos os resultados <i class="ph ph-arrow-right" aria-hidden="true"></i></a>`;

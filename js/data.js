@@ -54,10 +54,10 @@ const SPOSENCE_DATA = {
     {
       id: "mandarino",
       name: "Mandarino",
-      inspired_by: "Hermès Eau de Mandarine Ambrée",
+      inspired_by: "Tom Ford Mandarino di Amalfi",
       profile: "frescos",
-      notes: { top: "Mandarina, bergamota", heart: "Flor de laranjeira, gengibre", base: "Âmbar suave, sândalo" },
-      description: "Vitalidade cítrica com um final quente e envolvente.",
+      notes: { top: "Tangerina, limão, toranja", heart: "Manjericão, hortelã, flor de laranjeira", base: "Vetiver, ládano" },
+      description: "Cítrico italiano com ervas frescas, como uma tarde na costa de Amalfi.",
       category: "perfumes",
       concentration: "27%",
       last_units: true, // sai de catálogo: vende só o que resta em "stock"
@@ -263,7 +263,7 @@ const SPOSENCE_DATA = {
         { size: "50ml", price: 165 },
         { size: "100ml", price: 240, available: false, outOfStock: true },
       ],
-      image: "img/Tobaco Vanile.jpg",
+      image: "img/Tobacco Vanille.jpg",
       tags: ["noturnos", "amadeirado", "baunilha", "compartilhavel"],
       featured: true,
     },
@@ -348,20 +348,21 @@ const SPOSENCE_DATA = {
       volume: "200ml", 
       description: "Explosão de frutas para o dia todo. Escolha seu aroma favorito.", 
       category: "body_splashes", 
-      image: "img/Body Splash Frutado.jpg",
+      image: "img/Body Splash Perfumado.jpg",
       variants: [
-        { size: "Oceano", price: 80 },
-        { size: "Flor de laranjeira", price: 80 },
-        { size: "Uva", price: 80 },
-        { size: "Vanilla cookie", price: 80 },
-        { size: "Morango", price: 80 },
-        { size: "Baunilha", price: 80 },
-        { size: "Licor de chocolate", price: 80 },
-        { size: "Jabuticaba", price: 80 }
+        { size: "Oceano", price: 95 },
+        { size: "Flor de laranjeira", price: 95 },
+        { size: "Uva", price: 95 },
+        { size: "Vanilla cookie", price: 95 },
+        { size: "Morango", price: 95 },
+        { size: "Baunilha", price: 95 },
+        { size: "Licor de chocolate", price: 95 },
+        { size: "Jabuticaba", price: 95 }
       ]
     },
     { 
       id: "bs-perfumado", 
+      available: false, outOfStock: true,
       name: "Body Splash Perfumado", 
       type: "Perfumado", 
       concentration: "10%", 
@@ -377,13 +378,14 @@ const SPOSENCE_DATA = {
     },
     { 
       id: "bs-perolado-frutado", 
+      available: false, outOfStock: true,
       name: "Body Splash Perolado Frutado", 
       type: "Perolado Frutado", 
       concentration: "10%", 
       volume: "200ml", 
       description: "Fragrâncias frutadas com brilho sedoso na pele.", 
       category: "body_splashes", 
-      image: "img/Body Splash Frutado.jpg",
+      image: "img/Body Splash Perfumado.jpg",
       variants: [
         { size: "Oceano", price: 90 },
         { size: "Flor de laranjeira", price: 90 },
@@ -397,6 +399,7 @@ const SPOSENCE_DATA = {
     },
     { 
       id: "bs-perolado-perf", 
+      available: false, outOfStock: true,
       name: "Body Splash Perolado Perfumado", 
       type: "Perolado Perfumado", 
       concentration: "10%", 
@@ -491,7 +494,8 @@ const SPOSENCE_DATA = {
       description: "Combine o perfume com o creme para uma fixação que dura 2x mais.",
       perfume_ids: ["la-vie-est-belle", "devotion", "olympea"],
       skincare_ids: ["sk-hidra-perf"],
-      splash_ids: ["bs-perfumado"],
+      splash_ids: ["bs-frutado"],
+      splash_variant: "Baunilha", // fragrância do body splash que entra no kit
       tag: "doces",
     },
     {

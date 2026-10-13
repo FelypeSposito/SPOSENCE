@@ -60,11 +60,11 @@
     })();
   </script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="css/style.css?v=20261012a" />
-  <link rel="stylesheet" href="css/animations.css?v=20261012a" />
+  <link rel="stylesheet" href="css/style.css?v=20261013p" />
+  <link rel="stylesheet" href="css/animations.css?v=20261013p" />
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" href="css/brand.css?v=20261012a" />
-  <link rel="stylesheet" href="css/pages.css?v=20261012a" />
+  <link rel="stylesheet" href="css/brand.css?v=20261013p" />
+  <link rel="stylesheet" href="css/pages.css?v=20261013p" />
 </head>
 <body class="sp">
 
@@ -121,8 +121,8 @@
 
   <div id="footer-mount"></div>
 
-  <script src="js/data.js?v=20261012a"></script>
-  <script src="js/app.js?v=20261012a"></script>
+  <script src="js/data.js?v=20261013p"></script>
+  <script src="js/app.js?v=20261013p"></script>
   <script>
     document.getElementById('navbar-mount').innerHTML = buildNavbar('produtos.html');
     document.getElementById('cart-mount').innerHTML   = buildCart();
@@ -138,6 +138,12 @@
       return id === target || name === target || id.includes(target) || target.includes(id);
     });
     const mount = document.getElementById('product-mount');
+    // ?v=Baunilha: abre com essa fragrância/tamanho já escolhido (ex.: vindo de um kit)
+    const wanted = new URLSearchParams(location.search).get('v');
+    if (product && wanted && product.variants) {
+      const i = product.variants.findIndex(v => v.size === wanted && !spSoldOut(v));
+      if (i >= 0) spPicked[product.id] = i;
+    }
 
     if (!product) {
       mount.style.display = 'block';
@@ -217,7 +223,7 @@
         const v = spVariant(product);
         const off = spSoldOut(product) || spSoldOut(v);
         document.getElementById('buy-box').innerHTML = `
-          <div class="sp-buy__price">${formatBRL(v ? v.price : product.price || 0)}<small>${v ? v.size : (product.volume || '')}${off ? ' · esgotado' : spLeftLabel(v) ? ` · ${spLeftLabel(v).toLowerCase()}` : isPerfume ? ' · 27% de essência' : ''}</small></div>
+          <div class="sp-buy__price">${spPriceText(product, v ? v.price : product.price || 0)}<small>${v ? v.size : (product.volume || '')}${off ? ' · esgotado' : spLeftLabel(v) ? ` · ${spLeftLabel(v).toLowerCase()}` : isPerfume ? ' · 27% de essência' : ''}</small></div>
           <button type="button" class="h-btn h-btn--primary" data-add="${product.id}" ${off ? 'disabled' : ''}>
             ${off ? 'Indisponível no momento' : 'Adicionar ao carrinho <i class="ph ph-shopping-bag" aria-hidden="true"></i>'}
           </button>`;
@@ -235,7 +241,7 @@
         bar.innerHTML = `
           <div class="sp-buybar__info">
             <div class="sp-buybar__name">${product.name}</div>
-            <div class="sp-buybar__price">${formatBRL(v ? v.price : product.price || 0)} <small>${v ? v.size : ''}</small></div>
+            <div class="sp-buybar__price">${spPriceText(product, v ? v.price : product.price || 0)} <small>${v ? v.size : ''}</small></div>
           </div>
           <button type="button" class="h-btn h-btn--primary" data-add="${product.id}" tabindex="-1" ${off ? 'disabled' : ''}>${off ? 'Esgotado' : 'Adicionar'}</button>`;
       };
@@ -282,7 +288,7 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/motion.js?v=20261012a"></script>
+  <script src="js/motion.js?v=20261013p"></script>
   <script>SpMotion.auto();</script>
 </body>
 </html>

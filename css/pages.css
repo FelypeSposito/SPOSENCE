@@ -267,7 +267,6 @@
 .sp-value i { font-size: 1.75rem; color: var(--h-accent); }
 .sp-value h3 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.45rem; margin: 2rem 0 0.5rem; }
 .sp-value p { font-size: 0.92rem; color: var(--h-ink-soft); line-height: 1.6; }
-
 /* ============================================================
    RESPONSIVO
    ============================================================ */
@@ -385,4 +384,66 @@
   .sp-value { padding: 1.4rem 1.25rem; }
   .sp-value h3, .sp-step h3 { margin-top: 1.25rem; }
   .sp-cta__actions .h-btn { flex: 1 1 100%; justify-content: center; }
+}
+
+/* ============================================================
+   KITS DE LAYERING · mesmo formato do kit da home
+   foto grande à esquerda, montagem do kit à direita
+   ============================================================ */
+#kits-mount .h-tabs { margin-bottom: 1.5rem; }
+.sp-studio {
+  display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r);
+  overflow: hidden; box-shadow: var(--h-shadow-sm);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+}
+.sp-studio__visual { position: relative; min-height: 560px; background: var(--h-tint); overflow: hidden; }
+.sp-studio__visual img {
+  position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover;
+  transition: opacity 0.6s var(--h-ease), scale 1.2s var(--h-ease);
+}
+.sp-studio__visual img.is-out { opacity: 0; scale: 1.04; }
+/* nome do perfume escolhido, sobre a foto */
+.sp-studio__caption {
+  position: absolute; left: 1rem; bottom: 1rem; z-index: 1;
+  padding: 0.5rem 0.9rem; border-radius: 999px;
+  background: rgba(251, 249, 244, 0.9);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-family: 'Philosopher', Georgia, serif; font-size: 1rem; color: var(--h-ink);
+}
+.sp-studio__caption:empty { display: none; }
+.sp-studio__body { padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; }
+.sp-studio__title { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: clamp(1.7rem, 2.6vw, 2.3rem); line-height: 1.12; margin-top: 0.15rem; }
+.sp-studio__desc { color: var(--h-ink-soft); margin-top: 0.5rem; max-width: 50ch; }
+.sp-studio__step { margin-top: 1.75rem; }
+.sp-studio__skip {
+  margin-top: 0.6rem; padding: 0.35rem 0; background: none; border: 0;
+  font-size: 0.85rem; color: var(--h-ink-soft);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--h-line-strong);
+  transition: color 0.25s ease;
+}
+.sp-studio__skip:hover { color: var(--h-ink); }
+.sp-studio__skip[aria-pressed="true"] { color: var(--h-ink); font-weight: 600; }
+.sp-studio__skip:focus-visible { outline: 2px solid var(--h-accent); outline-offset: 2px; border-radius: 4px; }
+.sp-studio__foot {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: auto; padding-top: 1.75rem;
+}
+.sp-studio__foot .sp-kit__total { text-align: left; }
+.sp-studio__foot [data-hint] { display: block; font-size: 0.78rem; margin-top: 0.15rem; }
+.sp-studio .sp-pick[role="radio"] .sp-pick__box { border-radius: 50%; }
+@media (max-width: 1023px) {
+  .sp-studio { grid-template-columns: 1fr; }
+  .sp-studio__visual { min-height: 0; aspect-ratio: 16 / 9; }
+}
+@media (max-width: 767px) {
+  #kits-mount .h-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  #kits-mount .h-tabs::-webkit-scrollbar { display: none; }
+  #kits-mount .h-tab { flex: none; }
+  .sp-studio__visual { aspect-ratio: 4 / 3; }
+  .sp-studio__body { padding: 1.1rem 1.1rem 1.25rem; }
+  .sp-studio__title { font-size: 1.6rem; }
+  .sp-studio__foot, .sp-studio__foot .h-btn { width: 100%; }
+  .sp-studio__foot .h-btn { justify-content: center; }
 }
