@@ -563,3 +563,6 @@ body.sp .navbar { animation: none; }
 
 /* produto esgotado: sem preço, só o aviso */
 .h-card__price--off { font-weight: 500; font-size: 0.9rem; color: var(--h-ink-soft); }
+
+/* sob encomenda: botão do card leva ao WhatsApp */
+.h-add--order { text-decoration: none; }

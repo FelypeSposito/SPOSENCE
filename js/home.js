@@ -72,7 +72,7 @@
     index,
     kit,
     perfumes: kit.perfume_ids.map(id => findIn('perfumes', id)).filter(Boolean),
-    creme: findIn('skincare', kit.skincare_ids[0]),
+    creme: [findIn('skincare', kit.skincare_ids[0])].filter(p => p && !spSoldOut(p))[0] || null,
     splash: [findIn('body_splashes', kit.splash_ids[0])].filter(p => p && !spSoldOut(p))[0] || null,
   }));
   const state = { kit: 0, perfume: 0 };
@@ -107,7 +107,7 @@
       <p class="h-kit__desc">${k.kit.description}</p>
       <div class="h-pieces">
         ${piece(productUrl(perf), perf.image, `Perfume ${perfVar ? perfVar.size : ''}`, perfumeDetail, `Ver ${perf.name}`)}
-        ${k.creme ? piece(productUrl(k.creme), k.creme.image, 'Creme corporal', shortName(k.creme, /^Creme\s+/i), `Ver ${k.creme.name}`) : ''}
+        ${k.creme ? piece(productUrl(k.creme, k.kit.skincare_variant), k.creme.image, 'Creme corporal', [shortName(k.creme, /^Creme\s+/i), k.kit.skincare_variant].filter(Boolean).join(' · '), `Ver ${k.creme.name}`) : ''}
         ${k.splash ? piece(productUrl(k.splash, k.kit.splash_variant), k.splash.image, `Body splash ${k.splash.volume || ''}`, splashDetail, `Ver ${k.splash.name}${k.kit.splash_variant ? ' ' + k.kit.splash_variant : ''}`) : ''}
       </div>
       <div class="h-kit__foot">

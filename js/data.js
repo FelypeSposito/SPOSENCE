@@ -467,6 +467,8 @@ const SPOSENCE_DATA = {
     },
     { 
       id: "sk-hidra-perf", 
+      // sob encomenda: sem preço (varia) e sem carrinho; o botão abre o WhatsApp
+      available: false, outOfStock: true, on_request: true,
       name: "Creme Hidratante Perfumado", 
       type: "Creme Corporal", 
       description: "Pele nutrida com aroma envolvente. Apenas para uso corporal.", 
@@ -493,7 +495,8 @@ const SPOSENCE_DATA = {
       title: "Kit Baunilha Intenso",
       description: "Combine o perfume com o creme para uma fixação que dura 2x mais.",
       perfume_ids: ["la-vie-est-belle", "devotion", "olympea"],
-      skincare_ids: ["sk-hidra-perf"],
+      skincare_ids: ["sk-hidra-frutado"],
+      skincare_variant: "Baunilha", // fragrância do creme que entra no kit
       splash_ids: ["bs-frutado"],
       splash_variant: "Baunilha", // fragrância do body splash que entra no kit
       tag: "doces",

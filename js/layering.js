@@ -25,7 +25,7 @@
     perfumes: kit.perfume_ids.map(id => byId('perfumes', id)).filter(available),
     extras: [
       ...kit.skincare_ids.map(id => byId('skincare', id)).filter(available)
-        .map(p => ({ p, list: 'skincare', label: 'Creme hidratante' })),
+        .map(p => ({ p, list: 'skincare', label: 'Creme hidratante', size: kit.skincare_variant })),
       ...kit.splash_ids.map(id => byId('body_splashes', id)).filter(available)
         .map(p => ({ p, list: 'body_splashes', label: `Body splash ${p.volume || ''}`.trim(), size: kit.splash_variant })),
     ],

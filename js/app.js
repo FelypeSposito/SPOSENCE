@@ -639,8 +639,11 @@ function getAllProducts() {
 const SP_BRAND_MARK = 'ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png';
 const SP_CATEGORY = { perfumes: 'Perfume', body_splashes: 'Body Splash', skincare: 'Cuidados', merchandise: 'Acessório' };
 const spSoldOut = (x) => !!x && (x.outOfStock || x.available === false);
-// Produto esgotado não mostra preço em lugar nenhum do site
-const spPriceText = (p, value) => (spSoldOut(p) ? 'Indisponível' : formatBRL(value));
+// Sob encomenda: fora do carrinho, preço variável; o pedido é feito pelo WhatsApp
+const spOnRequest = (p) => !!(p && p.on_request);
+const spOrderUrl = (p, v) => `https://wa.me/5511933175390?text=${encodeURIComponent(`Olá! Gostaria de encomendar o ${p.name}${v ? ` (${v.size})` : ''}.`)}`;
+// Produto esgotado ou sob encomenda não mostra preço em lugar nenhum do site
+const spPriceText = (p, value) => (spOnRequest(p) ? 'Sob encomenda' : spSoldOut(p) ? 'Indisponível' : formatBRL(value));
 // Miniatura de 720px para cards e listas; a foto inteira fica para a página do produto
 const spThumb = (src) => (src ? src.replace(/^img\//, 'img/thumbs/') : '');
 
@@ -666,7 +669,9 @@ function spCardFoot(p, withSizes) {
   const v = spVariant(p);
   const off = spSoldOut(p) || spSoldOut(v);
   const from = p.variants && p.variants.length > 1 && !withSizes ? '<small>a partir de</small>' : '';
-  const button = off
+  const button = spOnRequest(p)
+    ? `<a class="h-add h-add--order" href="${spOrderUrl(p, v)}" target="_blank" rel="noopener" aria-label="Encomendar ${p.name} pelo WhatsApp"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i><span>Encomendar</span></a>`
+    : off
     ? `<button class="h-add h-add--off" type="button" disabled><span>Esgotado</span></button>`
     : `<button class="h-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name} ao carrinho"><i class="ph ph-plus" aria-hidden="true"></i><span>Adicionar</span></button>`;
   const left = !off && spLeftLabel(v) ? `<small class="h-left">${spLeftLabel(v)}</small>` : '';
@@ -678,13 +683,13 @@ function spCard(p, { sizes = false } = {}) {
   const withSizes = sizes && p.variants && p.variants.length > 1;
   const url = `produto.html?id=${p.id}`;
   const meta = p.inspired_by ? `Inspirado em ${p.inspired_by}` : [p.type, p.volume].filter(Boolean).join(' · ') || p.description || '';
-  const chip = spSoldOut(p) ? 'Esgotado' : (p.profile ? profileLabel(p.profile) : SP_CATEGORY[p.category] || 'Sposence');
+  const chip = spOnRequest(p) ? 'Sob encomenda' : spSoldOut(p) ? 'Esgotado' : (p.profile ? profileLabel(p.profile) : SP_CATEGORY[p.category] || 'Sposence');
   const sizeButtons = withSizes ? `
         <div class="h-sizes${spNamedVariants(p) ? ' h-sizes--named' : ''}" role="group" aria-label="${spNamedVariants(p) ? 'Fragrância' : 'Tamanho'}">
           ${p.variants.map((v, i) => `<button class="h-size" type="button" data-size="${p.id}" data-i="${i}" aria-pressed="${spVariant(p) === v}"${spSoldOut(v) ? ' data-soldout title="Esgotado"' : spLeftLabel(v) ? ` title="${spLeftLabel(v)}"` : ''}>${v.size}</button>`).join('')}
         </div>` : '';
   return `
-    <article class="h-card${spSoldOut(p) ? ' is-soldout' : ''}" data-card="${p.id}">
+    <article class="h-card${spSoldOut(p) && !spOnRequest(p) ? ' is-soldout' : ''}" data-card="${p.id}">
       <a href="${url}" class="h-card__media" aria-label="${p.name}">
         ${p.image ? `<img src="${spThumb(p.image)}" alt="${p.name}" loading="lazy" decoding="async"
             onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">` : ''}
