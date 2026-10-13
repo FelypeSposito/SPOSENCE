@@ -282,6 +282,11 @@
   .sp-hero__float { left: 1rem; bottom: 1rem; }
 }
 @media (max-width: 767px) {
+  /* no celular o card sai de cima da foto e encosta na borda de baixo dela */
+  .sp-hero__float {
+    position: relative; left: auto; bottom: auto;
+    width: auto; margin: -1.75rem 0.75rem 0;
+  }
   .sp-filters { position: static; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .sp-filters .h-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; width: 100%; min-width: 0; }
   .sp-filters__row > * { min-width: 0; }
@@ -366,6 +371,9 @@
   .sp-product .sp-hero__title { font-size: clamp(2.1rem, 9vw, 2.5rem); }
   .sp-product .h-size { min-height: 48px; flex: 1 1 0; }
   .sp-product .h-sizes { flex-wrap: nowrap; }
+  /* fragrâncias com nome: quebram em linhas em vez de espremer */
+  .sp-product .h-sizes--named { flex-wrap: wrap; }
+  .sp-product .h-sizes--named .h-size { flex: 0 0 auto; min-height: 44px; padding: 0.6rem 1rem; }
   .sp-buybar { display: flex; }
   body.has-buybar .float-wa { opacity: 0; pointer-events: none; transform: translateY(12px); }
   .sp-chapter .h-title { font-size: 2.2rem; }

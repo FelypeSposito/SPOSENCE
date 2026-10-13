@@ -217,6 +217,8 @@ body.sp .navbar.scrolled { background: rgba(245, 240, 234, 0.95); }
 .h-size[aria-pressed="true"] { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }
 .h-size[data-soldout] { text-decoration: line-through; opacity: 0.5; }
 .h-size:focus-visible { outline: 2px solid var(--h-accent); outline-offset: 2px; }
+/* fragrâncias: o nome nunca quebra dentro do botão */
+.h-sizes--named .h-size { white-space: nowrap; }
 
 /* grade padrão de cards */
 .h-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 1.25rem; }
@@ -519,6 +521,16 @@ body.sp .footer__tagline { font-size: 0.92rem; color: var(--h-ink-soft); }
   .h-grid .h-sizes { gap: 0.3rem; margin-top: 0.6rem; }
   .h-grid .h-size { min-width: 0; flex: 1 1 0; min-height: 36px; padding: 0.3rem 0.2rem; font-size: 0.74rem; }
   .h-grid .h-size[data-soldout] { display: none; }
+  /* fragrâncias no card: uma linha que rola de lado, cada nome inteiro */
+  .h-grid .h-sizes--named {
+    flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity; scrollbar-width: none;
+    margin-inline: -0.5rem; padding-inline: 0.5rem; scroll-padding-inline: 0.5rem;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 0.5rem, #000 80%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 0.5rem, #000 80%, transparent);
+  }
+  .h-grid .h-sizes--named::-webkit-scrollbar { display: none; }
+  .h-grid .h-sizes--named .h-size { flex: 0 0 auto; padding: 0.3rem 0.8rem; scroll-snap-align: start; }
   .h-grid .h-card__foot { padding-top: 0.75rem; gap: 0.4rem; }
   .h-grid .h-card__price { font-size: 0.95rem; }
   .h-grid .h-add--off { padding: 0 10px; font-size: 0.72rem; }

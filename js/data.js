@@ -452,14 +452,14 @@ const SPOSENCE_DATA = {
       category: "skincare",
       image: "img/Creme Frutado.jpg",
       variants: [
-        { size: "Oceano", price: 25 },
-        { size: "Flor de laranjeira", price: 25 },
-        { size: "Uva", price: 25 },
-        { size: "Vanilla cookie", price: 25 },
-        { size: "Morango", price: 25 },
-        { size: "Baunilha", price: 25 },
-        { size: "Licor de chocolate", price: 25 },
-        { size: "Jabuticaba", price: 25 }
+        { size: "Oceano", price: 35 },
+        { size: "Flor de laranjeira", price: 35 },
+        { size: "Uva", price: 35 },
+        { size: "Vanilla cookie", price: 35 },
+        { size: "Morango", price: 35 },
+        { size: "Baunilha", price: 35 },
+        { size: "Licor de chocolate", price: 35 },
+        { size: "Jabuticaba", price: 35 }
       ]
     },
     { 

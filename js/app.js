@@ -51,6 +51,14 @@ const cart = {
     try {
       this.items = JSON.parse(localStorage.getItem('sposence_cart') || '[]');
     } catch (_) { this.items = []; }
+    // usa sempre o preço atual do catálogo, não o do dia em que o item entrou no carrinho
+    const all = getAllProducts();
+    this.items.forEach(item => {
+      const p = all.find(x => x.id === item.productId);
+      const v = p && p.variants ? p.variants.find(x => x.size === item.variant) : null;
+      const price = v ? v.price : p && p.price;
+      if (typeof price === 'number') item.price = price;
+    });
   },
   render() {
     const countEl = document.querySelectorAll('.navbar__cart-count');
@@ -582,6 +590,8 @@ function spVariant(p) {
   }
   return p.variants[spPicked[p.id]];
 }
+// variantes com nome (fragrâncias) em vez de tamanho (30ml, 100ml)
+const spNamedVariants = (p) => !!(p && p.variants && p.variants.some(v => !/\d/.test(v.size)));
 const spFindProduct = (id) => getAllProducts().find(p => p.id === id);
 
 function spCardFoot(p, withSizes) {
@@ -602,7 +612,7 @@ function spCard(p, { sizes = false } = {}) {
   const meta = p.inspired_by ? `Inspirado em ${p.inspired_by}` : [p.type, p.volume].filter(Boolean).join(' · ') || p.description || '';
   const chip = spSoldOut(p) ? 'Esgotado' : (p.profile ? profileLabel(p.profile) : SP_CATEGORY[p.category] || 'Sposence');
   const sizeButtons = withSizes ? `
-        <div class="h-sizes" role="group" aria-label="Tamanho">
+        <div class="h-sizes${spNamedVariants(p) ? ' h-sizes--named' : ''}" role="group" aria-label="${spNamedVariants(p) ? 'Fragrância' : 'Tamanho'}">
           ${p.variants.map((v, i) => `<button class="h-size" type="button" data-size="${p.id}" data-i="${i}" aria-pressed="${spVariant(p) === v}"${spSoldOut(v) ? ' data-soldout title="Esgotado"' : spLeftLabel(v) ? ` title="${spLeftLabel(v)}"` : ''}>${v.size}</button>`).join('')}
         </div>` : '';
   return `
@@ -631,6 +641,7 @@ document.addEventListener('click', (e) => {
     spPicked[p.id] = Number(size.dataset.i);
     const card = size.closest('[data-card]');
     card.querySelectorAll('[data-size]').forEach(b => b.setAttribute('aria-pressed', b === size));
+    size.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
     card.querySelector('.h-card__foot').innerHTML = spCardFoot(p, true);
     return;
   }

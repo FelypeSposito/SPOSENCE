@@ -165,7 +165,7 @@
       const sizes = product.variants && product.variants.length > 1 ? `
         <div class="sp-block" data-intro>
           <div class="sp-block__title">${isPerfume ? 'Escolha o tamanho' : 'Escolha a opção'}</div>
-          <div class="h-sizes" role="group" aria-label="Tamanho">
+          <div class="h-sizes${spNamedVariants(product) ? ' h-sizes--named' : ''}" role="group" aria-label="${spNamedVariants(product) ? 'Fragrância' : 'Tamanho'}">
             ${product.variants.map((v, i) => `<button class="h-size" type="button" data-pick="${i}" aria-pressed="${spVariant(product) === v}"${spSoldOut(v) ? ' data-soldout title="Esgotado"' : ''}>${v.size}</button>`).join('')}
           </div>
         </div>` : '';
