@@ -81,6 +81,19 @@ const cart = {
   },
   save() {
     localStorage.setItem('sposence_cart', JSON.stringify(this.items));
+    this.syncConta();
+  },
+  // quem está logada na conta: o carrinho ajuda a Sposence a entender o gosto (só perfumes, sem dados de pagamento)
+  syncConta() {
+    try {
+      if (localStorage.getItem('sp_conta_on') !== '1') return;
+      clearTimeout(this._sync);
+      this._sync = setTimeout(() => {
+        const ids = [...new Set(this.items.filter(i => i.category === 'perfumes').map(i => i.productId))];
+        fetch('/api/conta', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ acao: 'salvar', carrinho: ids }) })
+          .then(r => { if (r.status === 401) localStorage.removeItem('sp_conta_on'); }).catch(() => {});
+      }, 1500);
+    } catch (_) {}
   },
   load() {
     try {

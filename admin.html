@@ -1631,6 +1631,7 @@ const secComprou = (c) => {
       : '<p class="detalhe" style="margin-top:6px">Ainda não comprou pelos pedidos registrados.</p>'}
     ${chipsNomes('Já usou, segundo a conta do site', usou)}
     ${chipsNomes('Quer experimentar', k ? k.desejos : [], 'chip--ouro')}
+    ${chipsNomes('No carrinho do site', k ? k.carrinho || [] : [], 'chip--ouro')}
     ${chipsNomes('Não curte', k ? k.naocurte || [] : [], 'chip--nao')}
   </section>`;
 };

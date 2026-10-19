@@ -144,6 +144,8 @@ function enriquecer(x, conta, porId) {
   for (const n of g.notas || []) x.vetor[`nota:${n}`] = (x.vetor[`nota:${n}`] || 0) + 2;
   for (const id of conta.usou || []) { const p = porId.get(id); if (p) { soma(x.vetor, featuresProduto(p), 1); x.comprou.add(id); } }
   for (const id of conta.desejos || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 1.5); }
+  // o que está no carrinho do site também mostra o que ela está pensando em levar
+  for (const id of conta.carrinho || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 1.2); }
   // não curte: some do que sugerir e puxa o gosto para longe daquelas características
   x.naoCurte = new Set(conta.naocurte || []);
   for (const id of x.naoCurte) { const p = porId.get(id); if (!p) continue; for (const [f, v] of Object.entries(featuresProduto(p))) if (x.vetor[f]) x.vetor[f] = Math.max(0, x.vetor[f] - v * 0.8); }
@@ -206,7 +208,7 @@ function recomendar(e, c, todosClientes, n = 3) {
   return todos(e).filter((p) => p.category === 'perfumes' && !(c.naoCurte && c.naoCurte.has(p.id))).map((p) => {
     const alvo = featuresProduto(p);
     const pts = pontuar(c, todosClientes, alvo, p.id);
-    return { id: p.id, nome: p.name, inspirado: p.inspired_by || '', perfil: p.profile || '', afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), disponivel: vendavel(e, p), ja_comprou: c.comprou.has(p.id), quer: Boolean(c.conta && (c.conta.desejos || []).includes(p.id)) };
+    return { id: p.id, nome: p.name, inspirado: p.inspired_by || '', perfil: p.profile || '', afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), disponivel: vendavel(e, p), ja_comprou: c.comprou.has(p.id), quer: Boolean(c.conta && ((c.conta.desejos || []).includes(p.id) || (c.conta.carrinho || []).includes(p.id))) };
   }).filter((r) => r.afinidade > 0).sort((a, b) => (b.quer - a.quer) || (a.ja_comprou - b.ja_comprou) || ((b.afinidade - (b.disponivel ? 0 : 8)) - (a.afinidade - (a.disponivel ? 0 : 8)))).slice(0, n);
 }
 
@@ -235,7 +237,7 @@ function resumo(e, c, todosClientes) {
     conta: c.conta ? {
       nome: c.conta.nome, email: c.conta.email, vinculada: c.contaVinculada, whatsapp: (c.conta.consentimento && c.conta.consentimento.whatsapp) || '',
       aceite_em: (c.conta.consentimento && c.conta.consentimento.data) || null,
-      gosto: c.conta.gosto || {}, usou: nomesDe(e, c.conta.usou), desejos: nomesDe(e, c.conta.desejos), naocurte: nomesDe(e, c.conta.naocurte), sub: c.conta.sub,
+      gosto: c.conta.gosto || {}, usou: nomesDe(e, c.conta.usou), desejos: nomesDe(e, c.conta.desejos), naocurte: nomesDe(e, c.conta.naocurte), carrinho: nomesDe(e, c.conta.carrinho), sub: c.conta.sub,
     } : null,
     contato: { ultimo: c.extra.ultimo_contato || null, notas: c.extra.notas || '', nao_chamar: Boolean(c.extra.nao_chamar), historico: (c.extra.contatos || []).slice(-6).reverse() },
   };

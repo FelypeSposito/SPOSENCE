@@ -101,7 +101,7 @@ export async function entrar(info) {
 }
 
 // o que o próprio cliente pode ver da conta (sem o identificador interno)
-export const contaPublica = (c) => ({ nome: c.nome, email: c.email, foto: c.foto, criado: c.criado, consentimento: c.consentimento, gosto: c.gosto, usou: c.usou, desejos: c.desejos, naocurte: c.naocurte || [], politica_atual: VERSAO_POLITICA });
+export const contaPublica = (c) => ({ nome: c.nome, email: c.email, foto: c.foto, criado: c.criado, consentimento: c.consentimento, gosto: c.gosto, usou: c.usou, desejos: c.desejos, naocurte: c.naocurte || [], carrinho: c.carrinho || [], politica_atual: VERSAO_POLITICA });
 
 const digitos = (t) => String(t || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
 export async function salvarPreferencias(e, conta, corpo) {
@@ -113,6 +113,7 @@ export async function salvarPreferencias(e, conta, corpo) {
   }
   if (Array.isArray(corpo.usou)) conta.usou = lista(corpo.usou, idsPerfumes, 40);
   if (Array.isArray(corpo.desejos)) conta.desejos = lista(corpo.desejos, idsPerfumes, 40);
+  if (Array.isArray(corpo.carrinho)) conta.carrinho = lista(corpo.carrinho, idsPerfumes, 12);
   if (Array.isArray(corpo.naocurte)) conta.naocurte = lista(corpo.naocurte, idsPerfumes, 40);
   // quem não curte um perfume não o tem na lista de usados nem de desejos
   if (conta.naocurte && conta.naocurte.length) { const fora = new Set(conta.naocurte); conta.usou = (conta.usou || []).filter((x) => !fora.has(x)); conta.desejos = (conta.desejos || []).filter((x) => !fora.has(x)); }
