@@ -779,6 +779,61 @@
     }
     @media (min-width: 900px) { .es-corpo .fe-grade { grid-template-columns: 1fr; } }
     @media (min-width: 981px) { .sp-menu { display: none; } }
+
+    /* ======================================================================================
+       Movimento: parallax (rolagem), revelação ao rolar, troca de aba suave, título por palavras,
+       botão magnético. Tudo em transform/opacity/translate; respeita "reduzir movimento".
+       ====================================================================================== */
+    @keyframes inFrame { from { opacity: .35; transform: scale(1.07); } to { opacity: 1; transform: none; } }
+    @keyframes palavra { to { transform: none; } }
+    @keyframes revela { from { opacity: 0; translate: 0 44px; } to { opacity: 1; translate: 0 0; } }
+    @keyframes pxFoto { from { transform: translateY(-7%); } to { transform: translateY(7%); } }
+    @keyframes pxTile { from { transform: translateY(-9%); } to { transform: translateY(9%); } }
+    @keyframes pxFloat { from { translate: 0 30px; } to { translate: 0 -30px; } }
+    @keyframes pxMarca { to { transform: rotate(32deg) translateY(110px); } }
+    @keyframes vtSai { to { opacity: 0; transform: translateY(-10px); } }
+    @keyframes vtEntra { from { opacity: 0; transform: translateY(20px); } }
+
+    /* hero: a foto entra em escala e corre mais devagar que a rolagem; marca d'água gira ao fundo */
+    .in-hero { position: relative; isolation: isolate; }
+    .in-marca { position: absolute; z-index: -1; right: -8%; top: -14%; width: min(560px, 70vw); aspect-ratio: 1; background: var(--tinta); opacity: .045; -webkit-mask: url('img/simbolo-loader.png') center / contain no-repeat; mask: url('img/simbolo-loader.png') center / contain no-repeat; pointer-events: none; }
+    .in-frame { animation: inFrame 1.5s var(--ease) both; }
+    .in-frame img { animation: none; height: 118%; margin-top: -9%; }
+    .in-tile .foto { top: -12%; bottom: -12%; transition: scale 1.4s var(--ease); }
+    @media (hover: hover) { .in-tile:hover .foto { transform: none; scale: 1.07; } }
+    .btn-site { transition: color .45s var(--ease), border-color .45s var(--ease), transform .2s, translate .5s var(--ease); }
+
+    /* título: palavra por palavra, saindo de uma máscara (como a landing) */
+    .in-titulo .pl { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
+    .in-titulo .pl > span { display: inline-block; transform: translateY(108%); animation: palavra .95s var(--ease) forwards; animation-delay: calc(var(--w) * 110ms + 160ms); }
+
+    /* navbar ao rolar */
+    .sp-nav { view-transition-name: sp-nav; transition: box-shadow .5s var(--ease), background-color .4s; }
+    .sp-nav__in { transition: min-height .45s var(--ease); }
+    .sp-nav.rolou { box-shadow: 0 16px 34px -26px rgba(70, 37, 6, .55); background: color-mix(in srgb, var(--bg) 94%, transparent); }
+    .sp-nav.rolou .sp-nav__in { min-height: 56px; }
+
+    /* troca de aba: a antiga sai para cima, a nova sobe */
+    ::view-transition-old(root) { animation: .28s cubic-bezier(.4, 0, 1, 1) both vtSai; }
+    ::view-transition-new(root) { animation: .6s var(--ease) both vtEntra; }
+    ::view-transition-group(sp-nav) { animation: none; }
+
+    /* rolagem dirigida (Chrome, Edge, Safari recente); onde não existe, tudo aparece normal */
+    @supports (animation-timeline: view()) {
+      .in-frame img { animation: pxFoto linear both; animation-timeline: view(); animation-range: cover; }
+      .in-tile .foto { animation: pxTile linear both; animation-timeline: view(); animation-range: cover; }
+      .in-float { animation: flutua 6s ease-in-out infinite, pxFloat linear both; animation-timeline: auto, view(); animation-range: normal, cover; }
+      .in-marca { animation: pxMarca linear both; animation-timeline: scroll(root); animation-range: 0 100vh; }
+      .in-sec, .ped-lista > li, .mat-lista > li, .cli-lista > li, .fe-acc, .hist, .quadro, .ped-resumo > div, .es-lado { animation: revela linear both; animation-timeline: view(); animation-range: entry 2% entry 34%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .in-frame, .in-float, .in-marca, .in-tile .foto, .in-frame img { animation: none !important; }
+      .in-titulo .pl > span { transform: none; animation: none; }
+      .in-sec, .ped-lista > li, .mat-lista > li, .cli-lista > li, .fe-acc, .hist, .quadro, .ped-resumo > div, .es-lado { animation: none !important; }
+      ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+    }
+    main { overflow-x: clip; }
   </style>
 </head>
 <body>
@@ -1051,6 +1106,16 @@ $('sair').addEventListener('click', () => sair());
 /* ---------- abas ---------- */
 const ABAS = ['inicio', 'pedidos', 'estoque', 'clientes', 'baixa', 'catalogo', 'historico'];
 function irPara(aba) {
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (document.startViewTransition && !reduz && !$('app').hidden) {
+    // a troca nunca depende da animação: se o navegador demorar para pintar, ela acontece mesmo assim
+    let feito = false; const rodar = () => { if (feito) return; feito = true; irParaAgora(aba); };
+    const vt = document.startViewTransition(rodar); vt.ready.catch(() => {}); vt.finished.catch(() => {}); vt.updateCallbackDone.catch(() => {});
+    setTimeout(rodar, 350); return;
+  }
+  irParaAgora(aba);
+}
+function irParaAgora(aba) {
   document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
   fecharMenu();
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
@@ -1059,6 +1124,20 @@ function irPara(aba) {
   if (aba === 'clientes') { desenharClientes(); carregarClientes(); }
 }
 document.addEventListener('click', (ev) => { const t = ev.target.closest('[data-tab]'); if (t) irPara(t.dataset.tab); });
+// navbar ganha sombra e encolhe ao rolar (sentinela, sem ouvir scroll)
+{ const s = document.createElement('div'); s.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:60px;pointer-events:none'; document.body.prepend(s);
+  new IntersectionObserver(([e]) => $('sp-nav').classList.toggle('rolou', !e.isIntersecting)).observe(s); }
+// botão do site puxa um pouco para o cursor
+if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.addEventListener('pointermove', (ev) => { const b = ev.target.closest && ev.target.closest('.btn-site'); if (!b) return; const r = b.getBoundingClientRect(); b.style.translate = `${((ev.clientX - r.left - r.width / 2) * .2).toFixed(1)}px ${((ev.clientY - r.top - r.height / 2) * .3).toFixed(1)}px`; });
+  document.addEventListener('pointerout', (ev) => { const b = ev.target.closest && ev.target.closest('.btn-site'); if (b && !b.contains(ev.relatedTarget)) b.style.translate = ''; });
+}
+// plano B do parallax, onde o navegador não tem rolagem dirigida
+if (!(window.CSS && CSS.supports && CSS.supports('animation-timeline: view()')) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let esperando = false;
+  const mover = () => { document.querySelectorAll('.in-frame img, .in-tile .foto').forEach((el) => { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return; el.style.transform = `translateY(${(-(r.top + r.height / 2 - innerHeight / 2) * .06).toFixed(1)}px)`; }); esperando = false; };
+  addEventListener('scroll', () => { if (!esperando) { esperando = true; requestAnimationFrame(mover); } }, { passive: true });
+}
 function fecharMenu() { const m = $('sp-menu'); if (!m) return; m.classList.remove('aberto'); const bg = $('sp-burger'); bg.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
 $('sp-burger').addEventListener('click', () => { const abre = !$('sp-menu').classList.contains('aberto'); $('sp-menu').classList.toggle('aberto', abre); $('sp-burger').setAttribute('aria-expanded', String(abre)); document.body.style.overflow = abre ? 'hidden' : ''; });
 $('menu-busca').addEventListener('click', () => { fecharMenu(); abrirBusca(); });
@@ -1084,8 +1163,21 @@ function confirmar(titulo, texto, rotulo, aoConfirmar) {
 /* ---------- desenho ---------- */
 /* ---------- Início: a landing da bancada ---------- */
 const imgCat = (id) => { const c = est.catalogo.find((x) => x.id === id); return c && c.imagem ? encodeURI(c.imagem) : 'img/simbolo-loader.png'; };
+const palavrasMascara = (txt, de) => txt.split(' ').map((p, i) => `<span class="pl"><span style="--w:${de + i}">${esc(p)}</span></span>`).join(' ');
+function contarNumeros(raiz) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  raiz.querySelectorAll('[data-n]').forEach((el) => {
+    const alvo = Number(el.dataset.n), no = el.firstChild;
+    if (!no || no.nodeType !== 3) return;
+    const fmt = el.dataset.f === 'din' ? din : (v) => nf.format(Math.round(v));
+    const t0 = performance.now();
+    const passo = (t) => { const k = Math.min(1, (t - t0) / 1200); no.nodeValue = fmt(alvo * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(passo); };
+    requestAnimationFrame(passo);
+  });
+}
 function desenharInicio() {
   const el = $('t-inicio'); if (!el || !est) return;
+  const primeira = !el.dataset.pronto;
   const ativos = est.pedidos.filter((p) => p.status !== 'cancelado');
   const receber = ativos.reduce((t, p) => t + p.falta, 0);
   const comPend = ativos.filter((p) => p.falta > 0).length;
@@ -1106,12 +1198,13 @@ function desenharInicio() {
   if (comPend) cards.push({ icone: true, titulo: `${comPend} ${comPend === 1 ? 'pagamento pendente' : 'pagamentos pendentes'}`, sub: `${din(receber)} para receber`, btn: ['go', 'pedidos', 'Pedidos'] });
   if (paraChamar) cards.push({ icone: true, titulo: `${paraChamar} ${paraChamar === 1 ? 'cliente' : 'clientes'} para chamar`, sub: 'pelo ritmo de compra de cada um', btn: ['go', 'clientes', 'Clientes'] });
   const tile = (go, titulo, texto, foto, classe) => `<button type="button" class="in-tile${classe ? ' ' + classe : ''}" data-go="${go}"><span class="foto" style="background-image:url('${foto}')"></span><span class="tx"><h3>${titulo}</h3><p>${texto}</p></span><span class="seta">${IC_SETA}</span></button>`;
-  el.innerHTML = `
+  const html = `
     <div class="in-hero">
+      <span class="in-marca" aria-hidden="true"></span>
       <div class="in-copy">
         <span class="eyebrow">Bancada Sposence</span>
-        <h1 class="in-titulo" id="h-inicio">${saudacao}, <em>Sposence.</em></h1>
-        <p class="in-lead">${lead}</p>
+        <h1 class="in-titulo" id="h-inicio" aria-label="${saudacao}, Sposence.">${palavrasMascara(saudacao + ',', 0)} <em>${palavrasMascara('Sposence.', saudacao.split(' ').length)}</em></h1>
+        <p class="in-lead" id="in-lead">${lead}</p>
         <div class="in-cta">
           <button class="btn-site" type="button" data-go="baixa"><span>Dar baixa em uma venda</span>${IC_SETA}</button>
           <button class="btn" type="button" data-go="pedidos">Ver pedidos</button>
@@ -1122,20 +1215,20 @@ function desenharInicio() {
           <source type="image/webp" srcset="img/hero/sacola-640.webp 640w, img/hero/sacola-960.webp 960w, img/hero/sacola-1280.webp 1280w" sizes="(min-width: 900px) 40vw, 100vw">
           <img src="img/hero/sacola-1280.jpg" alt="Frasco Sposence sobre a sacola de algodão cru, em luz de fim de tarde" width="1600" height="1460" decoding="async">
         </picture>
-        <div class="in-float"><small>Estoque na bancada</small><div class="num">${nf.format(est.resumo.ml_total)}<em> ml</em></div><span>${est.resumo.frascos_prontos} frascos prontos</span></div>
+        <div class="in-float"><small>Estoque na bancada</small><div class="num" data-n="${est.resumo.ml_total}">${nf.format(est.resumo.ml_total)}<em> ml</em></div><span>${est.resumo.frascos_prontos} frascos prontos</span></div>
       </div>
     </div>
     <section class="in-sec" aria-label="Números de hoje">
-      <div class="in-metricas">
-        <button type="button" class="in-m in-m--forte" data-go="pedidos"><small>A receber</small><div class="num">${din(receber)}</div><span>${comPend ? `${comPend} ${comPend === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'nada pendente'}</span><span class="seta">${IC_SETA}</span></button>
-        <button type="button" class="in-m" data-go="pedidos"><small>Pedidos em aberto</small><div class="num">${abertos}</div><span>para separar e entregar</span><span class="seta">${IC_SETA}</span></button>
-        <button type="button" class="in-m" data-go="estoque"><small>Perfumes sem estoque</small><div class="num">${est.resumo.esgotados}</div><span>${baixos.length ? `${baixos.length} pedindo reposição` : 'tudo abastecido'}</span><span class="seta">${IC_SETA}</span></button>
+      <div class="in-metricas" id="in-met">
+        <button type="button" class="in-m in-m--forte" data-go="pedidos"><small>A receber</small><div class="num" data-n="${receber}" data-f="din">${din(receber)}</div><span>${comPend ? `${comPend} ${comPend === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'nada pendente'}</span><span class="seta">${IC_SETA}</span></button>
+        <button type="button" class="in-m" data-go="pedidos"><small>Pedidos em aberto</small><div class="num" data-n="${abertos}">${abertos}</div><span>para separar e entregar</span><span class="seta">${IC_SETA}</span></button>
+        <button type="button" class="in-m" data-go="estoque"><small>Perfumes sem estoque</small><div class="num" data-n="${est.resumo.esgotados}">${est.resumo.esgotados}</div><span>${baixos.length ? `${baixos.length} pedindo reposição` : 'tudo abastecido'}</span><span class="seta">${IC_SETA}</span></button>
         <button type="button" class="in-m" data-go="clientes"><small>Clientes para chamar</small><div class="num">${paraChamar == null ? '…' : paraChamar}</div><span>pelo ritmo de compra</span><span class="seta">${IC_SETA}</span></button>
       </div>
     </section>
     <section class="in-sec" aria-labelledby="h-ir">
       <h2 id="h-ir">Para onde <em>ir</em></h2>
-      <div class="in-atalhos">
+      <div class="in-atalhos" id="in-tiles">
         ${tile('pedidos', 'Pedidos', `${abertos} em aberto, quadro por etapa`, 'img/hero/sacola-960.webp', 'in-tile--alto')}
         ${tile('estoque', 'Estoque', 'frascos, granel, maturação e insumos', 'img/Royal Amber.jpg')}
         ${tile('catalogo', 'Catálogo', 'o que aparece no site, preços e fotos', 'img/Light Blue.jpg')}
@@ -1143,12 +1236,18 @@ function desenharInicio() {
     </section>
     <section class="in-sec" aria-labelledby="h-aten">
       <h2 id="h-aten">Precisa de <em>atenção</em></h2>
-      ${cards.length ? `<div class="in-aten">${cards.map((c) => `<div class="in-c">
+      <div id="in-atn">${cards.length ? `<div class="in-aten">${cards.map((c) => `<div class="in-c">
         ${c.icone ? '<span class="foto foto--vazia"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 16.5v.01"/><circle cx="12" cy="12" r="9"/></svg></span>' : `<span class="foto" style="background-image:url('${c.foto}')"></span>`}
         <div><b>${esc(c.titulo)}</b><small>${c.sub}</small></div>
         ${c.btn[0] === 'go' ? `<button class="btn pequeno" type="button" data-go="${c.btn[1]}">${c.btn[2]}</button>` : `<button class="btn pequeno" type="button" data-act="entrada" data-id="${esc(c.btn[1])}">${IC_MAIS} ${c.btn[2]}</button>`}</div>`).join('')}</div>`
-      : '<div class="in-ok"><b>Tudo em dia.</b>Nenhum perfume pedindo reposição e nada pendente por agora.</div>'}
+      : '<div class="in-ok"><b>Tudo em dia.</b>Nenhum perfume pedindo reposição e nada pendente por agora.</div>'}</div>
     </section>`;
+  if (primeira) {
+    el.innerHTML = html; el.dataset.pronto = '1'; contarNumeros(el);
+  } else {
+    const t = document.createElement('template'); t.innerHTML = html;
+    ['#in-lead', '#in-met', '#in-tiles', '#in-atn'].forEach((s) => { const x = el.querySelector(s), y = t.content.querySelector(s); if (x && y) x.innerHTML = y.innerHTML; });
+  }
 }
 
 function desenharTudo() {
