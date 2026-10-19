@@ -249,6 +249,37 @@
     .folha { padding: 22px 22px calc(26px + env(safe-area-inset-bottom)); }
     .folha-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
     .folha h2 { font-size: 27px; }
+
+    /* Ficha do cliente em tela cheia */
+    dialog.tela-cheia { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; border: 0; border-radius: 0; background: var(--bg); }
+    .tela-topo { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 14px; padding: 8px 18px; background: var(--bg); border-bottom: 1px solid var(--forte); }
+    .tela-id { flex: 1; min-width: 0; }
+    .tela-id h2 { font-size: 24px; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tela-id .legenda { margin: 0; }
+    .tela-in { padding: 18px 16px calc(40px + env(safe-area-inset-bottom)); max-width: 1180px; margin: 0 auto; }
+    .tela-grade { display: flex; flex-direction: column; gap: 16px; }
+    .tela-col { display: contents; }
+    .tela-card { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 20px; }
+    .tela-card[hidden] { display: none; }
+    .tela-card h3 { font-size: 22px; margin-bottom: 8px; }
+    .tela-card.tela-card h3 + .detalhe { margin-top: 0; }
+    .tela-card .sec { border: 0; padding: 0; }
+    .comprou, .sug, .gostos { list-style: none; padding: 0; margin: 10px 0 0; }
+    .comprou li, .sug li { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--linha); }
+    .comprou li:first-child, .sug li:first-child { border-top: 0; }
+    .comprou b, .sug b { font-weight: 600; }
+    .comprou small, .sug small { display: block; color: var(--suave); font-size: 13.5px; margin-top: 2px; }
+    .qtd-pill { flex: none; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--acento); }
+    .sug li.sel { background: color-mix(in srgb, var(--acento) 7%, transparent); margin: 0 -12px; padding: 12px; border-radius: 12px; border-top-color: transparent; }
+    .gostos-top { font-family: 'Philosopher', serif; font-size: 24px; line-height: 1.2; margin: 4px 0 14px; }
+    .gostos li { display: grid; grid-template-columns: minmax(110px, 38%) 1fr 34px; align-items: center; gap: 12px; padding: 5px 0; font-size: 14.5px; }
+    .gostos .pg-barra { margin: 0; }
+    .gostos b { text-align: right; font-variant-numeric: tabular-nums; color: var(--suave); font-weight: 600; }
+    @media (min-width: 1000px) {
+      .tela-in { padding-top: 26px; }
+      .tela-grade { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+      .tela-col { display: flex; flex-direction: column; gap: 16px; }
+    }
     .fechar { width: 44px; height: 44px; margin: -8px -10px 0 0; border: 0; background: none; color: var(--suave); display: grid; place-items: center; }
     .fechar svg { width: 22px; height: 22px; }
 
@@ -589,6 +620,7 @@
   </div>
 
   <dialog id="folha" aria-labelledby="folha-titulo"><div class="folha" id="folha-corpo"></div></dialog>
+  <dialog id="cli-tela" class="tela-cheia" aria-label="Ficha do cliente"><div id="cli-corpo"></div></dialog>
   <dialog id="busca-geral" aria-label="Buscar no painel">
     <div class="busca-campo">
       <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
@@ -1443,7 +1475,7 @@ let animCli = true;
 const PERFIS_ORDEM = ['doces', 'frescos', 'noturnos', 'elegantes'];
 const SING_PERFIL = { doces: 'doce', frescos: 'fresco', noturnos: 'noturno', elegantes: 'elegante' };
 const qtdPerfil = (k, n) => n + ' ' + (n === 1 ? SING_PERFIL[k] : k);
-const ROT_PERFIL = { doces: 'doces', frescos: 'frescos', noturnos: 'noturnos', elegantes: 'elegantes', 'sem perfil': 'sem compras ainda' };
+const ROT_PERFIL = { doces: 'doces', frescos: 'frescos', noturnos: 'noturnos', elegantes: 'elegantes', 'sem perfil': 'perfil misto ou sem dados' };
 const ROT_AFIN = { alta: 'Alta', media: 'Média', baixa: 'Baixa', 'sem dados': 'Sem dados' };
 const normalNome = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 const primeiroNome = (n) => String(n || '').trim().split(/\s+/)[0] || '';
@@ -1461,9 +1493,9 @@ async function carregarClientes(forcar) {
 }
 
 /* ----- peças visuais ----- */
-function barraGosto(perfil) {
+function barraGosto(perfil, declarados) {
   const ativos = PERFIS_ORDEM.filter((k) => perfil[k]);
-  if (!ativos.length) return '<p class="gosto-vazio">sem compras de perfume ainda</p>';
+  if (!ativos.length) return declarados && declarados.length ? `<p class="gosto-vazio">declarou na conta: ${esc(declarados.join(', '))}</p>` : '<p class="gosto-vazio">sem compras de perfume ainda</p>';
   const legenda = ativos.map((k) => qtdPerfil(k, perfil[k])).join(', ');
   return `<div class="gosto" role="img" aria-label="Gosto: ${legenda}">${ativos.map((k) => `<i class="perfil-${k}" style="flex:${perfil[k]}"></i>`).join('')}</div>
     <p class="gosto-legenda">${ativos.map((k) => `<span><b class="perfil-${k}"></b>${qtdPerfil(k, perfil[k])}</span>`).join('')}</p>`;
@@ -1471,16 +1503,47 @@ function barraGosto(perfil) {
 const pilulaAfin = (rotulo, pts) => `<span class="afin" data-r="${esc(rotulo)}">${ROT_AFIN[rotulo]}${rotulo === 'sem dados' ? '' : ` · ${pts}`}</span>`;
 const telefoneLink = (tel) => { const d = String(tel || '').replace(/\D/g, ''); return d.length >= 10 ? `https://wa.me/${d.startsWith('55') ? d : '55' + d}` : ''; };
 
-/* ----- mensagens para WhatsApp (você revisa e envia) ----- */
+/* ----- mensagens de WhatsApp: usam o que se sabe da pessoa e da fragrância (você revisa e envia) ----- */
 const juntarMotivos = (m) => m.join(' e ').replace(/ e perfumes /g, ' e ');
-function msgRecompra(c, r) {
-  const quando = c.dias >= 25 ? 'Faz um tempinho desde o seu último pedido e lembrei de você. ' : '';
-  const gosto = r && r.motivos && r.motivos.length ? `Como você curte ${juntarMotivos(r.motivos)}, acho que` : 'Acho que';
-  return `Oi ${primeiroNome(c.nome)}, tudo bem? Aqui é da Sposence. ${quando}${r ? `${gosto} o ${r.nome} combina muito com você. Quer que eu separe um?` : 'Quer dar uma olhada nas novidades?'}`;
+const listaPt = (a) => (a.length > 1 ? `${a.slice(0, -1).join(', ')} e ${a[a.length - 1]}` : a[0] || '');
+const primeirasNotas = (txt, n) => String(txt || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean).slice(0, n);
+// "notas de pera, melão, jasmim e almíscar": saída, coração e fundo, sem encher
+const notasTexto = (p) => {
+  const n = (p && p.notas) || {};
+  const todas = [...primeirasNotas(n.topo, 2), ...primeirasNotas(n.coracao, 1), ...primeirasNotas(n.fundo, 1)];
+  return todas.length ? `notas de ${listaPt([...new Set(todas)])}` : '';
+};
+const precoTexto2 = (p) => (p && p.variantes && p.variantes.length ? `a partir de ${dinInt(Math.min(...p.variantes.map((v) => v.preco)))}` : '');
+
+// tipo: "recompra" (já comprou e está na hora), "novidade" (lançamento) ou "conhecer" (tem conta, ainda não comprou)
+function msgCliente(c, tipo, rec) {
+  const nome = primeiroNome(c.nome);
+  const abre = `Oi ${nome}, tudo bem? Aqui é da Sposence.`;
+  if (!rec) return `${abre} Passando para saber se você quer dar uma olhada nas novidades.`;
+  const p = est.catalogo.find((x) => x.id === rec.id);
+  const sugestao = `${rec.nome}${p && p.inspirado && !normalNome(p.inspirado).includes(normalNome(rec.nome)) ? `, inspirado no ${p.inspirado}` : ''}`;
+  const notas = notasTexto(p);
+  const preco = precoTexto2(p);
+  const gosto = rec.motivos.length ? juntarMotivos(rec.motivos) : (c.dominante ? `perfumes ${c.dominante}` : '');
+  const ultimoItem = c.pedidos[0] && c.pedidos[0].itens[0] ? c.pedidos[0].itens[0].replace(/^\d+×\s*/, '') : '';
+  const fecho = `${preco ? ` Está ${preco}.` : ''}`;
+  if (tipo === 'conhecer') {
+    const quer = c.conta && c.conta.desejos && c.conta.desejos[0];
+    return `${abre} Vi que você criou a sua conta no nosso site${gosto ? ` e que curte ${gosto}` : ''}${quer ? `, e que quer experimentar o ${quer}` : ''}. Separei uma sugestão para você: o ${sugestao}${notas ? `, com ${notas}` : ''}.${fecho} Quer conhecer?`;
+  }
+  if (tipo === 'novidade') {
+    return `${abre} Chegou novidade: o ${sugestao}${notas ? `, com ${notas}` : ''}. Pensei em você${gosto ? ` porque você curte ${gosto}` : ''}${ultimoItem ? `, e gostou do ${ultimoItem.replace(/\s+\d+\s?(ml|g)$/i, '')}` : ''}.${fecho} Quer experimentar?`;
+  }
+  const quando = ultimoItem ? `Faz ${c.dias} ${c.dias === 1 ? 'dia' : 'dias'} que você levou o ${ultimoItem} e lembrei de você.` : 'Lembrei de você.';
+  return `${abre} ${quando} ${gosto ? `Como você curte ${gosto}, ` : ''}separei uma sugestão: o ${sugestao}${notas ? `, com ${notas}` : ''}.${fecho} Quer que eu separe um para você?`;
 }
-function msgLancamento(c, produto, motivos, inspirado) {
+
+// lançamento: uma mensagem para cada pessoa do ranking
+function msgLancamento(c, produto, motivos, inspirado, cat) {
   const porque = motivos && motivos.length ? `porque você curte ${juntarMotivos(motivos)}` : 'porque combina com o seu gosto';
-  return `Oi ${primeiroNome(c.nome)}, tudo bem? Aqui é da Sposence. Acabou de chegar o ${produto}${inspirado ? `, inspirado no ${inspirado}` : ''}. Pensei em você ${porque}. Quer experimentar?`;
+  const notas = notasTexto(cat);
+  const preco = precoTexto2(cat);
+  return `Oi ${primeiroNome(c.nome)}, tudo bem? Aqui é da Sposence. Chegou novidade: o ${produto}${inspirado && !normalNome(inspirado).includes(normalNome(produto)) ? `, inspirado no ${inspirado}` : ''}${notas ? `, com ${notas}` : ''}. Pensei em você ${porque}.${preco ? ` Está ${preco}.` : ''} Quer experimentar?`;
 }
 const linkZap = (tel, texto) => { const base = telefoneLink(tel); return base ? `${base}?text=${encodeURIComponent(texto)}` : ''; };
 
@@ -1523,7 +1586,7 @@ function cartaoCliente(c, i) {
   return `<li><article class="cli" style="--i:${i}" data-act="cli-abrir" data-id="${esc(c.id)}" tabindex="0" role="button" aria-label="Abrir o cliente ${esc(c.nome)}">
     <div class="ped-topo"><div><span class="ped-num">${c.lead ? 'contato do site' : `${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}, ${dinInt(c.gasto)}`}</span><h3 class="ped-nome">${esc(c.nome || 'Sem nome')}</h3></div>
       ${c.contato.nao_chamar ? '<span class="chip-st" data-st="cancelado">Não chamar</span>' : c.consent === 'sem_aceite' ? '<span class="chip-st" data-st="cancelado">Sem aceite</span>' : c.consent === 'aceitou' ? '<span class="chip-st" data-st="pronto">Aceitou contato</span>' : ''}</div>
-    ${barraGosto(c.perfil)}
+    ${barraGosto(c.perfil, c.perfis_todos)}
     ${c.notas.length ? `<p class="chips-notas">${c.notas.map((n) => `<span class="chip">${esc(n.rotulo)}</span>`).join('')}</p>` : ''}
     <div class="ped-pe"><span class="ped-origem">${c.lead ? 'conta criada' : 'última compra'} ${quandoDias(c.dias)}</span>${c.recomendacoes[0] ? `<span class="detalhe">${esc(c.recomendacoes[0].nome)} ${pilulaAfin(c.recomendacoes[0].rotulo, c.recomendacoes[0].afinidade)}</span>` : ''}</div>
   </article></li>`;
@@ -1531,7 +1594,7 @@ function cartaoCliente(c, i) {
 
 function corpoClientes() {
   const b = normalNome(filtroCli.busca);
-  const lista = cli.lista.filter((c) => (filtroCli.perfil === 'todos' || c.dominante === filtroCli.perfil) && (!b || normalNome(c.nome + ' ' + c.telefone).includes(b)));
+  const lista = cli.lista.filter((c) => (filtroCli.perfil === 'todos' || (c.perfis_todos || []).includes(filtroCli.perfil)) && (!b || normalNome(c.nome + ' ' + c.telefone).includes(b)));
   const filtros = [['todos', 'Todos'], ...PERFIS_ORDEM.map((k) => [k, k[0].toUpperCase() + k.slice(1)])];
   return `
     ${cli.chamar.length ? `<h3 class="sub-titulo" style="margin-top:0">Para chamar agora</h3><p class="detalhe">Quem já passou do ritmo de compra de cada um, com a fragrância que mais combina.</p>
@@ -1544,51 +1607,96 @@ function corpoClientes() {
       : '<div class="vazio"><span class="simbolo"></span><b>Os clientes aparecem sozinhos</b>Cada pedido que você registrar com nome ou WhatsApp cria o cliente aqui, com o gosto dele calculado das compras.</div>'}`;
 }
 
-/* ----- detalhe do cliente ----- */
+/* ----- tela cheia do cliente: o que comprou, o que gosta, o que sugerir, a mensagem ----- */
+let msgEstado = { id: null, tipo: 'recompra', rec: null };
+
+const secComprou = (c) => {
+  const usou = c.conta ? c.conta.usou.filter((n) => !c.compras.some((x) => normalNome(x.nome) === normalNome(n))) : [];
+  return `<section class="tela-card" style="order:1">
+    <div class="det-linha"><h3>Perfumes que já comprou</h3><span class="detalhe">${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}${c.n_pedidos ? `, ${din(c.gasto)}` : ''}</span></div>
+    ${c.compras.length ? `<ul class="comprou">${c.compras.map((x) => `<li><div><b>${esc(x.nome)}</b><small>última vez em ${dataCurta(x.ultima)}/${x.ultima.slice(0, 4)}, ${quandoDias(difDiasCli(x.ultima, est.hoje))}</small></div><span class="qtd-pill">${x.qtd}×</span></li>`).join('')}</ul>`
+      : '<p class="detalhe">Ainda não comprou pelos pedidos registrados.</p>'}
+    ${usou.length ? `<p class="conta-rotulo" style="margin-top:16px">Já usou, segundo a conta do site</p><p class="chips-notas" style="margin-top:6px">${usou.map((n) => `<span class="chip">${esc(n)}</span>`).join('')}</p>` : ''}
+  </section>`;
+};
+
+const secGostos = (c) => {
+  const top = c.gostos || [];
+  return `<section class="tela-card" style="order:2"><h3>Gostos aromáticos</h3>
+    ${top.length ? `<p class="gostos-top">${esc(top.slice(0, 3).map((g) => g.rotulo).join(', '))}</p>` : '<p class="detalhe">Ainda não dá para saber: faltam compras ou preferências na conta.</p>'}
+    ${Object.keys(c.perfil).length ? barraGosto(c.perfil) : ''}
+    ${top.length ? `<ul class="gostos">${top.map((g) => `<li><span>${esc(g.rotulo)}</span><div class="pg-barra" aria-hidden="true"><i style="--p:${(g.pct / 100).toFixed(2)}"></i></div><b>${g.pct}</b></li>`).join('')}</ul>
+      <p class="detalhe" style="margin-top:12px">Calculado das compras e do que a pessoa marcou na conta. Compras recentes pesam mais. O 100 é o gosto mais forte dela.</p>` : ''}
+  </section>`;
+};
+
+const secSugestoes = (c, sel) => `<section class="tela-card" style="order:3"><h3>Perfumes sugeridos</h3>
+  ${c.recomendacoes.length ? `<ul class="sug">${c.recomendacoes.map((r) => {
+    const p = est.catalogo.find((x) => x.id === r.id);
+    return `<li class="${r.id === sel ? 'sel' : ''}"><div><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}
+      ${p && p.inspirado ? `<small>inspirado em ${esc(p.inspirado)}</small>` : ''}${p && p.variantes.length ? `<small>${esc(precoTexto2(p))}</small>` : ''}
+      <small>${r.motivos.length ? 'combina com ' + esc(r.motivos.join(' e ')) : 'sem motivo claro ainda'}${r.ja_comprou ? ', ela já tem' : ''}${r.disponivel ? '' : ', sem estoque agora'}</small></div>
+      <button class="btn pequeno${r.id === sel ? ' primario' : ''}" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">${r.id === sel ? 'Na mensagem' : 'Usar'}</button></li>`;
+  }).join('')}</ul>` : '<p class="detalhe">Ainda não há compras ou preferências para comparar.</p>'}</section>`;
+
+function secMensagem(c, tipo, rec) {
+  const texto = msgCliente(c, tipo, rec);
+  const pode = c.telefone && telefoneLink(c.telefone) && c.consent !== 'sem_aceite';
+  const tipos = [['recompra', 'Recompra'], ['novidade', 'Novidade'], ['conhecer', 'Conhecer']];
+  return `<section class="tela-card" id="cli-sec-msg" style="order:4"><h3>Mensagem para o WhatsApp</h3>
+    <div class="troca" role="group" aria-label="Tipo de mensagem" style="margin-top:6px">${tipos.map(([k, n]) => `<button type="button" data-act="cli-tipo" data-id="${esc(c.id)}" data-tipo="${k}" aria-pressed="${tipo === k}">${n}</button>`).join('')}</div>
+    <label for="cli-msg">Você revisa e envia. Nada sai sozinho.</label>
+    <textarea id="cli-msg" data-cli="${esc(c.id)}" style="min-height:170px">${esc(texto)}</textarea>
+    <div class="grade2" style="margin-top:12px;gap:10px">
+      ${pode ? `<a class="btn primario" id="cli-zap" href="${esc(linkZap(c.telefone, texto))}" target="_blank" rel="noopener">Abrir no WhatsApp</a>` : `<span class="btn" aria-disabled="true" style="opacity:.5">${c.consent === 'sem_aceite' ? 'Não aceitou contato' : 'Sem telefone'}</span>`}
+      <button class="btn" type="button" data-act="cli-chamei" data-id="${esc(c.id)}">Marquei como chamado</button></div>
+    <button class="link" type="button" data-act="cli-copiar" style="margin-top:8px">Copiar o texto</button>
+    ${c.consent === 'nao_registrado' && !c.lead ? '<p class="detalhe" style="margin-top:8px">Ainda não há consentimento registrado para promoções. Convide para criar a conta e aceitar.</p>' : ''}
+    ${c.contato.ultimo ? `<p class="detalhe" style="margin-top:8px">Última vez chamado em ${dataCurta(c.contato.ultimo)}.</p>` : ''}</section>`;
+}
+
 function abrirCliente(id, foco) {
   const c = cli && cli.lista.find((x) => x.id === id);
   if (!c) return;
-  const rolagem = $('folha').open && $('folha').dataset.cli === id ? $('folha').scrollTop : 0;
-  $('folha').dataset.cli = id;
-  const recs = c.recomendacoes;
-  const escolhida = recs.find((r) => r.disponivel) || recs[0] || null;
-  abrirFolha(c.nome || 'Cliente', `
-    <p class="legenda" style="margin-top:4px">${c.telefone ? esc(c.telefone) + ', ' : ''}${c.lead ? 'contato do site' : `cliente desde ${dataCurta(c.primeira)}/${c.primeira.slice(0, 4)}`}</p>
-    ${secaoConta(c)}
-    <section class="sec"><h3>Gosto</h3>${barraGosto(c.perfil)}
-      ${c.notas.length ? `<p class="chips-notas">${c.notas.map((n) => `<span class="chip">${esc(n.rotulo)}</span>`).join('')}</p>` : ''}
-      <p class="detalhe">${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}, ${din(c.gasto)} no total${c.intervalo ? `, compra a cada ${c.intervalo} dias em média` : ''}. Última compra ${quandoDias(c.dias)}.</p></section>
-    <section class="sec"><h3>O que sugerir</h3>
-      ${recs.length ? `<ul class="det-itens">${recs.map((r) => `<li><span><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}<br><i>${r.motivos.length ? 'combina com ' + esc(r.motivos.join(' e ')) : 'sem motivo claro ainda'}${r.ja_comprou ? ', ela já tem' : ''}${r.disponivel ? '' : ', sem estoque agora'}</i></span>
-        <button class="btn pequeno" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">Usar</button></li>`).join('')}</ul>`
-        : '<p class="detalhe">Ainda não há compras de perfume para comparar.</p>'}</section>
-    <section class="sec" id="cli-sec-msg"><h3>Mensagem</h3>
-      <label for="cli-msg" style="margin-top:0">Você revisa e envia pelo WhatsApp</label>
-      <textarea id="cli-msg" data-cli="${esc(c.id)}" style="min-height:120px">${esc(msgRecompra(c, escolhida))}</textarea>
-      <div class="grade2" style="margin-top:12px;gap:10px">
-        ${c.telefone && telefoneLink(c.telefone) && c.consent !== 'sem_aceite' ? `<a class="btn primario" id="cli-zap" href="${esc(linkZap(c.telefone, msgRecompra(c, escolhida)))}" target="_blank" rel="noopener">Abrir no WhatsApp</a>` : `<span class="btn" aria-disabled="true" style="opacity:.5">${c.consent === 'sem_aceite' ? 'Não aceitou contato' : 'Sem telefone'}</span>`}
-        <button class="btn" type="button" data-act="cli-chamei" data-id="${esc(c.id)}">Marquei como chamado</button></div>
-      ${c.contato.ultimo ? `<p class="detalhe" style="margin-top:10px">Última vez chamado em ${dataCurta(c.contato.ultimo)}.</p>` : ''}</section>
-    <section class="sec"${c.pedidos.length ? '' : ' hidden'}><h3>Compras</h3>
-      <ul class="det-itens">${c.compras.map((x) => `<li><span>${x.qtd}× ${esc(x.nome)}</span><i>${dataCurta(x.ultima)}</i></li>`).join('')}</ul>
-      <h4 class="mini-nome" style="margin-top:16px">Pedidos</h4>
-      <ul class="det-itens">${c.pedidos.map((p) => `<li><button class="link" type="button" data-act="cli-pedido" data-id="${esc(p.id)}">nº ${p.numero}, ${dataCurta(p.data)}</button><b>${din(p.total)}</b></li>`).join('')}</ul></section>
-    <section class="sec"><h3>Anotações</h3>
-      <form data-form="cli-dados" data-id="${esc(c.id)}">
-        <textarea name="notas" style="min-height:84px" maxlength="600" placeholder="Ex.: prefere ser chamada à tarde; presenteia a irmã">${esc(c.contato.notas)}</textarea>
-        <label class="lembrar"><input type="checkbox" name="nao_chamar"${c.contato.nao_chamar ? ' checked' : ''} /> Não chamar (pediu para parar ou não quer promoções)</label>
-        <button class="btn cheio" type="submit">Salvar anotações</button></form></section>`);
-  $('folha').scrollTop = foco === 'mensagem' ? ($('cli-sec-msg').offsetTop - 12) : rolagem;
+  const dlg = $('cli-tela');
+  const rolagem = dlg.open && dlg.dataset.cli === id ? dlg.scrollTop : 0;
+  dlg.dataset.cli = id;
+  if (msgEstado.id !== id) {
+    const primeira = c.recomendacoes.find((r) => r.disponivel) || c.recomendacoes[0] || null;
+    msgEstado = { id, rec: primeira ? primeira.id : null, tipo: c.lead ? 'conhecer' : (c.dias >= (c.intervalo || 45) ? 'recompra' : 'novidade') };
+  }
+  const rec = c.recomendacoes.find((r) => r.id === msgEstado.rec) || null;
+  $('cli-corpo').innerHTML = `
+    <header class="tela-topo">
+      <button class="voltar" type="button" data-act="cli-fechar" style="margin:0">← Clientes</button>
+      <div class="tela-id"><h2>${esc(c.nome || 'Sem nome')}</h2>
+        <p class="legenda">${c.telefone ? esc(c.telefone) + ', ' : ''}${c.lead ? 'contato do site' : `cliente desde ${dataCurta(c.primeira)}/${c.primeira.slice(0, 4)}`}</p></div>
+      ${c.consent === 'aceitou' ? '<span class="chip-st" data-st="pronto">Aceitou contato</span>' : c.consent === 'sem_aceite' ? '<span class="chip-st" data-st="cancelado">Sem aceite</span>' : ''}
+    </header>
+    <div class="tela-in"><div class="tela-grade">
+      <div class="tela-col">
+        ${secComprou(c)}
+        ${secGostos(c)}
+        ${secaoConta(c).replace('class="sec primeira"', 'class="tela-card" style="order:5"')}
+        <section class="tela-card" style="order:6"${c.pedidos.length ? '' : ' hidden'}><h3>Pedidos</h3>
+          <ul class="det-itens">${c.pedidos.map((p) => `<li><button class="link" type="button" data-act="cli-pedido" data-id="${esc(p.id)}">nº ${p.numero}, ${dataCurta(p.data)}</button><b>${din(p.total)}</b></li>`).join('')}</ul></section>
+      </div>
+      <div class="tela-col">
+        ${secSugestoes(c, msgEstado.rec)}
+        ${secMensagem(c, msgEstado.tipo, rec)}
+        <section class="tela-card" style="order:7"><h3>Anotações</h3>
+          <form data-form="cli-dados" data-id="${esc(c.id)}">
+            <textarea name="notas" style="min-height:84px" maxlength="600" placeholder="Ex.: prefere ser chamada à tarde; presenteia a irmã">${esc(c.contato.notas)}</textarea>
+            <label class="lembrar"><input type="checkbox" name="nao_chamar"${c.contato.nao_chamar ? ' checked' : ''} /> Não chamar (pediu para parar ou não quer promoções)</label>
+            <button class="btn cheio" type="submit">Salvar anotações</button></form></section>
+      </div>
+    </div></div>`;
+  if (!dlg.open) dlg.showModal();
+  dlg.scrollTop = foco === 'mensagem' ? Math.max(0, $('cli-sec-msg').offsetTop - 90) : rolagem;
 }
 
-function usarSugestao(id, prodId) {
-  const c = cli.lista.find((x) => x.id === id);
-  const r = c.recomendacoes.find((x) => x.id === prodId);
-  const texto = msgRecompra(c, r);
-  $('cli-msg').value = texto;
-  const z = $('cli-zap'); if (z) z.href = linkZap(c.telefone, texto);
-  $('cli-msg').focus();
-}
+function escolherSugestao(id, prodId) { msgEstado = { ...msgEstado, id, rec: prodId }; abrirCliente(id); }
+function mudarTipoMensagem(id, tipo) { msgEstado = { ...msgEstado, id, tipo }; abrirCliente(id); }
 
 /* ----- simulador de lançamento ----- */
 function opcoesLancamento() {
@@ -1634,7 +1742,7 @@ function resultadoLancamento() {
       <div><b>${esc(x.nome || 'Sem nome')}</b> ${pilulaAfin(x.rotulo, x.afinidade)}
         <p class="detalhe">${x.motivos.length ? 'Combina com ' + esc(x.motivos.join(' e ')) + '. ' : ''}${x.ja_comprou ? 'Já comprou esta fragrância. ' : ''}${x.consent === 'sem_aceite' ? 'Não aceitou receber novidades. ' : x.nao_chamar ? 'Marcado como não chamar. ' : x.chamado_ha !== null ? `Chamado ${quandoDias(x.chamado_ha)}. ` : ''}${x.lead ? 'Contato do site, ainda sem pedidos.' : `Última compra ${quandoDias(x.dias)}.`}</p></div>
       ${((x.rotulo === 'alta' || x.rotulo === 'media') && x.consent !== 'sem_aceite') ? `<div class="acoes" style="margin:0;flex:none">
-        ${telefoneLink(x.telefone) && !x.nao_chamar ? `<a class="btn pequeno primario" target="_blank" rel="noopener" data-act="lanc-zap" data-id="${esc(x.id)}" href="${esc(linkZap(x.telefone, msgLancamento(x, r.nome || 'novo perfume', x.motivos, r.inspirado)))}">WhatsApp</a>` : ''}
+        ${telefoneLink(x.telefone) && !x.nao_chamar ? `<a class="btn pequeno primario" target="_blank" rel="noopener" data-act="lanc-zap" data-id="${esc(x.id)}" href="${esc(linkZap(x.telefone, msgLancamento(x, r.nome || 'novo perfume', x.motivos, r.inspirado, r.cat)))}">WhatsApp</a>` : ''}
         <button class="btn pequeno" type="button" data-act="cli-chamei" data-id="${esc(x.id)}">Marquei</button></div>` : `<span class="detalhe" style="flex:none">${x.consent === 'sem_aceite' ? 'não aceitou contato' : 'pouco provável'}</span>`}</li>`).join('')}</ul>
     ${r.ranking.length > 12 ? `<p class="detalhe">Mostrando 12 de ${r.ranking.length} clientes.</p>` : ''}`;
 }
@@ -1653,6 +1761,7 @@ async function rodarLancamento() {
     lanc = d.lancamento;
     const p = corpo.produto_id && est.catalogo.find((x) => x.id === corpo.produto_id);
     lanc.inspirado = p ? p.inspirado : '';
+    lanc.cat = p || null;
     const el = $('lanc-res'); if (el) el.innerHTML = resultadoLancamento();
   } catch (e) { falhou(e); }
 }
@@ -2280,14 +2389,17 @@ document.addEventListener('click', async (ev) => {
     else if (act === 'cli-vista') { vistaCli = b.dataset.v; animCli = true; desenharClientes(); }
     else if (act === 'cli-abrir') abrirCliente(id);
     else if (act === 'cli-chamar') abrirCliente(id, 'mensagem');
-    else if (act === 'cli-usar') usarSugestao(id, b.dataset.prod);
-    else if (act === 'cli-pedido') { irPara('pedidos'); abrirPedido(id); }
+    else if (act === 'cli-usar') escolherSugestao(id, b.dataset.prod);
+    else if (act === 'cli-tipo') mudarTipoMensagem(id, b.dataset.tipo);
+    else if (act === 'cli-fechar') $('cli-tela').close();
+    else if (act === 'cli-copiar') { const m = $('cli-msg'); try { await navigator.clipboard.writeText(m.value); aviso('Texto copiado.'); } catch (_) { m.select(); aviso('Selecionei o texto, é só copiar.'); } }
+    else if (act === 'cli-pedido') { if ($('cli-tela').open) $('cli-tela').close(); irPara('pedidos'); abrirPedido(id); }
     else if (act === 'cli-chamei') {
       try {
         await api('cliente_contato', { id });
         aviso('Contato registrado.');
         if (lanc) { const x = lanc.ranking.find((r) => r.id === id); if (x) { x.ultimo_contato = est.hoje; x.chamado_ha = 0; } const el = $('lanc-res'); if (el) el.innerHTML = resultadoLancamento(); }
-        if ($('folha').open && $('folha').dataset.cli === id) abrirCliente(id);
+        if ($('cli-tela').open && $('cli-tela').dataset.cli === id) abrirCliente(id);
       } catch (e) { falhou(e); }
     }
     else if (act === 'lanc-rodar') rodarLancamento();

@@ -3,10 +3,10 @@
 // - Cada cliente é identificado pelo WhatsApp (ou, sem telefone, pelo nome).
 // - O perfil olfativo vem das fragrâncias que a pessoa comprou (perfil e notas de js/data.js).
 // - A afinidade com uma fragrância é um score de 0 a 100, explicável:
-//     80% semelhança entre o gosto da pessoa e a fragrância (cosseno entre vetores de características,
-//         dando mais peso ao que ela comprou recentemente)
-//     20% sinal de "clientes parecidos": o que as pessoas de gosto próximo também compraram
-//   Se a pessoa já tem a fragrância, o score cai (ela provavelmente quer algo novo).
+//     85% quanto das características da fragrância (perfil, público, notas) a pessoa já aprecia,
+//         dando mais peso ao que ela comprou recentemente; quesitos sem dado da pessoa não contam contra
+//     15% sinal de "clientes parecidos": o que as pessoas de gosto próximo também compraram
+//   Se a pessoa já tem a fragrância, o score cai pela metade (ela provavelmente quer algo novo).
 // - Recompra: compara os dias desde a última compra com o intervalo habitual da própria pessoa
 //   (ou 45 dias, quando só comprou uma vez).
 //
@@ -141,7 +141,7 @@ function enriquecer(x, conta, porId) {
   for (const n of g.notas || []) x.vetor[`nota:${n}`] = (x.vetor[`nota:${n}`] || 0) + 1;
   for (const id of conta.usou || []) { const p = porId.get(id); if (p) { soma(x.vetor, featuresProduto(p), 1); x.comprou.add(id); } }
   for (const id of conta.desejos || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 0.8); }
-  if (!x.dominante && (g.perfis || []).length) x.dominante = g.perfis[0];
+  if (!x.dominante && (g.perfis || []).length === 1) x.dominante = g.perfis[0];
 }
 
 // consentimento para receber promoções: com conta, vale o que a pessoa marcou; sem conta, não há registro
@@ -154,19 +154,41 @@ function vendavel(e, p) {
   return item ? e.tamanhos.some((s) => disponivel(item, s) > 0) : true;
 }
 
-// 0 a 100: o quanto a fragrância combina com o gosto da pessoa
+// 0 a 100: o quanto a fragrância combina com o gosto da pessoa.
+// Mede quanto das características do perfume a pessoa já aprecia (e não a "distância" entre dois vetores):
+// quem curte várias famílias não pode ser punido por isso, senão ninguém passa de 30.
+const DIMENSOES = [['perfil:', 0.5], ['publico:', 0.2], ['nota:', 0.3]];
+function conteudoDe(c, alvo) {
+  const maior = Math.max(0, ...Object.values(c.vetor));
+  if (!maior) return 0;
+  const ref = maior * 0.5; // gostar pelo menos da metade do que ela mais gosta já conta como gostar
+  let soma = 0, peso = 0;
+  for (const [pref, w] of DIMENSOES) {
+    const doProduto = Object.entries(alvo).filter(([f]) => f.startsWith(pref));
+    const temDado = Object.keys(c.vetor).some((f) => f.startsWith(pref) && c.vetor[f] > 0);
+    if (!doProduto.length || !temDado) continue; // sem informação nesse quesito: não conta contra
+    let tot = 0, ok = 0;
+    for (const [f, v] of doProduto) {
+      let gosto = Math.min(1, (c.vetor[f] || 0) / ref);
+      if (f === 'publico:compartilhavel') gosto = Math.max(gosto, 0.7); // unissex serve para qualquer pessoa
+      tot += v; ok += v * gosto;
+    }
+    soma += w * (ok / tot); peso += w;
+  }
+  return peso ? soma / peso : 0;
+}
 function pontuar(c, todosClientes, alvo, prodId) {
-  const conteudo = cosseno(c.vetor, alvo);
+  const conteudo = conteudoDe(c, alvo);
   let colab = 0;
   if (prodId) {
     const outros = todosClientes.filter((o) => o.id !== c.id && o.comprou.has(prodId));
     if (outros.length) colab = outros.reduce((t, o) => t + cosseno(c.vetor, o.vetor), 0) / outros.length;
   }
-  let pts = 100 * (0.8 * conteudo + 0.2 * colab);
-  if (prodId && c.comprou.has(prodId)) pts *= 0.4;
-  return Math.round(Math.min(100, pts));
+  let pts = 100 * Math.min(1, conteudo + 0.15 * colab);
+  if (prodId && c.comprou.has(prodId)) pts *= 0.5;
+  return Math.round(pts);
 }
-const rotuloPts = (c, pts) => (!Object.keys(c.vetor).length ? 'sem dados' : pts >= 65 ? 'alta' : pts >= 35 ? 'media' : 'baixa');
+const rotuloPts = (c, pts) => (!Object.keys(c.vetor).length ? 'sem dados' : pts >= 60 ? 'alta' : pts >= 35 ? 'media' : 'baixa');
 
 function motivosDe(c, alvo) {
   return Object.entries(alvo)
@@ -179,7 +201,14 @@ function recomendar(e, c, todosClientes, n = 3) {
     const alvo = featuresProduto(p);
     const pts = pontuar(c, todosClientes, alvo, p.id);
     return { id: p.id, nome: p.name, inspirado: p.inspired_by || '', perfil: p.profile || '', afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), disponivel: vendavel(e, p), ja_comprou: c.comprou.has(p.id) };
-  }).filter((r) => r.afinidade > 0).sort((a, b) => (b.disponivel - a.disponivel) || (b.afinidade - a.afinidade)).slice(0, n);
+  }).filter((r) => r.afinidade > 0).sort((a, b) => (b.disponivel - a.disponivel) || (a.ja_comprou - b.ja_comprou) || (b.afinidade - a.afinidade)).slice(0, n);
+}
+
+// os gostos mais fortes, de 0 a 100 (o mais forte vale 100)
+function gostosDe(c) {
+  const itens = Object.entries(c.vetor).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const maior = itens.length ? itens[0][1] : 1;
+  return itens.slice(0, 8).map(([f, v]) => ({ chave: f, rotulo: rotuloDe(f), pct: Math.round((v / maior) * 100) }));
 }
 
 const nomesDe = (e, ids) => (ids || []).map((id) => todos(e).find((p) => p.id === id)?.name).filter(Boolean);
@@ -190,10 +219,12 @@ function resumo(e, c, todosClientes) {
     n_pedidos: c.pedidos.length, gasto: Math.round(c.gasto * 100) / 100,
     primeira: c.primeira, ultima: c.ultima, dias: c.dias, intervalo: c.intervalo,
     perfil: c.perfilQtd, dominante: c.dominante,
+    perfis_todos: [...new Set([...Object.keys(c.perfilQtd), ...(((c.conta && c.conta.gosto && c.conta.gosto.perfis) || []))])],
     notas: Object.entries(c.notaQtd).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t, n]) => ({ tag: t, rotulo: rotuloDe(`nota:${t}`), n })),
-    compras: [...c.compras.values()].sort((a, b) => b.qtd - a.qtd || b.ultima.localeCompare(a.ultima)).slice(0, 8),
+    compras: [...c.compras.values()].sort((a, b) => b.ultima.localeCompare(a.ultima) || b.qtd - a.qtd).slice(0, 24),
+    gostos: gostosDe(c),
     pedidos: c.pedidos.slice().reverse().slice(0, 12),
-    recomendacoes: recomendar(e, c, todosClientes),
+    recomendacoes: recomendar(e, c, todosClientes, 5),
     consent: consentDe(c), lead: Boolean(c.lead),
     conta: c.conta ? {
       nome: c.conta.nome, email: c.conta.email, vinculada: c.contaVinculada, whatsapp: (c.conta.consentimento && c.conta.consentimento.whatsapp) || '',
