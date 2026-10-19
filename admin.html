@@ -342,17 +342,7 @@
     .esq .a { height: 108px; border-radius: 22px 22px 8px 8px; }
     .esq .b { height: 24px; width: 58%; } .esq .c { height: 40px; width: 36%; margin-top: 12px; } .esq .d { height: 14px; width: 80%; margin-top: 14px; }
 
-    @media (min-width: 960px) {
-      body { padding: 0 0 0 232px; }
-      nav { inset: 0 auto 0 0; width: 232px; border-top: 0; border-right: 1px solid var(--linha); padding: 84px 14px 0; }
-      nav .in { grid-template-columns: 1fr; gap: 4px; max-width: none; }
-      nav button { grid-auto-flow: column; justify-content: start; justify-items: start; min-height: 48px; padding: 0 16px; gap: 14px; font-size: 15px; border-radius: 10px; }
-      nav button::before { display: none; }
-      nav button[aria-current="true"] { background: color-mix(in srgb, var(--tinta) 9%, transparent); }
-      .topo-in { max-width: 960px; padding-left: 28px; padding-right: 28px; }
-      main { max-width: 960px; padding: 40px 28px 56px; }
-      #aviso { bottom: 28px; left: calc(50% + 116px); }
-    }
+    @media (min-width: 960px) { #aviso { bottom: 28px; } }
     /* Maturação: lotes com prazo e progresso */
     .troca-vista { margin: 0 0 24px; gap: 22px; flex-wrap: wrap; }
     .troca button small { font-size: 12px; opacity: .7; margin-left: 3px; font-variant-numeric: tabular-nums; }
@@ -433,7 +423,7 @@
     /* telas largas: o painel de pedidos usa mais espaço; as outras abas ficam numa coluna de leitura */
     @media (min-width: 1100px) {
       main { max-width: 1180px; }
-      main > section { max-width: 860px; margin-inline: auto; }
+      main > section { max-width: none; }
       main > #t-pedidos { max-width: none; }
       .topo-in { max-width: 1180px; }
     }
@@ -639,6 +629,156 @@
       .aba-in > *, .fe-acc.abrindo .item { animation: none; }
       .fe-corpo, .fe-seta, .btn::before { transition: none; }
     }
+
+    /* ======================================================================================
+       Bancada no formato do site: navbar com links, menu de tela cheia no celular,
+       Início como a landing (hero, números, atalhos com foto) e produtos com foto.
+       Paleta oficial: off-white #f5f0ea, marrom #462506, dourado #daa753, musgo #6b6943.
+       ====================================================================================== */
+    :root { --bg: #f5f0ea; --papel: #fbf9f4; --acento: #6b6943; --linha: rgba(70, 37, 6, .13); --forte: rgba(70, 37, 6, .34); }
+    :root[data-tema="dark"] { --bg: #1b1a18; --papel: #262522; }
+    @media (prefers-color-scheme: dark) { :root:not([data-tema="light"]) { --bg: #1b1a18; --papel: #262522; } }
+    body { padding-bottom: 0; }
+    main { max-width: 1180px; padding: 20px 24px 64px; }
+    @media (min-width: 1000px) { main { max-width: 1180px; } #t-baixa, #t-historico { max-width: 780px; margin-inline: 0; } }
+    @media (max-width: 640px) { main { padding: 12px 18px 56px; } }
+
+    /* navbar do site */
+    .sp-nav { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--linha); }
+    .sp-nav__in { max-width: 1180px; margin: 0 auto; padding: 8px 24px; display: flex; align-items: center; gap: 26px; min-height: 68px; }
+    .sp-nav .marca { flex: none; background: none; border: 0; padding: 0; color: var(--tinta); gap: 12px; cursor: pointer; }
+    .sp-nav__links { display: flex; align-items: center; gap: 2px; margin: 0 auto; }
+    .sp-nav__links button { position: relative; background: none; border: 0; padding: .7rem .85rem; min-height: 44px; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--suave); transition: color .3s ease; }
+    .sp-nav__links button::after { content: ''; position: absolute; left: .85rem; right: .85rem; bottom: .35rem; height: 2px; background: var(--ouro); transform: scaleX(0); transform-origin: 0 50%; transition: transform .5s var(--ease); }
+    .sp-nav__links button:hover { color: var(--tinta); }
+    .sp-nav__links button[aria-current="true"] { color: var(--tinta); }
+    .sp-nav__links button[aria-current="true"]::after { transform: scaleX(1); }
+    .sp-nav__acoes { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .sp-nav__acoes button { background: none; border: 0; min-height: 44px; min-width: 44px; display: grid; place-items: center; color: var(--suave); font-size: 13px; font-weight: 700; border-radius: 99px; transition: background-color .3s, color .3s; }
+    .sp-nav__acoes button:hover { background: color-mix(in srgb, var(--tinta) 7%, transparent); color: var(--tinta); }
+    .sp-nav__acoes button svg { width: 21px; height: 21px; }
+    #sair { padding: 0 16px; border: 1px solid var(--forte); }
+    .sp-burger { display: none !important; }
+    .sp-burger span { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: transform .45s var(--ease), opacity .3s; }
+    .sp-burger span + span { margin-top: 5px; }
+    .sp-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .sp-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .sp-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media (max-width: 980px) {
+      .sp-nav__links, #sair { display: none; }
+      .sp-burger { display: flex !important; flex-direction: column; align-items: center; justify-content: center; }
+      .sp-nav__in { padding: 6px 14px 6px 18px; min-height: 60px; }
+    }
+    /* menu de tela cheia (celular) */
+    .sp-menu { position: fixed; inset: 0; z-index: 25; padding: 84px 28px 32px; background: var(--bg); display: flex; flex-direction: column; visibility: hidden; opacity: 0; transition: opacity .35s ease, visibility 0s .35s; overflow-y: auto; }
+    .sp-menu.aberto { visibility: visible; opacity: 1; transition-delay: 0s; }
+    .sp-menu__links { display: grid; margin-top: 8px; }
+    .sp-menu__links button { text-align: left; background: none; border: 0; border-bottom: 1px solid var(--linha); padding: .5rem 0; min-height: 64px; display: flex; align-items: center; justify-content: space-between; font-family: 'Philosopher', Georgia, serif; font-size: clamp(2rem, 9vw, 2.8rem); line-height: 1.05; color: var(--tinta); opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .7s var(--ease), color .3s; }
+    .sp-menu__links button[aria-current="true"] { color: var(--acento); font-style: italic; }
+    .sp-menu__links button svg { width: 22px; height: 22px; opacity: .5; }
+    .sp-menu.aberto .sp-menu__links button { opacity: 1; transform: none; }
+    .sp-menu.aberto .sp-menu__links button:nth-child(2) { transition-delay: .05s; } .sp-menu.aberto .sp-menu__links button:nth-child(3) { transition-delay: .1s; } .sp-menu.aberto .sp-menu__links button:nth-child(4) { transition-delay: .15s; }
+    .sp-menu.aberto .sp-menu__links button:nth-child(5) { transition-delay: .2s; } .sp-menu.aberto .sp-menu__links button:nth-child(6) { transition-delay: .25s; } .sp-menu.aberto .sp-menu__links button:nth-child(7) { transition-delay: .3s; }
+    .sp-menu__pe { margin-top: auto; padding-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ---------- Início: a landing da bancada ---------- */
+    .in-hero { display: grid; gap: 28px; align-items: center; padding: 6px 0 26px; }
+    .in-titulo { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: clamp(2.7rem, 7vw, 4.9rem); line-height: 1.01; letter-spacing: -.016em; text-wrap: balance; }
+    .in-titulo em { color: var(--acento); }
+    .in-lead { color: var(--suave); font-size: 1.0625rem; line-height: 1.65; max-width: 46ch; margin-top: 18px; }
+    .in-lead b { color: var(--tinta); font-weight: 700; }
+    .in-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .in-stage { position: relative; }
+    .in-frame { display: block; border-radius: 22px; overflow: hidden; aspect-ratio: 1 / 1; background: color-mix(in srgb, var(--ouro) 18%, var(--papel)); box-shadow: 0 30px 60px -34px rgba(70, 37, 6, .5); }
+    .in-frame img { width: 100%; height: 100%; object-fit: cover; display: block; animation: inZoom 2.4s var(--ease) both; }
+    .in-float { position: absolute; left: 14px; bottom: -22px; min-width: 210px; padding: 16px 18px; background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; box-shadow: 0 26px 46px -26px rgba(70, 37, 6, .5); animation: flutua 6s ease-in-out infinite; }
+    .in-float small { display: block; color: var(--suave); font-size: 12.5px; font-weight: 600; }
+    .in-float .num { font-size: 32px; line-height: 1.05; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+    .in-float span { font-size: 12.5px; color: var(--suave); }
+    @keyframes inZoom { from { transform: scale(1.12); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+    @media (min-width: 900px) {
+      .in-hero { grid-template-columns: 1.02fr .98fr; gap: 64px; padding: 24px 0 52px; }
+      .in-float { left: -34px; bottom: 34px; }
+      .in-frame { aspect-ratio: 5 / 5.4; }
+    }
+    .in-sec { margin-top: 44px; }
+    .in-sec > h2 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.08; letter-spacing: -.01em; }
+    .in-sec > h2 em { color: var(--acento); }
+    .in-sec > p.legenda { margin-top: 6px; }
+    .in-metricas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 4px; }
+    @media (min-width: 900px) { .in-metricas { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+    .in-m { position: relative; display: flex; flex-direction: column; text-align: left; padding: 20px 18px 16px; background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; color: var(--tinta); transition: transform .55s var(--ease), box-shadow .55s var(--ease), border-color .4s; }
+    @media (hover: hover) { .in-m:hover { transform: translateY(-6px); border-color: var(--forte); box-shadow: 0 26px 46px -28px rgba(70, 37, 6, .5); } }
+    .in-m small { font-size: 13px; font-weight: 600; color: var(--suave); }
+    .in-m .num { font-size: clamp(30px, 4.2vw, 44px); line-height: 1.02; margin: 14px 0 8px; font-variant-numeric: tabular-nums; }
+    .in-m .num em { font-size: .4em; color: var(--suave); margin-left: 4px; }
+    .in-m span { font-size: 13px; color: var(--suave); }
+    .in-m .seta { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 99px; border: 1px solid var(--forte); display: grid; place-items: center; transition: background-color .4s var(--ease), color .4s var(--ease), transform .5s var(--ease); }
+    .in-m .seta svg { width: 16px; height: 16px; }
+    @media (hover: hover) { .in-m:hover .seta { background: var(--btn); color: var(--no-btn); transform: rotate(-45deg); } }
+    .in-m--forte { background: var(--btn); color: var(--no-btn); border-color: transparent; }
+    .in-m--forte small, .in-m--forte span, .in-m--forte .num em { color: inherit; opacity: .8; }
+    .in-m--forte .seta { border-color: color-mix(in srgb, var(--no-btn) 40%, transparent); }
+
+    /* atalhos com foto, como as categorias da landing */
+    .in-atalhos { display: grid; gap: 14px; margin-top: 20px; }
+    .in-tile { position: relative; overflow: hidden; display: block; min-height: 190px; border-radius: 20px; background: var(--tint, #e7ddcf) center / cover; color: #f5f0ea; text-align: left; border: 0; padding: 0; isolation: isolate; }
+    .in-tile .foto { position: absolute; inset: 0; z-index: -2; background: center / cover; transition: transform 1.4s var(--ease); }
+    .in-tile::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(32, 17, 3, .82) 4%, rgba(32, 17, 3, .18) 52%, transparent 74%); }
+    @media (hover: hover) { .in-tile:hover .foto { transform: scale(1.07); } }
+    .in-tile .tx { position: absolute; left: 20px; right: 70px; bottom: 18px; }
+    .in-tile h3 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); line-height: 1.05; }
+    .in-tile p { font-size: 13.5px; opacity: .85; margin-top: 4px; }
+    .in-tile .seta { position: absolute; right: 16px; bottom: 16px; width: 42px; height: 42px; border-radius: 99px; display: grid; place-items: center; border: 1px solid rgba(245, 240, 234, .6); transition: background-color .4s var(--ease), color .4s var(--ease), transform .5s var(--ease); }
+    .in-tile .seta svg { width: 18px; height: 18px; }
+    @media (hover: hover) { .in-tile:hover .seta { background: #f5f0ea; color: #462506; transform: rotate(-45deg); } }
+    @media (min-width: 900px) {
+      .in-atalhos { grid-template-columns: 1.25fr 1fr; grid-template-rows: 220px 220px; }
+      .in-tile--alto { grid-row: span 2; }
+      .in-tile { min-height: 0; }
+    }
+
+    /* precisa de atenção */
+    .in-aten { display: grid; gap: 12px; margin-top: 20px; }
+    @media (min-width: 900px) { .in-aten { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .in-c { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 16px; padding: 12px 16px 12px 12px; background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; transition: transform .55s var(--ease), box-shadow .55s var(--ease), border-color .4s; }
+    @media (hover: hover) { .in-c:hover { transform: translateY(-4px); border-color: var(--forte); box-shadow: 0 22px 40px -28px rgba(70, 37, 6, .5); } }
+    .in-c .foto { width: 64px; height: 64px; border-radius: 12px; background: var(--linha) center / cover; }
+    .in-c .foto--vazia { display: grid; place-items: center; color: var(--acento); background: color-mix(in srgb, var(--acento) 12%, transparent); }
+    .in-c .foto--vazia svg { width: 26px; height: 26px; }
+    .in-c b { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.15; }
+    .in-c small { display: block; color: var(--suave); font-size: 13.5px; margin-top: 2px; }
+    .in-c .alerta { color: var(--perigo); font-weight: 700; }
+    .in-ok { padding: 22px; border: 1px dashed var(--forte); border-radius: 16px; color: var(--suave); margin-top: 20px; }
+    .in-ok b { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--tinta); }
+    .in-entra > * { animation: abaEntra .9s var(--ease) both; }
+    .in-entra > :nth-child(2) { animation-delay: .1s; } .in-entra > :nth-child(3) { animation-delay: .2s; } .in-entra > :nth-child(4) { animation-delay: .3s; } .in-entra > :nth-child(5) { animation-delay: .4s; }
+
+    /* produtos com foto em Estoque e Catálogo */
+    .item { grid-template-columns: 92px 1fr; }
+    .item-foto { width: 92px; height: 92px; border-radius: 14px; background: var(--linha) center / cover; transition: transform .8s var(--ease); }
+    .item:hover .item-foto { transform: scale(1.04); }
+    .item .nivel { height: 5px; border-radius: 99px; background: var(--linha); overflow: hidden; margin-top: 10px; max-width: 220px; }
+    .item .nivel i { display: block; height: 100%; background: linear-gradient(90deg, var(--ambar), var(--ouro)); border-radius: 99px; transform-origin: 0 50%; transform: scaleX(var(--n)); transition: transform .9s var(--ease); }
+    .item .ml { font-size: 34px; }
+    .linha { display: grid; grid-template-columns: 84px 1fr; gap: 4px 16px; align-items: start; }
+    .linha-foto { grid-row: span 4; width: 84px; height: 84px; border-radius: 14px; background: var(--linha) center / cover; }
+    .linha > :not(.linha-foto) { grid-column: 2; }
+    .linha.fora .linha-foto { filter: grayscale(1); opacity: .6; }
+    @media (prefers-reduced-motion: reduce) { .in-frame img, .in-float, .in-entra > * { animation: none; } }
+    [style*="simbolo-loader.png"] { background-size: 44% !important; background-repeat: no-repeat !important; background-position: center !important; background-color: color-mix(in srgb, var(--acento) 14%, transparent) !important; }
+    .es-grade { display: block; }
+    .es-lado .btn { margin-top: 6px; }
+    .fe { margin-top: 24px; }
+    @media (min-width: 1000px) {
+      .es-grade { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 56px; align-items: start; margin-top: 8px; }
+      .es-lado { position: sticky; top: 92px; padding: 26px; background: var(--papel); border: 1px solid var(--linha); border-radius: 20px; }
+      .es-lado .total { margin-top: 0; }
+      .es-lado .btn { width: 100%; }
+      .es-corpo .fe { margin-top: 0; }
+    }
+    @media (min-width: 900px) { .es-corpo .fe-grade { grid-template-columns: 1fr; } }
+    @media (min-width: 981px) { .sp-menu { display: none; } }
   </style>
 </head>
 <body>
@@ -680,17 +820,42 @@
   </div>
 
   <div id="app" hidden>
-    <header class="topo">
-      <div class="topo-in">
-        <div class="marca"><span class="simbolo" aria-hidden="true"></span><span class="palavra" role="img" aria-label="Sposence"></span></div>
-        <button class="icone-topo" id="busca-btn" type="button" aria-label="Buscar no painel (Ctrl+K)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
-        <button id="tema" type="button" aria-label="Alternar tema"></button>
-        <button id="sair" type="button">Sair</button>
+    <header class="sp-nav" id="sp-nav">
+      <div class="sp-nav__in">
+        <button class="marca" type="button" data-tab="inicio" aria-label="Início da bancada"><span class="simbolo" aria-hidden="true"></span><span class="palavra" role="img" aria-label="Sposence"></span></button>
+        <div class="sp-nav__links" role="navigation" aria-label="Seções do painel">
+          <button type="button" data-tab="inicio" aria-current="true">Início</button>
+          <button type="button" data-tab="pedidos">Pedidos</button>
+          <button type="button" data-tab="estoque">Estoque</button>
+          <button type="button" data-tab="clientes">Clientes</button>
+          <button type="button" data-tab="catalogo">Catálogo</button>
+          <button type="button" data-tab="baixa">Baixa</button>
+          <button type="button" data-tab="historico">Histórico</button>
+        </div>
+        <div class="sp-nav__acoes">
+          <button class="icone-topo" id="busca-btn" type="button" aria-label="Buscar no painel (Ctrl+K)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+          <button id="tema" type="button" aria-label="Alternar tema"></button>
+          <button id="sair" type="button">Sair</button>
+          <button class="sp-burger" id="sp-burger" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="sp-menu"><span></span><span></span><span></span></button>
+        </div>
       </div>
     </header>
+    <div class="sp-menu" id="sp-menu" role="dialog" aria-label="Menu da bancada">
+      <div class="sp-menu__links">
+        <button type="button" data-tab="inicio">Início<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="pedidos">Pedidos<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="estoque">Estoque<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="clientes">Clientes<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="catalogo">Catálogo<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="baixa">Baixa<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" data-tab="historico">Histórico<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="sp-menu__pe"><button class="btn" type="button" id="menu-busca">Buscar no painel</button><button class="btn" type="button" id="menu-sair">Sair</button></div>
+    </div>
 
     <main>
-      <section id="t-pedidos" aria-labelledby="h-pedidos"></section>
+      <section id="t-inicio" aria-labelledby="h-inicio"></section>
+      <section id="t-pedidos" aria-labelledby="h-pedidos" hidden></section>
       <section id="t-estoque" aria-labelledby="h-estoque" hidden></section>
       <section id="t-clientes" aria-labelledby="h-clientes" hidden></section>
       <section id="t-baixa" aria-labelledby="h-baixa" hidden></section>
@@ -698,14 +863,6 @@
       <section id="t-historico" aria-labelledby="h-historico" hidden></section>
     </main>
 
-    <nav aria-label="Seções do painel"><div class="in">
-      <button data-tab="pedidos" aria-current="true" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10a1.5 1.5 0 0 1 1.5 1.5v15l-3-1.8-2.5 1.8-2.5-1.8-2.5 1.8-3-1.8V5A1.5 1.5 0 0 1 7 3.5Z"/><path d="M9 9h6M9 13h4"/></svg>Pedidos</button>
-      <button data-tab="estoque" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v3.2c0 1-3.5 2-3.5 5.3V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-3.3-3.5-4.3-3.5-5.3V3"/><path d="M7 14h10"/></svg>Estoque</button>
-      <button data-tab="clientes" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M2.5 20c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5"/><path d="M16 4.7a3.2 3.2 0 0 1 0 6M18.5 14.8c1.8.7 3 2.2 3 4.2"/></svg>Clientes</button>
-      <button data-tab="baixa" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>Baixa</button>
-      <button data-tab="catalogo" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14"/><path d="M3.5 5h.01M3.5 12h.01M3.5 19h.01"/></svg>Catálogo</button>
-      <button data-tab="historico" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5V8h3.5"/><path d="M12 8v4.2l2.8 1.8"/></svg>Histórico</button>
-    </div></nav>
   </div>
 
   <dialog id="folha" aria-labelledby="folha-titulo"><div class="folha" id="folha-corpo"></div></dialog>
@@ -847,7 +1004,7 @@ async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente()) {
   sessao.gravar(senha, lembrar);
   $('senha').value = ''; $('senha').type = 'password'; mensagemLogin('', '');
   $('login').hidden = true; $('app').hidden = false;
-  irPara('pedidos');
+  irPara('inicio');
   carregarClientes(true).catch(() => {});
 }
 
@@ -892,15 +1049,22 @@ $('login-form').addEventListener('submit', async (ev) => {
 $('sair').addEventListener('click', () => sair());
 
 /* ---------- abas ---------- */
-const ABAS = ['pedidos', 'estoque', 'clientes', 'baixa', 'catalogo', 'historico'];
+const ABAS = ['inicio', 'pedidos', 'estoque', 'clientes', 'baixa', 'catalogo', 'historico'];
 function irPara(aba) {
-  document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
+  document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
+  fecharMenu();
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
   window.scrollTo(0, 0);
-  { const el = $('t-' + aba); el.classList.remove('aba-in'); void el.offsetWidth; el.classList.add('aba-in'); }
+  { const el = $('t-' + aba); el.classList.remove('aba-in'); void el.offsetWidth; el.classList.add('aba-in'); clearTimeout(irPara._t); irPara._t = setTimeout(() => el.classList.remove('aba-in'), 1500); }
   if (aba === 'clientes') { desenharClientes(); carregarClientes(); }
 }
-document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => irPara(b.dataset.tab)));
+document.addEventListener('click', (ev) => { const t = ev.target.closest('[data-tab]'); if (t) irPara(t.dataset.tab); });
+function fecharMenu() { const m = $('sp-menu'); if (!m) return; m.classList.remove('aberto'); const bg = $('sp-burger'); bg.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+$('sp-burger').addEventListener('click', () => { const abre = !$('sp-menu').classList.contains('aberto'); $('sp-menu').classList.toggle('aberto', abre); $('sp-burger').setAttribute('aria-expanded', String(abre)); document.body.style.overflow = abre ? 'hidden' : ''; });
+$('menu-busca').addEventListener('click', () => { fecharMenu(); abrirBusca(); });
+$('menu-sair').addEventListener('click', () => { fecharMenu(); sair(); });
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') fecharMenu(); });
+matchMedia('(min-width: 981px)').addEventListener('change', (e) => { if (e.matches) fecharMenu(); });
 
 /* ---------- janela ---------- */
 function abrirFolha(titulo, html) {
@@ -918,8 +1082,77 @@ function confirmar(titulo, texto, rotulo, aoConfirmar) {
 }
 
 /* ---------- desenho ---------- */
+/* ---------- Início: a landing da bancada ---------- */
+const imgCat = (id) => { const c = est.catalogo.find((x) => x.id === id); return c && c.imagem ? encodeURI(c.imagem) : 'img/simbolo-loader.png'; };
+function desenharInicio() {
+  const el = $('t-inicio'); if (!el || !est) return;
+  const ativos = est.pedidos.filter((p) => p.status !== 'cancelado');
+  const receber = ativos.reduce((t, p) => t + p.falta, 0);
+  const comPend = ativos.filter((p) => p.falta > 0).length;
+  const abertos = est.pedidos.filter((p) => passaFiltroPed(p, 'abertos')).length;
+  const baixos = est.produtos.filter((p) => p.ml_total < 60).sort((x, y) => x.ml_total - y.ml_total);
+  const acabando = est.insumos.filter((i) => i.acabando);
+  const paraChamar = cli && cli.chamar ? cli.chamar.length : null;
+  const hora = new Date().getHours();
+  const saudacao = hora < 5 ? 'Boa madrugada' : hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  const frases = [];
+  frases.push(abertos ? `<b>${abertos}</b> ${abertos === 1 ? 'pedido em aberto' : 'pedidos em aberto'}` : 'nenhum pedido em aberto');
+  if (receber > 0) frases.push(`<b>${din(receber)}</b> a receber`);
+  if (baixos.length) frases.push(`<b>${baixos.length}</b> ${baixos.length === 1 ? 'perfume pedindo reposição' : 'perfumes pedindo reposição'}`);
+  const lead = 'Hoje você tem ' + (frases.length > 1 ? frases.slice(0, -1).join(', ') + ' e ' + frases[frases.length - 1] : frases[0]) + '.';
+  const cards = [];
+  baixos.slice(0, 4).forEach((p) => cards.push({ foto: imgCat(p.id), titulo: p.nome, sub: p.ml_total === 0 ? '<span class="alerta">Sem estoque</span>' : `<span class="alerta">Só ${nf.format(p.ml_total)} ml</span> na bancada`, btn: ['entrada', p.id, 'Entrada'] }));
+  if (acabando.length) cards.push({ icone: true, titulo: 'Insumos acabando', sub: esc(acabando.map((i) => i.nome.toLowerCase()).join(', ')), go: 'insumos', btn: ['go', 'insumos', 'Ver'] });
+  if (comPend) cards.push({ icone: true, titulo: `${comPend} ${comPend === 1 ? 'pagamento pendente' : 'pagamentos pendentes'}`, sub: `${din(receber)} para receber`, btn: ['go', 'pedidos', 'Pedidos'] });
+  if (paraChamar) cards.push({ icone: true, titulo: `${paraChamar} ${paraChamar === 1 ? 'cliente' : 'clientes'} para chamar`, sub: 'pelo ritmo de compra de cada um', btn: ['go', 'clientes', 'Clientes'] });
+  const tile = (go, titulo, texto, foto, classe) => `<button type="button" class="in-tile${classe ? ' ' + classe : ''}" data-go="${go}"><span class="foto" style="background-image:url('${foto}')"></span><span class="tx"><h3>${titulo}</h3><p>${texto}</p></span><span class="seta">${IC_SETA}</span></button>`;
+  el.innerHTML = `
+    <div class="in-hero">
+      <div class="in-copy">
+        <span class="eyebrow">Bancada Sposence</span>
+        <h1 class="in-titulo" id="h-inicio">${saudacao}, <em>Sposence.</em></h1>
+        <p class="in-lead">${lead}</p>
+        <div class="in-cta">
+          <button class="btn-site" type="button" data-go="baixa"><span>Dar baixa em uma venda</span>${IC_SETA}</button>
+          <button class="btn" type="button" data-go="pedidos">Ver pedidos</button>
+        </div>
+      </div>
+      <div class="in-stage">
+        <picture class="in-frame">
+          <source type="image/webp" srcset="img/hero/sacola-640.webp 640w, img/hero/sacola-960.webp 960w, img/hero/sacola-1280.webp 1280w" sizes="(min-width: 900px) 40vw, 100vw">
+          <img src="img/hero/sacola-1280.jpg" alt="Frasco Sposence sobre a sacola de algodão cru, em luz de fim de tarde" width="1600" height="1460" decoding="async">
+        </picture>
+        <div class="in-float"><small>Estoque na bancada</small><div class="num">${nf.format(est.resumo.ml_total)}<em> ml</em></div><span>${est.resumo.frascos_prontos} frascos prontos</span></div>
+      </div>
+    </div>
+    <section class="in-sec" aria-label="Números de hoje">
+      <div class="in-metricas">
+        <button type="button" class="in-m in-m--forte" data-go="pedidos"><small>A receber</small><div class="num">${din(receber)}</div><span>${comPend ? `${comPend} ${comPend === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'nada pendente'}</span><span class="seta">${IC_SETA}</span></button>
+        <button type="button" class="in-m" data-go="pedidos"><small>Pedidos em aberto</small><div class="num">${abertos}</div><span>para separar e entregar</span><span class="seta">${IC_SETA}</span></button>
+        <button type="button" class="in-m" data-go="estoque"><small>Perfumes sem estoque</small><div class="num">${est.resumo.esgotados}</div><span>${baixos.length ? `${baixos.length} pedindo reposição` : 'tudo abastecido'}</span><span class="seta">${IC_SETA}</span></button>
+        <button type="button" class="in-m" data-go="clientes"><small>Clientes para chamar</small><div class="num">${paraChamar == null ? '…' : paraChamar}</div><span>pelo ritmo de compra</span><span class="seta">${IC_SETA}</span></button>
+      </div>
+    </section>
+    <section class="in-sec" aria-labelledby="h-ir">
+      <h2 id="h-ir">Para onde <em>ir</em></h2>
+      <div class="in-atalhos">
+        ${tile('pedidos', 'Pedidos', `${abertos} em aberto, quadro por etapa`, 'img/hero/sacola-960.webp', 'in-tile--alto')}
+        ${tile('estoque', 'Estoque', 'frascos, granel, maturação e insumos', 'img/Royal Amber.jpg')}
+        ${tile('catalogo', 'Catálogo', 'o que aparece no site, preços e fotos', 'img/Light Blue.jpg')}
+      </div>
+    </section>
+    <section class="in-sec" aria-labelledby="h-aten">
+      <h2 id="h-aten">Precisa de <em>atenção</em></h2>
+      ${cards.length ? `<div class="in-aten">${cards.map((c) => `<div class="in-c">
+        ${c.icone ? '<span class="foto foto--vazia"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 16.5v.01"/><circle cx="12" cy="12" r="9"/></svg></span>' : `<span class="foto" style="background-image:url('${c.foto}')"></span>`}
+        <div><b>${esc(c.titulo)}</b><small>${c.sub}</small></div>
+        ${c.btn[0] === 'go' ? `<button class="btn pequeno" type="button" data-go="${c.btn[1]}">${c.btn[2]}</button>` : `<button class="btn pequeno" type="button" data-act="entrada" data-id="${esc(c.btn[1])}">${IC_MAIS} ${c.btn[2]}</button>`}</div>`).join('')}</div>`
+      : '<div class="in-ok"><b>Tudo em dia.</b>Nenhum perfume pedindo reposição e nada pendente por agora.</div>'}
+    </section>`;
+}
+
 function desenharTudo() {
-  desenharEstoque(); desenharPedidos(); desenharBaixa(); desenharCatalogo(); desenharHistorico();
+  desenharInicio(); desenharEstoque(); desenharPedidos(); desenharBaixa(); desenharCatalogo(); desenharHistorico();
   if (cli) desenharClientes();
   if (cliVelho && !$('t-clientes').hidden) carregarClientes();
 }
@@ -958,10 +1191,11 @@ const abertosEst = new Set();
 const SETA_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 function itemEstoque(p, i, maior) {
   return `<li class="item" style="--i:${i}" data-id="${esc(p.id)}">
-    ${vidro(esc(p.id), p.ml_total ? Math.max(.05, p.ml_total / maior).toFixed(3) : 0)}
+    <span class="item-foto" style="background-image:url('${imgCat(p.id)}')"></span>
     <div>
       <h3>${esc(p.nome)}${selos(p)}</h3>
       <div class="ml">${nf.format(p.ml_total)}<em>ml no total</em></div>
+      <div class="nivel" aria-hidden="true"><i style="--n:${p.ml_total ? Math.max(.04, p.ml_total / maior).toFixed(3) : 0}"></i></div>
       <p class="detalhe"><b>${nf.format(p.granel_ml)}</b> ml a granel${est.tamanhos.map((s) => ` · <b>${p.unidades[s]}</b> × ${s}`).join('')}</p>
       <p class="detalhe" style="margin-top:2px">No site: ${est.tamanhos.map((s) => `<b>${p.vende[s]}</b> de ${s}`).join(' ou ')}</p>
       <div class="acoes">
@@ -1002,14 +1236,16 @@ function desenharEstoque() {
   $('t-estoque').innerHTML = `
     ${cabecaSecao('Bancada', 'Seu <em>estoque</em>', 'Essência em ml, do granel ao frasco.', 'h-estoque')}
     ${trocaEstoque()}
+    <div class="es-grade"><aside class="es-lado">
     <div class="total">
       <div class="num">${nf.format(r.ml_total)}<em>ml</em></div>
       <p>de essência no total, em <b>${r.frascos_prontos}</b> frascos prontos e no granel${r.esgotados ? `. <b>${r.esgotados}</b> ${r.esgotados === 1 ? 'perfume está' : 'perfumes estão'} sem estoque` : ''}.</p>
     </div>
     ${est.insumos.some((i) => i.acabando) ? `<p class="detalhe" style="margin:-6px 0 20px">Insumos acabando: <b>${esc(est.insumos.filter((i) => i.acabando).map((i) => i.nome.toLowerCase()).join(', '))}</b>. <button class="link" data-go="insumos" type="button">Ver insumos</button></p>` : ''}
     <button class="btn primario" data-act="entrada" type="button">${IC_MAIS} Registrar entrada</button>
+    </aside><div class="es-corpo">
     ${pratos ? blocosEstoque(maior)
-    : `<div class="vazio"><span class="simbolo"></span><b>A prateleira está vazia</b>Quando o primeiro lote maturar, registre a entrada e o vidro aparece aqui.</div>`}`;
+    : `<div class="vazio"><span class="simbolo"></span><b>A prateleira está vazia</b>Quando o primeiro lote maturar, registre a entrada e o vidro aparece aqui.</div>`}</div></div>`;
   primeiraVez = false;
 }
 
@@ -1608,7 +1844,7 @@ async function carregarClientes(forcar) {
   try {
     const d = await api('clientes');
     cli = d.clientes; cliVelho = false;
-    desenharClientes();
+    desenharClientes(); desenharInicio();
   } catch (e) { if (!$('t-clientes').hidden) falhou(e); }
 }
 
@@ -2288,6 +2524,7 @@ const abertosCat = new Set();
 const GRUPOS_CAT = [['doces', 'Perfumes doces', '#daa753'], ['frescos', 'Perfumes frescos', '#b9ba86'], ['noturnos', 'Perfumes noturnos', '#8a5a2b'], ['elegantes', 'Perfumes elegantes', '#6b6943'], ['perfumes', 'Outros perfumes', '#a8a496'], ['skincare', 'Cremes', '#e3c9a3'], ['body_splashes', 'Body splashes', '#9db4a0'], ['merchandise', 'Acessórios', '#b8a58f']];
 function linhaCatalogo(p) {
   return `<li class="linha${p.status === 'oculto' ? ' fora' : ''}" data-id="${esc(p.id)}">
+    <span class="linha-foto" style="background-image:url('${imgCat(p.id)}')"></span>
     <div class="nome">${esc(p.nome)}</div>
     <div class="meta">${esc(p.rotulo)}, ${precoTexto(p)}${p.criado_no_painel ? ', criado no painel' : ''}${p.controlado ? ', com estoque' : ''}</div>
     <div class="troca" role="group" aria-label="Situação de ${esc(p.nome)} no site">
