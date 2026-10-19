@@ -869,7 +869,7 @@
     /* ---- baixa: observações, valor, desconto sugerido ---- */
     .prev-valor { margin-top: 6px; color: var(--suave); }
     .prev-valor b { color: var(--tinta); font-family: 'Philosopher', serif; font-size: 24px; font-weight: 400; }
-    .prev-valor span { text-decoration: line-through; }
+    .prev-valor .prev-de { text-decoration: line-through; }
     .desc-sug { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linha); }
     .desc-sug h4 { font-family: 'Philosopher', serif; font-weight: 400; font-size: 22px; }
     .desc-ops { display: grid; gap: 10px; margin-top: 12px; }
@@ -910,6 +910,74 @@
     .vl { font-variant-numeric: tabular-nums; }
     html[data-ocultar="1"] .vl { letter-spacing: .08em; user-select: none; }
     #valores[aria-pressed="true"] { color: var(--acento); }
+    /* ---------- celular: nada passa da largura da tela ---------- */
+    html, body { max-width: 100%; overflow-x: clip; }
+    .ped-lista > li, .mat-lista > li, .cli-lista > li, .fe-grade > li, .lista > li { min-width: 0; }
+    @media (max-width: 560px) {
+      /* navbar: logo menor e botões mais juntos para caber logo, busca, valores, tema e menu */
+      .sp-nav__in { gap: 6px; padding: 6px 8px 6px 14px; }
+      .sp-nav .marca { gap: 8px; }
+      .sp-nav .palavra { width: 108px; height: 17.5px; }
+      .sp-nav .simbolo { width: 24px; height: 24px; }
+      .sp-nav__acoes { gap: 0; }
+      .sp-nav__acoes button { min-width: 40px; min-height: 44px; }
+      /* chaves de várias opções (etapa do pedido, status do produto): uma linha só, opções de larguras iguais */
+      .troca, .escolha { display: flex; flex-wrap: nowrap; width: 100%; gap: 2px; padding: 4px; }
+      .troca button, .escolha button { flex: 1 1 auto; min-width: 0; padding: .6rem .35rem; font-size: 13px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .troca-vista { width: 100%; }
+      .troca-vista button { flex: 1 1 auto; padding-inline: .9rem; overflow: visible; }
+      .ped-cabeca .ped-acoes { width: 100%; }
+      .ped-acoes .troca-vista { flex: 1 1 auto; }
+      /* cartão de pedido */
+      .ped--g { padding: 20px 18px 16px; }
+      .ped--g .ped-pe { flex-wrap: wrap; gap: 8px 12px; }
+      .ped--g .ped-total { font-size: 25px; }
+      .ped-de { margin-left: 6px; }
+    }
+    @media (max-width: 639px) {
+      /* janelas do celular: folha que sobe de baixo e ocupa a largura toda */
+      dialog:not(.tela-cheia) { width: 100%; max-width: 100%; margin: auto 0 0; }
+    }
+    @media (max-width: 560px) {
+      .troca button, .escolha button { font-size: 12.5px; letter-spacing: -.01em; padding: .6rem .1rem; text-overflow: clip; }
+    }
+    @media (max-width: 560px) {
+      /* produto no estoque: foto pequena ao lado do nome, e os botões ocupam a largura toda */
+      .fe-grade .item { grid-template-columns: 72px 1fr; column-gap: 14px; row-gap: 0; padding: 14px; }
+      .item > div { display: contents; }
+      .item-foto { width: 72px; height: 72px; grid-row: 1 / span 3; align-self: start; }
+      .item h3 { grid-column: 2; font-size: 21px; }
+      .item .ml, .item .nivel { grid-column: 2; }
+      .item .ml { font-size: 30px; margin-top: 4px; }
+      .item .detalhe, .item .acoes { grid-column: 1 / -1; }
+      .item .acoes { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+      .item .acoes .btn { padding: 0 8px; min-width: 0; }
+    }
+    .previa ul { padding: 0; margin-left: 0; }
+    .previa li { padding-left: 0; }
+    @media (max-width: 560px) {
+      /* catálogo: a chave Visível / Esgotado / Oculto e os links usam a largura toda do cartão, abaixo da foto */
+      .linha-foto { grid-row: span 2; }
+      .linha > .troca, .linha > .links { grid-column: 1 / -1; }
+      .linha > .troca { margin-top: 10px; }
+    }
+    .cli-grade > *, .tela-grade > *, .cli-blocos > * { min-width: 0; }
+    @media (max-width: 999px) { .cli-grade { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 560px) {
+      /* ficha do cliente: voltar e situação em cima, nome embaixo, e nada passa da tela */
+      .tela-topo { flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 8px 14px 12px; gap: 2px 10px; }
+      .tela-id { order: 3; flex: 1 1 100%; }
+      .tela-id h2 { white-space: normal; overflow: visible; font-size: 26px; }
+      .tela-in { padding: 14px 14px calc(36px + env(safe-area-inset-bottom)); }
+      .cli-acao { padding: 18px 16px; }
+      .sug li { gap: 10px; }
+      .sug li > div { min-width: 0; flex: 1; }
+      .sug li.sel { margin: 0; padding: 12px 10px; }
+      .sug .btn { flex: none; padding: 0 12px; min-height: 36px; font-size: 13px; }
+      .cli-corpo-in { padding: 4px 16px 18px; }
+      .faixa--3 div { padding: 4px 12px; }
+      .faixa--3 b { font-size: 24px; }
+    }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 </head>
@@ -2850,7 +2918,7 @@ function mostrarPrevia(d, erro, alvo = 'previa') {
   const linhas = (d.linhas || []).map((l) => `<li class="${l.ok === true ? 'ok' : 'aviso'}">${esc(l.texto)}</li>`).join('');
   const probs = (d.problemas || []).map((t) => `<li class="bad">${esc(t)}</li>`).join('');
   const v = d.valor;
-  const resumo = v ? `<p class="prev-valor">Total <b>${din(v.total)}</b>${v.total !== v.subtotal ? ` <span>de ${din(v.subtotal)}</span>` : ''}${v.lucro != null ? ` · lucro estimado <b>${din(v.lucro)}</b>` : ''}</p>` : '';
+  const resumo = v ? `<p class="prev-valor">Total <b>${din(v.total)}</b>${v.total !== v.subtotal ? ` <span class="prev-de">de ${din(v.subtotal)}</span>` : ''}${v.lucro != null ? ` · lucro estimado <b>${din(v.lucro)}</b>` : ''}</p>` : '';
   const s = d.desconto_sugerido;
   const sug = s && s.opcoes.length ? `<div class="desc-sug"><h4>Desconto sugerido para ${s.unidades} itens</h4>
     <div class="desc-ops">${s.opcoes.map((o) => `<button type="button" class="desc-op${o.id === s.recomendada ? ' rec' : ''}" data-act="av-desc" data-valor="${o.total}">
