@@ -119,25 +119,42 @@
 
   /* ---------- perfumes ---------- */
   const foto = (p) => encodeURI(p.image || '');
-  function cartao(p) {
+  function cartao(p, i, novo) {
     const nao = ed.naocurte.has(p.id);
     const no = carrinhoLocal().includes(p.id);
     const b = (l, rotulo) => `<button type="button" class="pf-b" data-lista="${l}" data-id="${esc(p.id)}" aria-pressed="${ed[l].has(p.id)}">${rotulo}</button>`;
-    return `<article class="pf${nao ? ' nao' : ''}">
-      <div class="pf-foto" style="background-image:url('${foto(p)}')">
-        <span class="pf-fam">${esc(rotuloPerfil(p.profile))}</span>${no ? '<span class="pf-car">No carrinho</span>' : ''}
+    return `<article class="pf reveal reveal-delay-${(i % 4) + 1}${nao ? ' nao' : ''}${novo ? ' pulsa' : ''}" data-id="${esc(p.id)}">
+      <div class="pf-foto"><span class="pf-img" style="background-image:url('${foto(p)}')"></span>${no ? '<span class="pf-car">No carrinho</span>' : ''}
         <button type="button" class="pf-x" data-lista="naocurte" data-id="${esc(p.id)}" aria-pressed="${nao}" aria-label="${nao ? 'Voltar a mostrar' : 'Não curto'} ${esc(p.name)}" title="${nao ? 'Desfazer' : 'Não curto'}">${nao ? '<i class="ph ph-arrow-counter-clockwise"></i>' : '<i class="ph ph-x"></i>'}</button>
       </div>
-      <div class="pf-corpo"><b>${esc(p.name)}</b>${p.inspired_by ? `<small>inspirado em ${esc(p.inspired_by)}</small>` : ''}</div>
+      <p class="pf-nome">${esc(p.name)}</p>
       <div class="pf-bot">${nao ? '<span class="pf-nao">Não curto</span>' : `${b('usou', 'Já usei')}${b('desejos', 'Quero')}`}</div>
     </article>`;
   }
+  const FRASE = { doces: 'Baunilha, caramelo e aconchego.', frescos: 'Cítricos, brisa e leveza.', noturnos: 'Intensos e sedutores.', elegantes: 'Florais nobres e orientais.' };
+  const COR = { doces: '#daa753', frescos: '#b9ba86', noturnos: '#4a2509', elegantes: '#6b6943' };
+  const marcadosDe = (k) => PERFUMES.filter((p) => p.profile === k && (ed.usou.has(p.id) || ed.desejos.has(p.id))).length;
   function listaPerfumes() {
     const q = normal(busca);
-    const itens = PERFUMES.filter((p) => (!q || normal(p.name + ' ' + (p.inspired_by || '')).includes(q)) && (filtro === 'todos' || ed[filtro].has(p.id)));
-    if (itens.length) return itens.map(cartao).join('');
-    return filtro === 'todos' ? '<p class="conta-nota">Nenhum perfume encontrado.</p>'
-      : '<div class="pf-vazio"><b>Nada por aqui ainda</b><span>Marque perfumes na aba Todos e eles aparecem aqui.</span></div>';
+    const ok = (p) => (!q || normal(p.name + ' ' + (p.inspired_by || '')).includes(q)) && (filtro === 'todos' || ed[filtro].has(p.id));
+    const blocos = PERFIS.map(([k, nome]) => {
+      const todos = PERFUMES.filter((p) => p.profile === k);
+      const itens = todos.filter(ok);
+      if (!itens.length) return '';
+      return `<section class="fam-bloco reveal" data-fam="${k}" style="--cor:${COR[k]}">
+        <header class="fam-cab"><span class="fam-ponto" aria-hidden="true"></span><div><h3>${nome}</h3><p>${FRASE[k]}</p></div><span class="fam-cont" data-cont="${k}">${marcadosDe(k)} de ${todos.length}</span></header>
+        <div class="pf-fila">${itens.map((p, i) => cartao(p, i)).join('')}</div></section>`;
+    }).join('');
+    return blocos || (filtro === 'todos' ? '<p class="conta-nota">Nenhum perfume encontrado.</p>'
+      : '<div class="pf-vazio"><b>Nada por aqui ainda</b><span>Marque perfumes na aba Todos e eles aparecem aqui.</span></div>');
+  }
+  const atualizarContagens = () => PERFIS.forEach(([k]) => { const el = document.querySelector(`[data-cont="${k}"]`); if (el) el.textContent = `${marcadosDe(k)} de ${PERFUMES.filter((p) => p.profile === k).length}`; });
+
+  // animações do site: .reveal + .visible (observer próprio, porque a página é montada depois do carregamento)
+  const reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const observador = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visible'); observador.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }) : null;
+  function revelar(raiz, semAnimar) {
+    raiz.querySelectorAll('.reveal:not(.visible)').forEach((el) => { if (semAnimar || reduzido || !observador) el.classList.add('visible'); else observador.observe(el); });
   }
   const abas = () => [['todos', 'Todos', PERFUMES.length], ['usou', 'Já usei', ed.usou.size], ['desejos', 'Quero', ed.desejos.size], ['naocurte', 'Não curto', ed.naocurte.size]]
     .map(([k, n, c]) => `<button type="button" class="cp-aba" data-aba="${k}" aria-pressed="${filtro === k}">${n} <small>${c}</small></button>`).join('');
@@ -157,7 +174,7 @@
           <button type="button" class="h-btn h-btn--ghost conta-sair" data-acao="sair">Sair</button>
         </div>
 
-        <section class="conta-card gosto-card" aria-labelledby="t-gosto">
+        <section class="conta-card gosto-card reveal" aria-labelledby="t-gosto">
           <h2 id="t-gosto">O seu gosto</h2>
           <div id="gosto-auto" aria-live="polite">${blocoGosto()}</div>
           <details class="ajuste">
@@ -168,12 +185,12 @@
           </details>
         </section>
 
-        <section class="conta-card" aria-labelledby="t-perfumes">
+        <section class="conta-card reveal reveal-delay-1" aria-labelledby="t-perfumes">
           <h2 id="t-perfumes">Seus perfumes</h2>
           <p class="conta-sub">Toque em <b>Já usei</b> ou <b>Quero</b>. Se não curte um, toque no X da foto.</p>
           <div class="cp-abas" id="cp-abas" role="group" aria-label="Filtrar a lista">${abas()}</div>
           <input id="conta-busca" type="search" class="conta-campo" placeholder="Buscar fragrância" aria-label="Buscar fragrância" value="${esc(busca)}" autocomplete="off" />
-          <div class="pf-grade" id="conta-perfumes">${listaPerfumes()}</div>
+          <div class="pf-blocos" id="conta-perfumes">${listaPerfumes()}</div>
         </section>
 
         <div class="conta-card">
@@ -213,6 +230,7 @@
         <p>Isso apaga o seu perfil, o seu gosto, as suas listas e o seu consentimento. Não dá para desfazer.</p>
         <div class="conta-acoes"><button type="button" class="h-btn h-btn--ghost" data-acao="cancelar">Cancelar</button><button type="button" class="h-btn h-btn--primary" data-acao="confirmar-excluir">Excluir</button></div>
       </dialog>`;
+    revelar($('conta-app'));
   }
 
   const marcarSujo = () => { sujo = true; const b = $('conta-barra'); if (b) b.hidden = false; };
@@ -238,7 +256,7 @@
       if (l === 'naocurte') { ed.usou.delete(id); ed.desejos.delete(id); } else ed.naocurte.delete(id);
     }
   }
-  const redesenharLista = () => { $('conta-perfumes').innerHTML = listaPerfumes(); $('cp-abas').innerHTML = abas(); };
+  const redesenharLista = () => { const el = $('conta-perfumes'); el.innerHTML = listaPerfumes(); revelar(el, true); $('cp-abas').innerHTML = abas(); };
 
   document.addEventListener('click', async (ev) => {
     const alvo = ev.target.closest('[data-grupo], [data-lista], [data-acao], [data-aba]');
@@ -256,7 +274,8 @@
       const antigo = alvo.closest('.pf');
       const p = porId.get(d.id);
       const ficaNaLista = filtro === 'todos' || ed[filtro].has(d.id);
-      if (ficaNaLista) { const t = document.createElement('div'); t.innerHTML = cartao(p); antigo.replaceWith(t.firstElementChild); } else antigo.remove();
+      if (ficaNaLista) { const t = document.createElement('div'); t.innerHTML = cartao(p, 0, true); const novo = t.firstElementChild; novo.classList.add('visible'); antigo.replaceWith(novo); } else { const bloco = antigo.closest('.fam-bloco'); antigo.remove(); if (bloco && !bloco.querySelector('.pf')) bloco.remove(); }
+      atualizarContagens();
       const ab = $('cp-abas'); if (ab) ab.innerHTML = abas();
       marcarSujo(); atualizarGosto(); return;
     }
@@ -280,7 +299,7 @@
     }
   });
   document.addEventListener('input', (ev) => {
-    if (ev.target.id === 'conta-busca') { busca = ev.target.value; $('conta-perfumes').innerHTML = listaPerfumes(); }
+    if (ev.target.id === 'conta-busca') { busca = ev.target.value; redesenharLista(); }
     else if (ev.target.id === 'conta-whats') { ed.whatsapp = ev.target.value; marcarSujo(); }
   });
   document.addEventListener('change', (ev) => {
