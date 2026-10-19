@@ -137,7 +137,7 @@ export function estado(e) {
     formas_pagamento: FORMAS,
     etapas_pedido: STATUS_PEDIDO,
     insumos: e.insumos.map((i) => ({ ...i, acabando: i.qtd <= (i.minimo ?? 0) })),
-    historico: e.historico.slice(-30).reverse().map((h) => ({ id: h.id, data: h.data, tipo: h.tipo, descricao: h.descricao })),
+    historico: e.historico.slice(-30).reverse().map((h) => ({ id: h.id, data: h.data, tipo: h.tipo, descricao: h.descricao, produto_id: (h.movs || []).find((m) => m.campo !== 'insumo')?.id })),
   };
 }
 
@@ -173,7 +173,7 @@ function dadosEditaveis(p) {
 
 // ---------- Catálogo: criar, editar, status, preços ----------
 const erro = (msg, status = 400) => Object.assign(new Error(msg), { status });
-const limpar = (s, max = 300) => String(s ?? '').replace(/[<>"`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+export const limpar = (s, max = 300) => String(s ?? '').replace(/[<>"`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
 const slug = (s) => normal(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 function preco(v, nome) {
@@ -530,7 +530,7 @@ function recalcularParcelas(p) {
   p.parcelas = lista;
 }
 
-export function criarPedido(e, { origem, itens, cliente, pagamento, movs, hash, texto }) {
+export function criarPedido(e, { origem, itens, cliente, pagamento, movs, hash, texto, desconto, obs }) {
   const total = arred(itens.reduce((t, i) => t + i.total, 0));
   const numero = e.proximo_pedido++;
   const p = {
@@ -540,6 +540,8 @@ export function criarPedido(e, { origem, itens, cliente, pagamento, movs, hash, 
     status: 'novo', observacoes: [], movs, hash,
   };
   if (texto) p.texto = String(texto).slice(0, 2500);
+  if (desconto) p.desconto = desconto;
+  if (obs) p.observacoes.push({ data: agora(), texto: limpar(obs, 500) });
   e.pedidos.push(p);
   return p;
 }

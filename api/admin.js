@@ -4,6 +4,8 @@
 //   estado
 //   pedido          { texto, confirmar }                       baixa a partir da mensagem do pedido
 //   venda           { itens: [{id, tamanho, qtd}], confirmar } venda avulsa
+//   venda           também aceita { valor_total, obs }          valor combinado (desconto) e observação do pedido
+//   saida_ml        { id, ml, motivo, obs, confirmar }          tira ml do granel sem venda (amostra, perda, presente)
 //   entrada         { id, ml }  ou  { id, tamanho, qtd }  ou  { id, unidades: { "30ml": 5, "50ml": 3 } }
 //   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
@@ -37,8 +39,9 @@ import {
   movimentoDeInsumo, movimentoDeAjusteInsumo, criarInsumo, removerInsumo,
   clienteDe, clienteDoTexto, itensParaPedido, criarPedido, statusPedido, observacaoPedido, clientePedido,
   formaPedido, parcelaPedido, quitarPedido, parcelamentoPedido, adicionarItemPedido, cancelarPedido,
-  criarLote, editarLote, removerLote, concluirLote,
+  criarLote, editarLote, removerLote, concluirLote, limpar,
 } from './_estoque.js';
+import { custoUnitario, sugerirDesconto } from './_custos.js';
 
 const LIMITE_TENTATIVAS = 8;   // senhas erradas por aparelho...
 const JANELA_SEGUNDOS = 600;  // ...a cada 10 minutos
@@ -99,16 +102,35 @@ export default async function handler(req, res) {
         if (!itens.length || itens.some((i) => !i.qtd)) return res.status(400).json({ erro: 'Escolha pelo menos um item.' });
         tipo = 'venda';
       }
-      const descricao = itens.map((i) => `${i.qtd}x ${i.nome} (${i.variante})`).join(', ');
+      const cliente = b.acao === 'pedido' ? clienteDoTexto(b.texto) : clienteDe(b.cliente);
+      const descricao = itens.map((i) => `${i.qtd}x ${i.nome} (${i.variante})`).join(', ') + (cliente.nome ? ` · ${cliente.nome}` : '');
       const sim = simularBaixa(e, itens);
       if (sim.problemas.length) return res.status(409).json({ erro: 'Falta estoque, nada foi descontado.', linhas: sim.linhas, problemas: sim.problemas });
-      if (!b.confirmar) return res.status(200).json({ previa: true, linhas: sim.linhas, descricao });
+      const itensPedido = itensParaPedido(e, itens);
+      const subtotal = Math.round(itensPedido.reduce((t, i) => t + i.total, 0) * 100) / 100;
+      // valor combinado com a pessoa (desconto, arredondamento): vale no pedido e é rateado entre os itens
+      let desconto;
+      const valor = b.valor_total === undefined || b.valor_total === '' || b.valor_total === null ? null : Number(b.valor_total);
+      if (valor !== null) {
+        if (!Number.isFinite(valor) || valor <= 0 || valor > 100000) return res.status(400).json({ erro: 'O valor combinado precisa ser maior que zero.' });
+        if (Math.abs(valor - subtotal) >= 0.01) {
+          const razao = valor / (subtotal || 1);
+          let resto = valor;
+          itensPedido.forEach((i, k) => { const t = k === itensPedido.length - 1 ? Math.round(resto * 100) / 100 : Math.round(i.total * razao * 100) / 100; i.total = t; resto -= t; });
+          desconto = { de: subtotal, para: valor };
+        }
+      }
+      const custoDe = (i) => { const p = todos(e).find((x) => x.id === i.produto_id); return p ? custoUnitario(p, i.variante) : null; };
+      const sugestao = b.acao === 'venda' ? sugerirDesconto(itensPedido.map((i) => ({ qtd: i.qtd, total: i.total, custo: custoDe(i) }))) : null;
+      const custoTotal = itensPedido.every((i) => custoDe(i) != null) ? Math.round(itensPedido.reduce((t, i) => t + custoDe(i) * i.qtd, 0) * 100) / 100 : null;
+      const resumoValor = { subtotal, total: valor !== null && desconto ? valor : subtotal, custo: custoTotal, lucro: custoTotal == null ? null : Math.round(((desconto ? valor : subtotal) - custoTotal) * 100) / 100 };
+      if (!b.confirmar) return res.status(200).json({ previa: true, linhas: sim.linhas, descricao, valor: resumoValor, desconto_sugerido: sugestao && !desconto ? sugestao : null });
       const pagamento = { modo: ['pago', 'pendente', 'parcelado'].includes(b.pagamento?.modo) ? b.pagamento.modo : (b.acao === 'pedido' ? 'pendente' : 'pago'), parcelas: b.pagamento?.parcelas, forma: b.pagamento?.forma };
       const pedido = criarPedido(e, {
         origem: b.acao === 'pedido' ? 'site' : 'avulsa',
-        itens: itensParaPedido(e, itens),
-        cliente: b.acao === 'pedido' ? clienteDoTexto(b.texto) : clienteDe(b.cliente),
+        itens: itensPedido, cliente,
         pagamento, movs: sim.movs, hash, texto: b.acao === 'pedido' ? b.texto : undefined,
+        desconto, obs: b.obs,
       });
       if (sim.movs.length) registrar(e, { tipo, descricao, movs: sim.movs, hash, meta: { pedido: pedido.id } });
       await salvar(e);
@@ -136,6 +158,22 @@ export default async function handler(req, res) {
         registrar(e, { tipo: 'ajuste', descricao: `Correção manual de ${nome}`, movs });
         await salvar(e);
       }
+    } else if (b.acao === 'saida_ml') {
+      const prod = todos(e).find((p) => p.id === b.id && p.category === 'perfumes');
+      if (!prod) return res.status(404).json({ erro: 'Perfume não encontrado.' });
+      const ml = inteiro(b.ml, 5000);
+      if (!ml) return res.status(400).json({ erro: 'Informe quantos ml saíram.' });
+      const MOTIVOS = { amostra: 'amostra', perda: 'perda na produção', presente: 'presente', teste: 'teste', outro: 'outra saída' };
+      const motivo = MOTIVOS[b.motivo] ? b.motivo : 'outro';
+      const granel = e.produtos[prod.id]?.granel_ml || 0;
+      if (ml > granel) return res.status(409).json({ erro: 'Falta granel, nada foi descontado.', linhas: [], problemas: [`${prod.name}: só há ${granel} ml a granel. Registre a entrada ou corrija o estoque.`] });
+      const obs = limpar(b.obs, 200);
+      const descricao = `−${ml} ml de ${prod.name}: ${MOTIVOS[motivo]}${obs ? ` (${obs})` : ''}`;
+      const linhas = [{ ok: true, texto: `${prod.name}: −${ml} ml do granel (sobram ${granel - ml} ml)` }];
+      if (!b.confirmar) return res.status(200).json({ previa: true, linhas, descricao });
+      registrar(e, { tipo: 'saida', descricao, movs: [{ id: prod.id, campo: 'granel_ml', delta: -ml }] });
+      await salvar(e);
+      extra = { feito: true, linhas, nada_a_descontar: false };
     } else if (b.acao === 'desfazer') {
       const h = desfazerUltimo(e);
       await salvar(e);

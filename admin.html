@@ -834,7 +834,79 @@
       ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
     }
     main { overflow-x: clip; }
+
+    /* ---- pedido: cartão maior e mais limpo ---- */
+    .ped--g { padding: 24px 24px 20px; }
+    .ped-cab { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; }
+    .ped-fotos { display: flex; }
+    .ped-fotos span { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--papel); background: var(--linha) center / cover; }
+    .ped-fotos span + span { margin-left: -22px; }
+    .ped--g .ped-nome { font-size: 30px; margin-top: 2px; }
+    .ped-prods { display: grid; gap: 4px; margin-top: 16px; }
+    .ped-item { font-size: 17px; line-height: 1.3; }
+    .ped-item b { font-weight: 600; }
+    .ped-item small { color: var(--suave); font-size: 14.5px; }
+    .ped-mais { color: var(--suave); font-size: 14px; }
+    .ped--g .trilha { margin: 20px 0 6px; }
+    .ped--g .ped-pe { align-items: center; margin-top: 16px; }
+    .ped--g .ped-total { font-size: 28px; }
+    .ped-de { color: var(--suave); text-decoration: line-through; margin-left: 8px; font-size: 14px; }
+    .ped-pg { padding: 6px 14px; border-radius: 99px; font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+    .ped-pg.ok { background: color-mix(in srgb, var(--acento) 18%, transparent); color: var(--tinta); }
+    .ped-pg.pend { background: color-mix(in srgb, var(--ouro) 26%, transparent); color: var(--tinta); }
+    @media (max-width: 520px) { .ped-cab { grid-template-columns: auto 1fr; } .ped-cab .chip-st { grid-column: 1 / -1; justify-self: start; } .ped--g .ped-nome { font-size: 26px; } }
+
+    /* ---- histórico: cartão grande, com a foto e o nome do cliente ---- */
+    .hist--g { display: grid; grid-template-columns: 76px 1fr auto; gap: 20px; align-items: center; padding: 22px 24px; margin-top: 14px; }
+    .hist-foto { width: 76px; height: 76px; border-radius: 18px; background: var(--linha) center / cover; }
+    .hist-tipo { display: inline-block; padding: 4px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: color-mix(in srgb, var(--acento) 16%, transparent); }
+    .hist-quem { font-family: 'Philosopher', serif; font-size: 26px; line-height: 1.12; margin-top: 8px; }
+    .hist-desc { font-size: 16px; margin-top: 4px; }
+    .hist--g .t { margin-top: 6px; }
+    @media (max-width: 560px) { .hist--g { grid-template-columns: 64px 1fr; } .hist--g .btn { grid-column: 1 / -1; } .hist-foto { width: 64px; height: 64px; } }
+
+    /* ---- baixa: observações, valor, desconto sugerido ---- */
+    .prev-valor { margin-top: 6px; color: var(--suave); }
+    .prev-valor b { color: var(--tinta); font-family: 'Philosopher', serif; font-size: 24px; font-weight: 400; }
+    .prev-valor span { text-decoration: line-through; }
+    .desc-sug { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linha); }
+    .desc-sug h4 { font-family: 'Philosopher', serif; font-weight: 400; font-size: 22px; }
+    .desc-ops { display: grid; gap: 10px; margin-top: 12px; }
+    @media (min-width: 700px) { .desc-ops { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .desc-op { text-align: left; display: grid; gap: 3px; padding: 14px 16px; border: 1px solid var(--forte); border-radius: 14px; background: transparent; color: var(--tinta); transition: transform .4s var(--ease), border-color .3s, background-color .3s; }
+    .desc-op:hover { transform: translateY(-3px); border-color: var(--tinta); }
+    .desc-op.rec { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 10%, transparent); }
+    .desc-rot { font-size: 13px; font-weight: 700; color: var(--suave); }
+    .desc-rot em { font-style: normal; color: var(--acento); margin-left: 4px; }
+    .desc-op b { font-family: 'Philosopher', serif; font-weight: 400; font-size: 28px; line-height: 1.1; }
+    .desc-op small { color: var(--suave); font-size: 13px; }
+    .desc-nota { font-style: italic; }
+
+    /* ---- ficha do cliente: resumo, sugestão e blocos que abrem ---- */
+    .faixa--3 { grid-template-columns: repeat(3, auto); justify-content: start; }
+    .cli-resumo { margin-bottom: 22px; }
+    .cli-curte { margin-top: 14px; font-family: 'Philosopher', serif; font-size: 24px; color: var(--suave); }
+    .cli-curte b { color: var(--tinta); font-weight: 400; }
+    .cli-grade { display: grid; gap: 16px; align-items: start; }
+    .cli-blocos { display: grid; gap: 12px; }
+    .cli-acao { padding: 24px; }
+    .cli-acao h3 { font-size: 28px; margin-bottom: 12px; }
+    .cli-acao h3 em { color: var(--acento); }
+    .cli-msg { margin-top: 20px; padding-top: 6px; border-top: 1px solid var(--linha); }
+    .cli-msg label { margin-top: 14px; }
+    .cli-corpo-in { padding: 4px 20px 22px; }
+    .cli-bloco .fe-topo { padding: 16px 18px; }
+    .cli-bloco .fe-nome { font-size: 22px; }
+    .fe-ic { font-size: 1.9rem; color: var(--acento); width: 1.9rem; text-align: center; }
+    @media (min-width: 1000px) { .cli-grade { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 22px; } }
+    @media (min-width: 900px) { .ped-lista { grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 18px; } }
+    .ped--g .ped-pe > div { display: flex; align-items: baseline; flex-wrap: nowrap; }
+    .ped--g .ped-total, .ped-de { white-space: nowrap; }
+    .ped--g .ped-num { display: block; line-height: 1.35; }
+    .ped--g .ped-nome { overflow-wrap: anywhere; }
+    @media (min-width: 1000px) { #t-baixa { max-width: none !important; } .bx-grade { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 0 32px; align-items: start; } }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 </head>
 <body>
 
@@ -1285,7 +1357,7 @@ function cabecaSecao(eyebrow, titulo, lead, id) {
 }
 
 // estoque: as famílias da loja são blocos que abrem
-const FAMILIAS_EST = [['doces', 'Doces', '#daa753'], ['frescos', 'Frescos', '#b9ba86'], ['noturnos', 'Noturnos', '#8a5a2b'], ['elegantes', 'Elegantes', '#6b6943'], ['outros', 'Outros', '#a8a496']];
+const FAMILIAS_EST = [['doces', 'Doces', '#daa753', 'ph-cookie'], ['frescos', 'Frescos', '#b9ba86', 'ph-waves'], ['noturnos', 'Noturnos', '#8a5a2b', 'ph-moon-stars'], ['elegantes', 'Elegantes', '#6b6943', 'ph-sparkle'], ['outros', 'Outros', '#a8a496', 'ph-drop']];
 const abertosEst = new Set();
 const SETA_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 function itemEstoque(p, i, maior) {
@@ -1307,7 +1379,7 @@ function itemEstoque(p, i, maior) {
 }
 function blocosEstoque(maior) {
   const perfilDe = (p) => { const c = est.catalogo.find((x) => x.id === p.id); return c && FAMILIAS_EST.some((f) => f[0] === c.perfil) ? c.perfil : 'outros'; };
-  return `<div class="fe">${FAMILIAS_EST.map(([k, nome, cor]) => {
+  return `<div class="fe">${FAMILIAS_EST.map(([k, nome, cor, ic]) => {
     const itens = est.produtos.filter((p) => perfilDe(p) === k);
     if (!itens.length) return '';
     const ml = itens.reduce((t, p) => t + p.ml_total, 0);
@@ -1316,7 +1388,7 @@ function blocosEstoque(maior) {
     const aberto = abertosEst.has(k);
     return `<section class="fe-acc${aberto ? ' aberto' : ''}" data-fe="${k}" style="--cor:${cor}">
       <button type="button" class="fe-topo" data-act="fe-toggle" data-id="${k}" aria-expanded="${aberto}" aria-controls="fe-${k}">
-        <span class="fe-ponto" aria-hidden="true"></span>
+        <i class="ph ${ic} fe-ic" aria-hidden="true"></i>
         <span class="fe-tx"><span class="fe-nome">${nome}</span><span class="fe-sub"><span>${itens.length} ${itens.length === 1 ? 'perfume' : 'perfumes'}</span>${sem ? `<span class="fe-alerta">${sem} sem estoque</span>` : ''}${acabando ? `<span class="fe-alerta">${acabando} acabando</span>` : ''}</span></span>
         <span class="fe-ml">${nf.format(ml)}<em>ml</em></span>
         <span class="fe-seta" aria-hidden="true">${SETA_MAIS}</span>
@@ -1406,6 +1478,7 @@ function desenharBaixa() {
   const maisAberto = rv('mais-aberto') === '1' || Boolean(rv('pedido')) || Boolean(pendente && pendente.corpo.acao === 'pedido');
   $('t-baixa').innerHTML = `
     ${cabecaSecao('Venda avulsa', 'Dar <em>baixa</em>', 'Alguém comprou? Desconte do estoque e crie o pedido.', 'h-baixa')}
+    <div class="bx-grade"><div class="bx-col">
     <div class="quadro">
       <h3>Venda avulsa</h3>
       <p class="ajuda">Escolha o que foi vendido. Vale para perfume, creme, body splash e acessório.</p>
@@ -1415,10 +1488,29 @@ function desenharBaixa() {
         <div><label for="av-nome">Cliente (opcional)</label><input id="av-nome" data-rasc value="${esc(rv('av-nome'))}" maxlength="80" /></div>
         <div><label for="av-tel">WhatsApp (opcional)</label><input id="av-tel" data-rasc value="${esc(rv('av-tel'))}" inputmode="tel" maxlength="30" /></div>
       </div>
+      <label for="av-valor">Valor combinado (opcional)</label>
+      <input id="av-valor" data-rasc type="number" min="0" step="0.01" inputmode="decimal" placeholder="Deixe vazio para usar o preço do site" value="${esc(rv('av-valor'))}" />
+      <p class="ajuda">Com mais de um item, a bancada sugere um desconto ao conferir e mostra quanto sobra de lucro.</p>
+      <label for="av-obs">Observações do pedido (opcional)</label>
+      <textarea id="av-obs" data-rasc style="min-height:84px" maxlength="500" placeholder="Ex.: levou uma amostra, entrega no sábado">${esc(rv('av-obs'))}</textarea>
       ${camposPagamento('av', 'pago')}
       <button class="btn primario cheio" id="conferir-avulsa" type="button" style="margin-top:24px">Conferir</button>
     </div>
     <div id="previa"></div>
+    </div><div class="bx-col">
+    <div class="quadro">
+      <h3>Saída em ml</h3>
+      <p class="ajuda">Amostra, perda na produção ou presente. Tira os ml do granel, sem criar pedido, e dá para desfazer.</p>
+      ${est.produtos.length ? `<label for="sm-prod">Perfume</label>${opcoesSel('sm-prod', rv('sm-prod', [...est.produtos].sort((x, y) => y.granel_ml - x.granel_ml)[0].id), [...est.produtos].sort((x, y) => y.granel_ml - x.granel_ml).map((p) => [p.id, `${p.nome} (${nf.format(p.granel_ml)} ml a granel)`]))}
+      <div class="grade2">
+        <div><label for="sm-ml">Quantos ml</label><input id="sm-ml" data-rasc type="number" min="1" inputmode="numeric" placeholder="5" value="${esc(rv('sm-ml'))}" /></div>
+        <div><label for="sm-motivo">Motivo</label>${opcoesSel('sm-motivo', rv('sm-motivo', 'amostra'), [['amostra', 'Amostra'], ['perda', 'Perda na produção'], ['presente', 'Presente'], ['teste', 'Teste'], ['outro', 'Outro']])}</div>
+      </div>
+      <label for="sm-obs">Observação (opcional)</label>
+      <input id="sm-obs" data-rasc maxlength="200" placeholder="Ex.: amostra para a Marina" value="${esc(rv('sm-obs'))}" />
+      <button class="btn cheio" id="conferir-saida" type="button" style="margin-top:22px">Conferir</button>` : '<p class="detalhe">Nenhum perfume com estoque controlado ainda.</p>'}
+    </div>
+    <div id="previa-saida"></div>
     <details class="mais"${maisAberto ? ' open' : ''}>
       <summary><span>Mensagem de pedido do site</span><small>colar do WhatsApp ou do e-mail</small></summary>
       <div class="mais-corpo">
@@ -1430,10 +1522,10 @@ function desenharBaixa() {
           <button class="btn primario" id="conferir" type="button">Conferir</button>
         </div>
       </div>
-    </details>`;
-  if (pendente) mostrarPrevia(pendente.previa, false);
+    </details></div></div>`;
+  if (pendente) mostrarPrevia(pendente.previa, false, pendente.alvo);
 }
-const limparRascunhoBaixa = () => { ['pedido', 'av-nome', 'av-tel'].forEach((k) => delete rasc[k]); avItens = [{ id: '', tam: '', qtd: 1 }]; };
+const limparRascunhoBaixa = () => { ['pedido', 'av-nome', 'av-tel', 'av-valor', 'av-obs', 'sm-ml', 'sm-obs'].forEach((k) => delete rasc[k]); avItens = [{ id: '', tam: '', qtd: 1 }]; };
 
 document.addEventListener('toggle', (ev) => { if (ev.target.matches && ev.target.matches('details.mais')) rasc['mais-aberto'] = ev.target.open ? '1' : ''; }, true);
 const mudouAv = (ev) => {
@@ -1502,11 +1594,19 @@ function blocoPagamento(p) {
 function cartaoPedido(p, i) {
   const nome = p.cliente?.nome;
   const cancelado = p.status === 'cancelado';
-  return `<li><article class="ped${cancelado ? ' cancelado' : ''}" style="--i:${i}" data-act="ped-abrir" data-id="${esc(p.id)}" tabindex="0" role="button" aria-label="Abrir o pedido ${p.numero}${nome ? ' de ' + esc(nome) : ''}">
-    <div class="ped-topo"><div><span class="ped-num">nº ${p.numero}, ${dataCurta(p.criado)}</span><h3 class="ped-nome${nome ? '' : ' sem-nome'}">${nome ? esc(nome) : 'Sem nome'}</h3></div>${chipEtapa(p.status)}</div>
-    <p class="ped-itens">${esc(resumoItens(p))}</p>
-    ${cancelado ? '' : trilha(p.status) + blocoPagamento(p)}
-    <div class="ped-pe"><span class="ped-total">${din(p.total)}</span><span class="ped-origem">${p.origem === 'site' ? 'pelo site' : 'venda avulsa'}</span></div>
+  const fotos = p.itens.slice(0, 3).map((it) => `<span style="background-image:url('${esc(imgCat(it.produto_id))}')"></span>`).join('');
+  const linhas = p.itens.slice(0, 2).map((it) => `<span class="ped-item"><b>${esc(it.nome)}</b>${it.variante ? ` <small>${esc(it.variante)}</small>` : ''}${it.qtd > 1 ? ` <small>× ${it.qtd}</small>` : ''}</span>`).join('');
+  const mais = p.itens.length > 2 ? `<span class="ped-item ped-mais">+ ${p.itens.length - 2} ${p.itens.length - 2 === 1 ? 'item' : 'itens'}</span>` : '';
+  return `<li><article class="ped ped--g${cancelado ? ' cancelado' : ''}" style="--i:${i}" data-act="ped-abrir" data-id="${esc(p.id)}" tabindex="0" role="button" aria-label="Abrir o pedido ${p.numero}${nome ? ' de ' + esc(nome) : ''}">
+    <div class="ped-cab">
+      <div class="ped-fotos" aria-hidden="true">${fotos}</div>
+      <div class="ped-quem"><span class="ped-num">nº ${p.numero}, ${dataCurta(p.criado)} · ${p.origem === 'site' ? 'pelo site' : 'venda avulsa'}</span><h3 class="ped-nome${nome ? '' : ' sem-nome'}">${nome ? esc(nome) : 'Sem nome'}</h3></div>
+      ${chipEtapa(p.status)}
+    </div>
+    <p class="ped-prods">${linhas}${mais}</p>
+    ${cancelado ? '' : trilha(p.status)}
+    <div class="ped-pe"><div><span class="ped-total">${din(p.total)}</span>${p.desconto ? `<small class="ped-de">de ${din(p.desconto.de)}</small>` : ''}</div>
+      ${cancelado ? '' : p.falta > 0 ? `<span class="ped-pg pend">Falta ${din(p.falta)}</span>` : '<span class="ped-pg ok">Pago</span>'}</div>
   </article></li>`;
 }
 
@@ -2066,67 +2166,69 @@ function corpoClientes() {
 let msgEstado = { id: null, tipo: 'recompra', rec: null };
 
 const chipsNomes = (rot, nomes, cls) => (nomes.length ? `<p class="conta-rotulo" style="margin-top:16px">${rot}</p><p class="chips-notas" style="margin-top:6px">${nomes.map((n) => `<span class="chip ${cls || ''}">${esc(n)}</span>`).join('')}</p>` : '');
-const secComprou = (c) => {
+const corpoComprou = (c) => {
   const k = c.conta;
   const usou = k ? k.usou.filter((n) => !c.compras.some((x) => normalNome(x.nome) === normalNome(n))) : [];
-  return `<section class="tela-card" style="order:1">
-    <h3>Perfumes que já comprou</h3>
-    ${c.compras.length ? `<ul class="comprou">${c.compras.map((x) => `<li><div><b>${esc(x.nome)}</b><small>última vez em ${dataCurta(x.ultima)}/${x.ultima.slice(0, 4)}, ${quandoDias(difDiasCli(x.ultima, est.hoje))}</small></div><span class="qtd-pill">${x.qtd}×</span></li>`).join('')}</ul>`
-      : '<p class="detalhe" style="margin-top:6px">Ainda não comprou pelos pedidos registrados.</p>'}
+  return `${c.compras.length ? `<ul class="comprou">${c.compras.map((x) => `<li><div><b>${esc(x.nome)}</b><small>última vez em ${dataCurta(x.ultima)}/${x.ultima.slice(0, 4)}, ${quandoDias(difDiasCli(x.ultima, est.hoje))}</small></div><span class="qtd-pill">${x.qtd}×</span></li>`).join('')}</ul>`
+      : '<p class="detalhe">Ainda não comprou pelos pedidos registrados.</p>'}
     ${chipsNomes('Já usou, segundo a conta do site', usou)}
     ${chipsNomes('Quer experimentar', k ? k.desejos : [], 'chip--ouro')}
     ${chipsNomes('No carrinho do site', k ? k.carrinho || [] : [], 'chip--ouro')}
-    ${chipsNomes('Não curte', k ? k.naocurte || [] : [], 'chip--nao')}
-  </section>`;
+    ${chipsNomes('Não curte', k ? k.naocurte || [] : [], 'chip--nao')}`;
 };
-
-const secGostos = (c) => {
+const corpoGostos = (c) => {
   const top = c.gostos || [];
-  return `<section class="tela-card" style="order:2"><h3>Gostos aromáticos</h3>
-    ${top.length ? `<p class="gostos-top">${esc(top.slice(0, 3).map((g) => g.rotulo).join(', '))}</p>` : '<p class="detalhe">Ainda não dá para saber: faltam compras ou preferências na conta.</p>'}
-    ${Object.keys(c.perfil).length ? barraGosto(c.perfil) : ''}
+  return `${Object.keys(c.perfil).length ? barraGosto(c.perfil) : ''}
     ${top.length ? `<ul class="gostos">${top.map((g) => `<li><span>${esc(g.rotulo)}</span><div class="pg-barra" aria-hidden="true"><i style="--p:${(g.pct / 100).toFixed(2)}"></i></div><b>${g.pct}</b></li>`).join('')}</ul>
-      <p class="detalhe" style="margin-top:12px">Calculado das compras e do que a pessoa marcou na conta. Compras recentes pesam mais. O 100 é o gosto mais forte dela.</p>` : ''}
-  </section>`;
+      <p class="detalhe" style="margin-top:12px">Calculado das compras e do que a pessoa marcou na conta. O 100 é o gosto mais forte dela.</p>` : '<p class="detalhe">Ainda não dá para saber: faltam compras ou preferências na conta.</p>'}`;
 };
+const corpoConta = (c) => secaoConta(c).replace(/^<section class="sec primeira"><h3>Conta no site<\/h3>/, '').replace(/<\/section>$/, '');
 
-const secSugestoes = (c, sel) => `<section class="tela-card" style="order:3"><h3>Perfumes sugeridos</h3>
-  ${c.recomendacoes.length ? `<ul class="sug">${c.recomendacoes.map((r) => {
-    const p = est.catalogo.find((x) => x.id === r.id);
-    return `<li class="${r.id === sel ? 'sel' : ''}"><span class="sug-foto" style="background-image:url('${p && p.imagem ? esc(encodeURI(p.imagem)) : ''}')"></span>
-      <div><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}${r.quer ? ' <span class="chip chip--ouro">Pediu para experimentar</span>' : ''}
-      ${p && p.inspirado ? `<small>inspirado em ${esc(p.inspirado)}</small>` : ''}${p && p.variantes.length ? `<small>${esc(precoTexto2(p))}</small>` : ''}
+const blocoCli = (id, icone, titulo, meta, corpo) => `<section class="fe-acc cli-bloco" data-fe="${id}">
+  <button type="button" class="fe-topo" data-act="fe-acc" aria-expanded="false" aria-controls="cb-${id}">
+    <i class="ph ${icone} fe-ic" aria-hidden="true"></i>
+    <span class="fe-tx"><span class="fe-nome">${titulo}</span>${meta ? `<span class="fe-sub"><span>${meta}</span></span>` : ''}</span>
+    <span></span><span class="fe-seta" aria-hidden="true">${SETA_MAIS}</span>
+  </button>
+  <div class="fe-corpo" id="cb-${id}"><div class="fe-in"><div class="cli-corpo-in">${corpo}</div></div></div></section>`;
+
+function listaSugestoes(c, sel) {
+  const lista = c.recomendacoes.slice(0, 3);
+  if (!lista.length) return '<p class="detalhe">Ainda não há compras ou preferências para sugerir um perfume.</p>';
+  return `<ul class="sug">${lista.map((r) => `<li class="${r.id === sel ? 'sel' : ''}"><span class="sug-foto" style="background-image:url('${esc(imgCat(r.id))}')"></span>
+    <div><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}${r.quer ? ' <span class="chip chip--ouro">Pediu para experimentar</span>' : ''}
       <small>${r.motivos.length ? 'combina com ' + esc(r.motivos.join(' e ')) : 'sem motivo claro ainda'}${r.ja_comprou ? ', ela já tem' : ''}${r.disponivel ? '' : ', sem estoque agora'}</small></div>
-      <button class="btn pequeno${r.id === sel ? ' primario' : ''}" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">${r.id === sel ? 'Na mensagem' : 'Usar'}</button></li>`;
-  }).join('')}</ul>` : '<p class="detalhe">Ainda não há compras ou preferências para comparar.</p>'}</section>`;
+    <button class="btn pequeno${r.id === sel ? ' primario' : ''}" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">${r.id === sel ? 'Na mensagem' : 'Usar'}</button></li>`).join('')}</ul>`;
+}
 
-function secMensagem(c, tipo, rec) {
+function composerMensagem(c, tipo, rec) {
   const texto = msgCliente(c, tipo, rec);
   const pode = c.telefone && telefoneLink(c.telefone) && c.consent !== 'sem_aceite';
   const tipos = [['recompra', 'Recompra'], ['novidade', 'Novidade'], ['conhecer', 'Conhecer']];
-  return `<section class="tela-card" id="cli-sec-msg" style="order:4"><h3>Mensagem para o WhatsApp</h3>
-    <div class="troca" role="group" aria-label="Tipo de mensagem" style="margin-top:6px">${tipos.map(([k, n]) => `<button type="button" data-act="cli-tipo" data-id="${esc(c.id)}" data-tipo="${k}" aria-pressed="${tipo === k}">${n}</button>`).join('')}</div>
+  return `<div class="cli-msg" id="cli-sec-msg"><div class="troca" role="group" aria-label="Tipo de mensagem">${tipos.map(([k, n]) => `<button type="button" data-act="cli-tipo" data-id="${esc(c.id)}" data-tipo="${k}" aria-pressed="${tipo === k}">${n}</button>`).join('')}</div>
     <label for="cli-msg">Você revisa e envia. Nada sai sozinho.</label>
-    <textarea id="cli-msg" data-cli="${esc(c.id)}" style="min-height:170px">${esc(texto)}</textarea>
+    <textarea id="cli-msg" data-cli="${esc(c.id)}" style="min-height:150px">${esc(texto)}</textarea>
     <div class="grade2" style="margin-top:12px;gap:10px">
       ${pode ? `<a class="btn primario" id="cli-zap" href="${esc(linkZap(c.telefone, texto))}" target="_blank" rel="noopener">Abrir no WhatsApp</a>` : `<span class="btn" aria-disabled="true" style="opacity:.5">${c.consent === 'sem_aceite' ? 'Não aceitou contato' : 'Sem telefone'}</span>`}
       <button class="btn" type="button" data-act="cli-chamei" data-id="${esc(c.id)}">Marquei como chamado</button></div>
     <button class="link" type="button" data-act="cli-copiar" style="margin-top:8px">Copiar o texto</button>
-    ${c.consent === 'nao_registrado' && !c.lead ? '<p class="detalhe" style="margin-top:8px">Ainda não há consentimento registrado para promoções. Convide para criar a conta e aceitar.</p>' : ''}
-    ${c.contato.ultimo ? `<p class="detalhe" style="margin-top:8px">Última vez chamado em ${dataCurta(c.contato.ultimo)}.</p>` : ''}</section>`;
+    ${c.contato.ultimo ? `<p class="detalhe" style="margin-top:8px">Última vez chamado em ${dataCurta(c.contato.ultimo)}.</p>` : ''}</div>`;
 }
 
 function abrirCliente(id, foco) {
   const c = cli && cli.lista.find((x) => x.id === id);
   if (!c) return;
   const dlg = $('cli-tela');
-  const rolagem = dlg.open && dlg.dataset.cli === id ? dlg.scrollTop : 0;
+  const mesmo = dlg.open && dlg.dataset.cli === id;
+  const rolagem = mesmo ? dlg.scrollTop : 0;
+  const abertas = mesmo ? [...dlg.querySelectorAll('.fe-acc.aberto')].map((x) => x.dataset.fe) : [];
   dlg.dataset.cli = id;
   if (msgEstado.id !== id) {
     const primeira = c.recomendacoes.find((r) => r.disponivel) || c.recomendacoes[0] || null;
     msgEstado = { id, rec: primeira ? primeira.id : null, tipo: c.lead ? 'conhecer' : (c.dias >= (c.intervalo || 45) ? 'recompra' : 'novidade') };
   }
   const rec = c.recomendacoes.find((r) => r.id === msgEstado.rec) || null;
+  const curte = (c.gostos || []).slice(0, 3).map((g) => g.rotulo.replace(/^perfumes /, ''));
   $('cli-corpo').innerHTML = `
     <header class="tela-topo">
       <button class="voltar" type="button" data-act="cli-fechar" style="margin:0">← Clientes</button>
@@ -2135,32 +2237,33 @@ function abrirCliente(id, foco) {
       ${c.consent === 'aceitou' ? '<span class="chip-st" data-st="pronto">Aceitou contato</span>' : c.consent === 'sem_aceite' ? '<span class="chip-st" data-st="cancelado">Sem aceite</span>' : ''}
     </header>
     <div class="tela-in">
-      <div class="faixa">
-        <div><b>${c.n_pedidos}</b><span>${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}</span></div>
-        <div><b>${dinInt(c.gasto)}</b><span>gasto no total</span></div>
-        <div><b>${c.ultima ? (c.dias === 0 ? 'hoje' : c.dias + ' d') : 'sem compra'}</b><span>${c.ultima ? 'desde a última compra' : 'cliente do site'}</span></div>
-        <div><b>${c.intervalo ? c.intervalo + ' d' : 'sem ritmo'}</b><span>${c.intervalo ? 'entre compras, em média' : 'precisa de 2 compras'}</span></div>
+      <div class="cli-resumo">
+        <div class="faixa faixa--3">
+          <div><b>${c.n_pedidos}</b><span>${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}</span></div>
+          <div><b>${dinInt(c.gasto)}</b><span>gasto no total</span></div>
+          <div><b>${c.ultima ? (c.dias === 0 ? 'hoje' : c.dias + ' d') : 'sem compra'}</b><span>${c.ultima ? 'desde a última compra' : 'ainda não comprou'}</span></div>
+        </div>
+        ${curte.length ? `<p class="cli-curte">Curte <b>${esc(curte.join(', '))}</b></p>` : ''}
       </div>
-      <div class="tela-grade">
-      <div class="tela-col">
-        ${secComprou(c)}
-        ${secGostos(c)}
-        ${secaoConta(c).replace('class="sec primeira"', 'class="tela-card" style="order:5"')}
-        <section class="tela-card" style="order:6"${c.pedidos.length ? '' : ' hidden'}><h3>Pedidos</h3>
-          <ul class="det-itens">${c.pedidos.map((p) => `<li><button class="link" type="button" data-act="cli-pedido" data-id="${esc(p.id)}">nº ${p.numero}, ${dataCurta(p.data)}</button><b>${din(p.total)}</b></li>`).join('')}</ul></section>
-      </div>
-      <div class="tela-col">
-        ${secSugestoes(c, msgEstado.rec)}
-        ${secMensagem(c, msgEstado.tipo, rec)}
-        <section class="tela-card" style="order:7"><h3>Anotações</h3>
-          <form data-form="cli-dados" data-id="${esc(c.id)}">
+      <div class="cli-grade">
+        <section class="tela-card cli-acao"><h3>O que <em>sugerir</em></h3>
+          ${listaSugestoes(c, msgEstado.rec)}
+          ${composerMensagem(c, msgEstado.tipo, rec)}</section>
+        <div class="cli-blocos">
+          ${blocoCli('comprou', 'ph-shopping-bag', 'Já comprou', `${c.compras.length} ${c.compras.length === 1 ? 'perfume' : 'perfumes'}`, corpoComprou(c))}
+          ${blocoCli('gostos', 'ph-drop', 'Gostos em detalhe', '', corpoGostos(c))}
+          ${blocoCli('conta', 'ph-user-circle', 'Conta no site', c.conta ? 'tem conta' : 'sem conta', corpoConta(c))}
+          ${c.pedidos.length ? blocoCli('pedidos', 'ph-package', 'Pedidos', `${c.pedidos.length}`, `<ul class="det-itens">${c.pedidos.map((p) => `<li><button class="link" type="button" data-act="cli-pedido" data-id="${esc(p.id)}">nº ${p.numero}, ${dataCurta(p.data)}</button><b>${din(p.total)}</b></li>`).join('')}</ul>`) : ''}
+          ${blocoCli('notas', 'ph-note-pencil', 'Anotações', c.contato.notas ? 'com anotação' : '', `<form data-form="cli-dados" data-id="${esc(c.id)}">
             <textarea name="notas" style="min-height:84px" maxlength="600" placeholder="Ex.: prefere ser chamada à tarde; presenteia a irmã">${esc(c.contato.notas)}</textarea>
             <label class="lembrar"><input type="checkbox" name="nao_chamar"${c.contato.nao_chamar ? ' checked' : ''} /> Não chamar (pediu para parar ou não quer promoções)</label>
-            <button class="btn cheio" type="submit">Salvar anotações</button></form></section>
+            <button class="btn cheio" type="submit">Salvar anotações</button></form>`)}
+        </div>
       </div>
-    </div></div>`;
+    </div>`;
+  abertas.forEach((k) => { const b = dlg.querySelector(`.fe-acc[data-fe="${k}"]`); if (b) { b.classList.add('aberto'); b.querySelector('.fe-topo').setAttribute('aria-expanded', 'true'); } });
   if (!dlg.open) dlg.showModal();
-  dlg.scrollTop = foco === 'mensagem' ? Math.max(0, $('cli-sec-msg').offsetTop - 90) : rolagem;
+  dlg.scrollTop = foco === 'mensagem' ? Math.max(0, $('cli-sec-msg').offsetTop - 120) : rolagem;
 }
 
 function escolherSugestao(id, prodId) { msgEstado = { ...msgEstado, id, rec: prodId }; abrirCliente(id); }
@@ -2577,13 +2680,21 @@ function secaoConta(c) {
       : ''}</section>`;
 }
 
-const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
+const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', saida: 'saída em ml', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
 function desenharHistorico() {
   $('t-historico').innerHTML = `
     ${cabecaSecao('Registro', 'Seu <em>histórico</em>', 'Os últimos movimentos. O mais recente dá para desfazer.', 'h-historico')}
-    ${est.historico.length ? `<div class="hist-lista">${est.historico.map((h, i) => `
-      <div class="hist"><div><div>${esc(h.descricao)}</div><div class="t">${esc(h.data)}, ${esc(TIPOS[h.tipo] || h.tipo)}</div></div>
-      ${i === 0 ? '<button class="btn pequeno" data-act="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('')}</div>`
+    ${est.historico.length ? `<div class="hist-lista">${est.historico.map((h, i) => {
+    const corte = h.descricao.lastIndexOf(' · ');
+    const cliente = corte > 0 ? h.descricao.slice(corte + 3) : '';
+    const texto = corte > 0 ? h.descricao.slice(0, corte) : h.descricao;
+    return `<div class="hist hist--g">
+      <span class="hist-foto" style="background-image:url('${esc(imgCat(h.produto_id))}')"></span>
+      <div class="hist-txt"><span class="hist-tipo">${esc(TIPOS[h.tipo] || h.tipo)}</span>
+        <div class="hist-quem">${esc(cliente || texto)}</div>${cliente ? `<div class="hist-desc">${esc(texto)}</div>` : ''}
+        <div class="t">${esc(h.data)}</div></div>
+      ${i === 0 ? '<button class="btn pequeno" data-act="desfazer" type="button">Desfazer</button>' : ''}</div>`;
+  }).join('')}</div>`
     : '<div class="vazio"><span class="simbolo"></span><b>Nada por aqui ainda</b>Entradas, baixas e correções aparecem nesta lista.</div>'}`;
 }
 
@@ -2620,7 +2731,7 @@ function precoTexto(p) {
   return a === b ? brl(a) : `${brl(a)} a ${brl(b)}`;
 }
 const abertosCat = new Set();
-const GRUPOS_CAT = [['doces', 'Perfumes doces', '#daa753'], ['frescos', 'Perfumes frescos', '#b9ba86'], ['noturnos', 'Perfumes noturnos', '#8a5a2b'], ['elegantes', 'Perfumes elegantes', '#6b6943'], ['perfumes', 'Outros perfumes', '#a8a496'], ['skincare', 'Cremes', '#e3c9a3'], ['body_splashes', 'Body splashes', '#9db4a0'], ['merchandise', 'Acessórios', '#b8a58f']];
+const GRUPOS_CAT = [['doces', 'Perfumes doces', '#daa753', 'ph-cookie'], ['frescos', 'Perfumes frescos', '#b9ba86', 'ph-waves'], ['noturnos', 'Perfumes noturnos', '#8a5a2b', 'ph-moon-stars'], ['elegantes', 'Perfumes elegantes', '#6b6943', 'ph-sparkle'], ['perfumes', 'Outros perfumes', '#a8a496', 'ph-drop'], ['skincare', 'Cremes', '#e3c9a3', 'ph-hand-soap'], ['body_splashes', 'Body splashes', '#9db4a0', 'ph-spray-bottle'], ['merchandise', 'Acessórios', '#b8a58f', 'ph-tote']];
 function linhaCatalogo(p) {
   return `<li class="linha${p.status === 'oculto' ? ' fora' : ''}" data-id="${esc(p.id)}">
     <span class="linha-foto" style="background-image:url('${imgCat(p.id)}')"></span>
@@ -2638,14 +2749,14 @@ function linhaCatalogo(p) {
 }
 function blocosCatalogo(lista, abrirTodos) {
   const grupoDe = (p) => (p.categoria === 'perfumes' ? (GRUPOS_CAT.some((g) => g[0] === p.perfil) ? p.perfil : 'perfumes') : (GRUPOS_CAT.some((g) => g[0] === p.categoria) ? p.categoria : 'merchandise'));
-  return `<div class="fe">${GRUPOS_CAT.map(([k, nome, cor]) => {
+  return `<div class="fe">${GRUPOS_CAT.map(([k, nome, cor, ic]) => {
     const itens = lista.filter((p) => grupoDe(p) === k);
     if (!itens.length) return '';
     const fora = itens.filter((p) => p.status !== 'visivel').length;
     const aberto = abrirTodos || abertosCat.has(k);
     return `<section class="fe-acc${aberto ? ' aberto' : ''}" data-fe="${k}" style="--cor:${cor}">
       <button type="button" class="fe-topo" data-act="cat-toggle" data-id="${k}" aria-expanded="${aberto}" aria-controls="cat-${k}">
-        <span class="fe-ponto" aria-hidden="true"></span>
+        <i class="ph ${ic} fe-ic" aria-hidden="true"></i>
         <span class="fe-tx"><span class="fe-nome">${nome}</span><span class="fe-sub"><span>${itens.length} ${itens.length === 1 ? 'produto' : 'produtos'}</span>${fora ? `<span class="fe-alerta">${fora} fora do ar</span>` : ''}</span></span>
         <span></span>
         <span class="fe-seta" aria-hidden="true">${SETA_MAIS}</span>
@@ -2673,23 +2784,33 @@ function desenharCatalogo() {
 }
 
 /* ---------- baixa ---------- */
-function mostrarPrevia(d, erro) {
+function mostrarPrevia(d, erro, alvo = 'previa') {
   const linhas = (d.linhas || []).map((l) => `<li class="${l.ok === true ? 'ok' : 'aviso'}">${esc(l.texto)}</li>`).join('');
   const probs = (d.problemas || []).map((t) => `<li class="bad">${esc(t)}</li>`).join('');
-  $('previa').innerHTML = `<div class="quadro previa">
+  const v = d.valor;
+  const resumo = v ? `<p class="prev-valor">Total <b>${din(v.total)}</b>${v.total !== v.subtotal ? ` <span>de ${din(v.subtotal)}</span>` : ''}${v.lucro != null ? ` · lucro estimado <b>${din(v.lucro)}</b>` : ''}</p>` : '';
+  const s = d.desconto_sugerido;
+  const sug = s && s.opcoes.length ? `<div class="desc-sug"><h4>Desconto sugerido para ${s.unidades} itens</h4>
+    <div class="desc-ops">${s.opcoes.map((o) => `<button type="button" class="desc-op${o.id === s.recomendada ? ' rec' : ''}" data-act="av-desc" data-valor="${o.total}">
+      <span class="desc-rot">${o.rotulo}${o.id === s.recomendada ? ' <em>recomendado</em>' : ''}</span><b>${din(o.total)}</b>
+      <small>−${din(o.desconto)} (${o.pct}%)</small>${o.lucro != null ? `<small>lucro ${din(o.lucro)} · margem ${o.margem}%</small>` : ''}<small class="desc-nota">${esc(o.nota)}</small></button>`).join('')}</div>
+    <p class="ajuda">Sem desconto: ${din(s.subtotal)}${s.lucro != null ? `, lucro ${din(s.lucro)}` : ''}. Toque numa opção para aplicar; você ainda pode digitar outro valor.</p></div>` : '';
+  $(alvo).innerHTML = `<div class="quadro previa">
     <h3>${erro ? 'Não deu para dar baixa' : 'Confira antes de confirmar'}</h3>
+    ${resumo}
     <ul style="margin-top:8px">${linhas}${probs}</ul>
+    ${erro ? '' : sug}
     ${erro ? '' : '<button class="btn primario cheio" id="confirmar" type="button" style="margin-top:16px">Confirmar baixa</button>'}
   </div>`;
 }
-async function conferir(corpo) {
-  $('previa').innerHTML = '';
+async function conferir(corpo, alvo = 'previa') {
+  $('previa').innerHTML = ''; const outro = $('previa-saida'); if (outro) outro.innerHTML = '';
   try {
     const d = await api(corpo.acao, { ...corpo, confirmar: false });
-    pendente = { corpo, previa: d }; mostrarPrevia(d, false);
+    pendente = { corpo, previa: d, alvo }; mostrarPrevia(d, false, alvo);
   } catch (e) {
     pendente = null;
-    if (e.dados?.linhas) mostrarPrevia(e.dados, true); else falhou(e);
+    if (e.dados?.linhas) mostrarPrevia(e.dados, true, alvo); else falhou(e);
   }
 }
 
@@ -2902,6 +3023,14 @@ document.addEventListener('click', async (ev) => {
     else if (act === 'av-add') { avItens.push({ id: '', tam: '', qtd: 1 }); desenharLinhasAv(); }
     else if (act === 'av-remover') { avItens.splice(Number(b.dataset.i), 1); if (!avItens.length) avItens = [{ id: '', tam: '', qtd: 1 }]; desenharLinhasAv(); }
     else if (act === 'ped-vista') { vistaPed = b.dataset.v; try { localStorage.setItem('sp-ped-vista', vistaPed); } catch (_) {} animPed = true; desenharPedidos(); }
+    else if (act === 'fe-acc') {
+      const bloco = b.closest('.fe-acc'); const abre = !bloco.classList.contains('aberto');
+      bloco.classList.toggle('aberto', abre); b.setAttribute('aria-expanded', abre);
+    }
+    else if (act === 'av-desc') {
+      const v = b.dataset.valor; $('av-valor').value = v; rasc['av-valor'] = v;
+      if (pendente) conferir({ ...pendente.corpo, valor_total: v }, pendente.alvo);
+    }
     else if (act === 'cat-toggle') {
       const bloco = b.closest('.fe-acc'); const abre = !bloco.classList.contains('aberto');
       abre ? abertosCat.add(id) : abertosCat.delete(id);
@@ -2961,13 +3090,16 @@ document.addEventListener('click', async (ev) => {
   if (t.id === 'tentar') entrar(senha, true).catch(() => {});
   else if (t.id === 'colar') { try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { aviso('Não consegui ler a área de transferência. Cole no campo.', true); } }
   else if (t.id === 'conferir') conferir({ acao: 'pedido', texto: $('pedido').value, pagamento: lerPagamento('pd') });
-  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: itensAvulsa(), cliente: { nome: $('av-nome').value, telefone: $('av-tel').value }, pagamento: lerPagamento('av') });
+  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: itensAvulsa(), cliente: { nome: $('av-nome').value, telefone: $('av-tel').value }, pagamento: lerPagamento('av'), valor_total: $('av-valor').value, obs: $('av-obs').value });
+  else if (t.id === 'conferir-saida') conferir({ acao: 'saida_ml', id: $('sm-prod').value, ml: $('sm-ml').value, motivo: $('sm-motivo').value, obs: $('sm-obs').value }, 'previa-saida');
   else if (t.id === 'confirmar' && pendente) {
     t.disabled = true;
     try {
       const antes = idUltimo();
       const d = await api(pendente.corpo.acao, { ...pendente.corpo, confirmar: true });
-      pendente = null; limparRascunhoBaixa(); if ($('pedido')) $('pedido').value = ''; $('previa').innerHTML = '';
+      const alvoPrevia = pendente.alvo || 'previa'; const eraSaida = pendente.corpo.acao === 'saida_ml';
+      pendente = null; limparRascunhoBaixa(); if ($('pedido')) $('pedido').value = ''; $(alvoPrevia).innerHTML = '';
+      if (eraSaida) { aviso('Saída em ml registrada.', false, [acaoDesfazer(antes)]); desenharBaixa(); return; }
       const novo = d.pedido;
       aviso(d.nada_a_descontar ? `Pedido nº ${novo.numero} criado. Nenhum item tem estoque controlado.` : `Baixa feita. Pedido nº ${novo.numero} criado.`, false, [
         { rotulo: 'Ver pedido', fn: async () => { irPara('pedidos'); abrirPedido(novo.id); } },

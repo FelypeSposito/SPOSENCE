@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/*.js": {
-      "includeFiles": "{js/data.js,tools/estoque.json}"
+      "includeFiles": "{js/data.js,tools/estoque.json,tools/custos.json}"
     }
   },
   "headers": [
