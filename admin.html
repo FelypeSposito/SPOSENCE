@@ -395,6 +395,78 @@
       main > #t-pedidos { max-width: none; }
       .topo-in { max-width: 1180px; }
     }
+    /* Clientes: gosto de cada pessoa, quem chamar, simulador de lançamento */
+    .cli-lista { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 16px; }
+    .cli, .cli-chamar { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 18px; cursor: pointer; box-shadow: 0 16px 34px -24px rgba(70, 37, 6, .4); transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .3s; }
+    @media (hover: hover) { .cli:hover, .cli-chamar:hover { transform: translateY(-3px); box-shadow: 0 26px 44px -24px rgba(70, 37, 6, .45); border-color: var(--forte); } }
+    .cli:active, .cli-chamar:active { transform: scale(.99); }
+    .cli-chamar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; }
+    .cli-chamar .mini-nome { margin-top: 0; }
+    .cli-chamar-lista { margin-top: 12px; }
+    .gosto { display: flex; gap: 2px; height: 10px; border-radius: 99px; overflow: hidden; margin-top: 14px; }
+    .gosto i { display: block; background: var(--c); min-width: 6px; }
+    .gosto-legenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--suave); margin-top: 8px; }
+    .gosto-legenda b { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 6px; }
+    .gosto-vazio { color: var(--suave); font-family: 'Philosopher', serif; font-style: italic; margin-top: 14px; font-size: 16px; }
+    .perfil-doces { --c: var(--ouro); }
+    .perfil-frescos { --c: var(--oliva); }
+    .perfil-noturnos { --c: var(--ambar); }
+    .perfil-elegantes { --c: var(--acento); }
+    .chips-notas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .chip { background: color-mix(in srgb, var(--acento) 14%, transparent); border-radius: 99px; padding: 3px 11px; font-size: 12.5px; font-weight: 600; color: var(--acento); white-space: nowrap; }
+    .afin { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 99px; font-variant-numeric: tabular-nums; vertical-align: 1px; }
+    .afin[data-r="alta"] { background: color-mix(in srgb, var(--acento) 24%, transparent); color: var(--tinta); }
+    .afin[data-r="media"] { background: color-mix(in srgb, var(--ouro) 28%, transparent); color: var(--tinta); }
+    .afin[data-r="baixa"] { background: color-mix(in srgb, var(--forte) 16%, transparent); color: var(--suave); }
+    .afin[data-r="sem dados"] { border: 1px dashed var(--forte); color: var(--suave); }
+    .segmentos { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 14px; }
+    .segmentos li { display: grid; grid-template-columns: 124px 1fr; gap: 4px 14px; align-items: center; }
+    .seg-nome { display: flex; align-items: center; gap: 8px; font-weight: 600; text-transform: capitalize; }
+    .seg-nome b { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+    .seg-num { grid-column: 2; font-family: 'Philosopher', serif; font-size: 22px; line-height: 1; }
+    .seg-num small { font: 400 13px 'Manrope', sans-serif; color: var(--suave); }
+    .segmentos .pg-barra { margin-top: 0; }
+    .rank { list-style: none; padding: 0; margin-top: 10px; }
+    .rank-item { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--linha); }
+    .rank-item.fora { opacity: .55; }
+    .rank-item .detalhe { margin-top: 4px; }
+    .passos { padding-left: 1.2em; line-height: 1.7; } .passos li { margin-bottom: 8px; }
+    @media (max-width: 560px) { .rank-item { flex-direction: column; align-items: stretch; } .segmentos li { grid-template-columns: 1fr; } .seg-num { grid-column: 1; } }
+    @media (min-width: 900px) { .cli-lista { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); } .cli-chamar-lista { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); } }
+    /* busca geral */
+    .icone-topo { width: 44px; height: 44px; background: none; border: 0; display: grid; place-items: center; color: var(--suave); }
+    .icone-topo svg { width: 22px; height: 22px; }
+    #busca-geral { margin: 7vh auto auto; width: min(660px, calc(100% - 20px)); border-radius: 18px; max-height: 80dvh; }
+    .busca-campo { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 18px; border-bottom: 1px solid var(--linha); position: sticky; top: 0; background: var(--papel); z-index: 1; }
+    .busca-campo svg { width: 22px; height: 22px; color: var(--suave); flex: none; }
+    .busca-campo input { flex: 1; min-width: 0; width: auto; border: 0; min-height: 52px; font-size: 17px; padding: 0; box-shadow: none; }
+    #busca-geral { overflow-x: hidden; }
+    .busca-campo input:focus { box-shadow: none; }
+    #busca-res { list-style: none; padding: 6px 8px 12px; margin: 0; }
+    .busca-grupo { font-family: 'Philosopher', serif; font-style: italic; color: var(--suave); font-size: 15px; padding: 14px 10px 4px; }
+    .busca-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
+    .busca-item[aria-selected="true"] { background: color-mix(in srgb, var(--acento) 14%, transparent); }
+    .busca-t { display: block; font-family: 'Philosopher', serif; font-size: 19px; line-height: 1.2; }
+    .busca-s { display: block; font-size: 13px; color: var(--suave); margin-top: 1px; }
+    .busca-vazio { padding: 28px 14px; color: var(--suave); line-height: 1.6; }
+    .busca-rodape { padding: 10px 18px 14px; font-size: 12.5px; color: var(--suave); border-top: 1px solid var(--linha); }
+    /* Baixa: venda avulsa em primeiro; mensagem do pedido do site num menu que abre */
+    .av-linha { display: grid; grid-template-columns: minmax(0, 1fr) 84px 44px; gap: 0 12px; align-items: end; }
+    .av-prod { grid-column: 1 / -1; }
+    .av-qtd { grid-column: 2; }
+    .av-linha .btn-x { grid-column: 3; }
+    .btn-x { width: 44px; height: 44px; border: 0; background: none; color: var(--suave); display: grid; place-items: center; border-radius: 50%; }
+    .btn-x svg { width: 20px; height: 20px; }
+    @media (hover: hover) { .btn-x:hover { background: color-mix(in srgb, var(--perigo) 12%, transparent); color: var(--perigo); } }
+    @media (min-width: 640px) { .av-linha { grid-template-columns: minmax(0, 1fr) 120px 84px 44px; } .av-prod { grid-column: auto; } .av-qtd, .av-linha .btn-x { grid-column: auto; } }
+    .mais { margin-top: 8px; border-top: 1px solid var(--linha); }
+    .mais summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 18px 2px; min-height: 56px; font-weight: 600; }
+    .mais summary::-webkit-details-marker { display: none; }
+    .mais summary small { color: var(--suave); font-weight: 400; font-size: 13.5px; margin-right: auto; margin-left: 10px; }
+    .mais summary::after { content: ''; width: 9px; height: 9px; border-right: 2px solid var(--suave); border-bottom: 2px solid var(--suave); transform: rotate(45deg); transition: transform .3s var(--ease); margin-right: 6px; align-self: center; flex: none; }
+    .mais[open] summary::after { transform: rotate(-135deg); }
+    .mais-corpo { padding: 4px 0 20px; }
+    .mais:focus-within summary:focus-visible { outline-offset: 2px; }
     @media (prefers-reduced-motion: no-preference) {
       dialog[open] { animation: sobe .32s var(--ease); }
       dialog[open]::backdrop { animation: fade .25s ease-out; }
@@ -422,6 +494,10 @@
       .anim .lote .pg-barra i { animation: enche-x 1.1s var(--ease) both; animation-delay: calc(var(--i) * 70ms + 250ms); }
       .ped-flutua { animation: flutua 6s ease-in-out infinite; }
       @keyframes flutua { 50% { transform: translateY(-5px); } }
+      .anim .cli, .anim .cli-chamar { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 70ms); }
+      .segmentos li, .rank-item { animation: item .6s var(--ease) both; animation-delay: calc(var(--i) * 50ms); }
+      .segmentos .pg-barra i { animation: enche-x 1.1s var(--ease) both; animation-delay: calc(var(--i) * 70ms + 200ms); }
+      #busca-geral[open] { animation: sobe .22s var(--ease); }
       .anim .item { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 90ms); }
       .anim .vial .liquido { animation: enche 1.3s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 200ms); }
       @keyframes item { from { transform: translateY(14px); opacity: 0; } }
@@ -471,31 +547,41 @@
     <header class="topo">
       <div class="topo-in">
         <div class="marca"><span class="simbolo" aria-hidden="true"></span><span class="palavra" role="img" aria-label="Sposence"></span></div>
+        <button class="icone-topo" id="busca-btn" type="button" aria-label="Buscar no painel (Ctrl+K)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
         <button id="tema" type="button" aria-label="Alternar tema"></button>
         <button id="sair" type="button">Sair</button>
       </div>
     </header>
 
     <main>
-      <section id="t-estoque" aria-labelledby="h-estoque"></section>
-      <section id="t-pedidos" aria-labelledby="h-pedidos" hidden></section>
+      <section id="t-pedidos" aria-labelledby="h-pedidos"></section>
+      <section id="t-estoque" aria-labelledby="h-estoque" hidden></section>
+      <section id="t-clientes" aria-labelledby="h-clientes" hidden></section>
       <section id="t-baixa" aria-labelledby="h-baixa" hidden></section>
-      <section id="t-insumos" aria-labelledby="h-insumos" hidden></section>
       <section id="t-catalogo" aria-labelledby="h-catalogo" hidden></section>
       <section id="t-historico" aria-labelledby="h-historico" hidden></section>
     </main>
 
     <nav aria-label="Seções do painel"><div class="in">
-      <button data-tab="estoque" aria-current="true" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v3.2c0 1-3.5 2-3.5 5.3V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-3.3-3.5-4.3-3.5-5.3V3"/><path d="M7 14h10"/></svg>Estoque</button>
-      <button data-tab="pedidos" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10a1.5 1.5 0 0 1 1.5 1.5v15l-3-1.8-2.5 1.8-2.5-1.8-2.5 1.8-3-1.8V5A1.5 1.5 0 0 1 7 3.5Z"/><path d="M9 9h6M9 13h4"/></svg>Pedidos</button>
+      <button data-tab="pedidos" aria-current="true" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10a1.5 1.5 0 0 1 1.5 1.5v15l-3-1.8-2.5 1.8-2.5-1.8-2.5 1.8-3-1.8V5A1.5 1.5 0 0 1 7 3.5Z"/><path d="M9 9h6M9 13h4"/></svg>Pedidos</button>
+      <button data-tab="estoque" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v3.2c0 1-3.5 2-3.5 5.3V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-3.3-3.5-4.3-3.5-5.3V3"/><path d="M7 14h10"/></svg>Estoque</button>
+      <button data-tab="clientes" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M2.5 20c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5"/><path d="M16 4.7a3.2 3.2 0 0 1 0 6M18.5 14.8c1.8.7 3 2.2 3 4.2"/></svg>Clientes</button>
       <button data-tab="baixa" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>Baixa</button>
-      <button data-tab="insumos" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg>Insumos</button>
       <button data-tab="catalogo" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14"/><path d="M3.5 5h.01M3.5 12h.01M3.5 19h.01"/></svg>Catálogo</button>
       <button data-tab="historico" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5V8h3.5"/><path d="M12 8v4.2l2.8 1.8"/></svg>Histórico</button>
     </div></nav>
   </div>
 
   <dialog id="folha" aria-labelledby="folha-titulo"><div class="folha" id="folha-corpo"></div></dialog>
+  <dialog id="busca-geral" aria-label="Buscar no painel">
+    <div class="busca-campo">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <input id="busca-q" type="search" placeholder="Buscar fragrância, pedido, cliente ou opção" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="busca-res" aria-label="Buscar no painel" />
+      <button class="fechar" type="button" data-fechar-busca aria-label="Fechar a busca"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <ul id="busca-res" role="listbox" aria-label="Resultados"></ul>
+    <p class="busca-rodape">Setas para escolher, Enter para abrir, Esc para fechar. Atalho: Ctrl+K ou /</p>
+  </dialog>
   <div id="aviso" role="status" aria-live="polite"></div>
 
 <script>
@@ -538,7 +624,9 @@ async function api(acao, corpo = {}) {
   const dados = await r.json().catch(() => ({ erro: 'O servidor respondeu algo inesperado. Tente de novo.' }));
   if (r.status === 401) { sair(est ? 'Sua sessão expirou. Entre de novo.' : ''); throw new Error(dados.erro); }
   if (!r.ok) throw Object.assign(new Error(dados.erro || 'Algo deu errado.'), { dados });
-  if (dados.estado) { est = dados.estado; desenharTudo(); }
+  if (dados.estado) { const antes = assinaturaPed(); est = dados.estado; if (antes !== assinaturaPed()) cliVelho = true; }
+  if (dados.clientes) { cli = dados.clientes; cliVelho = false; }
+  if (dados.estado) desenharTudo();
   return dados;
 }
 function aviso(msg, ruim, acao) {
@@ -606,22 +694,24 @@ function sair(motivo = '') {
   $('app').hidden = true;
   mostrarLogin(motivo);
 }
-const esqueleto = () => '<h2 id="h-estoque">Estoque</h2><p class="legenda">abrindo a bancada…</p><div style="margin-top:28px;border-top:1px solid var(--forte)">' + [1, 2, 3].map(() => '<div class="esq"><i class="a"></i><div><i class="b"></i><i class="c"></i><i class="d"></i></div></div>').join('') + '</div>';
+const esqueleto = () => '<h2 id="h-pedidos">Pedidos</h2><p class="legenda">abrindo a bancada…</p><div style="margin-top:28px;border-top:1px solid var(--forte)">' + [1, 2, 3].map(() => '<div class="esq"><i class="a"></i><div><i class="b"></i><i class="c"></i><i class="d"></i></div></div>').join('') + '</div>';
 
 async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente()) {
   senha = tentativa;
-  if (comEsqueleto) { $('login').hidden = true; $('app').hidden = false; $('t-estoque').innerHTML = esqueleto(); }
+  if (comEsqueleto) { $('login').hidden = true; $('app').hidden = false; $('t-pedidos').innerHTML = esqueleto(); }
   try {
     await api('estado');
   } catch (e) {
     if (comEsqueleto && senha) {   // senha ok, mas o servidor falhou: mostra o erro com saída
-      $('t-estoque').innerHTML = `<h2 id="h-estoque">Estoque</h2><div class="vazio"><span class="simbolo"></span><b>Não consegui abrir a bancada</b>${esc(e.message)}<br><button class="btn primario" id="tentar" type="button">Tentar de novo</button></div>`;
+      $('t-pedidos').innerHTML = `<h2 id="h-pedidos">Pedidos</h2><div class="vazio"><span class="simbolo"></span><b>Não consegui abrir a bancada</b>${esc(e.message)}<br><button class="btn primario" id="tentar" type="button">Tentar de novo</button></div>`;
     }
     throw e;
   }
   sessao.gravar(senha, lembrar);
   $('senha').value = ''; $('senha').type = 'password'; mensagemLogin('', '');
   $('login').hidden = true; $('app').hidden = false;
+  irPara('pedidos');
+  carregarClientes(true).catch(() => {});
 }
 
 const campoSenha = $('senha');
@@ -665,11 +755,12 @@ $('login-form').addEventListener('submit', async (ev) => {
 $('sair').addEventListener('click', () => sair());
 
 /* ---------- abas ---------- */
-const ABAS = ['estoque', 'pedidos', 'baixa', 'insumos', 'catalogo', 'historico'];
+const ABAS = ['pedidos', 'estoque', 'clientes', 'baixa', 'catalogo', 'historico'];
 function irPara(aba) {
   document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
   window.scrollTo(0, 0);
+  if (aba === 'clientes') { desenharClientes(); carregarClientes(); }
 }
 document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => irPara(b.dataset.tab)));
 
@@ -689,7 +780,11 @@ function confirmar(titulo, texto, rotulo, aoConfirmar) {
 }
 
 /* ---------- desenho ---------- */
-function desenharTudo() { desenharEstoque(); desenharPedidos(); desenharBaixa(); desenharInsumos(); desenharCatalogo(); desenharHistorico(); }
+function desenharTudo() {
+  desenharEstoque(); desenharPedidos(); desenharBaixa(); desenharCatalogo(); desenharHistorico();
+  if (cli) desenharClientes();
+  if (cliVelho && !$('t-clientes').hidden) carregarClientes();
+}
 
 // O vidro: casco com estrias; o líquido sobe conforme os ml (transform, sem recalcular layout)
 function vidro(id, nivel) {
@@ -717,6 +812,7 @@ function selos(p) {
 
 function desenharEstoque() {
   if (vistaEstoque === 'maturacao') { desenharMaturacao(); return; }
+  if (vistaEstoque === 'insumos') { desenharInsumosNoEstoque(); return; }
   const r = est.resumo;
   const maior = Math.max(1, ...est.produtos.map((p) => p.ml_total));
   const pratos = est.produtos.length;
@@ -766,40 +862,89 @@ function camposPagamento(p, modoPadrao) {
 }
 const lerPagamento = (p) => ({ modo: $(p + '-modo').value, forma: $(p + '-forma').value, parcelas: $(p + '-n').value });
 
+// Venda avulsa: a tela principal da baixa. Vários itens de uma vez, de qualquer produto do catálogo.
+let avItens = [{ id: '', tam: '', qtd: 1 }];
+const opcoesProdutos = (sel) => {
+  const grupos = {};
+  est.catalogo.forEach((p) => { (grupos[p.rotulo] ||= []).push(p); });
+  return Object.entries(grupos).map(([r, itens]) => `<optgroup label="${esc(r)}">${itens.map((p) => `<option value="${esc(p.id)}"${p.id === sel ? ' selected' : ''}>${esc(p.nome)}</option>`).join('')}</optgroup>`).join('');
+};
+const tamanhosDe = (p) => (p ? p.variantes.filter((v) => v.tamanho !== 'unico') : []);
+function normalizarAv() {
+  avItens.forEach((it) => {
+    let p = est.catalogo.find((x) => x.id === it.id);
+    if (!p) { p = est.catalogo[0]; it.id = p ? p.id : ''; }
+    const tams = tamanhosDe(p);
+    if (!tams.some((v) => v.tamanho === it.tam)) it.tam = tams[0] ? tams[0].tamanho : '';
+    it.qtd = Math.max(1, Number(it.qtd) || 1);
+  });
+}
+function linhaAvulsa(it, i) {
+  const p = est.catalogo.find((x) => x.id === it.id);
+  const tams = tamanhosDe(p);
+  return `<div class="av-linha" data-i="${i}">
+    <div class="av-prod"><label for="av-p${i}">${i ? 'Outro item' : 'Produto'}</label><select id="av-p${i}" data-av="prod" data-i="${i}">${opcoesProdutos(it.id)}</select></div>
+    <div class="av-tam"${tams.length ? '' : ' hidden'}><label for="av-t${i}">Tamanho</label><select id="av-t${i}" data-av="tam" data-i="${i}">${tams.map((v) => `<option value="${esc(v.tamanho)}"${v.tamanho === it.tam ? ' selected' : ''}>${esc(v.tamanho)}</option>`).join('')}</select></div>
+    <div class="av-qtd"><label for="av-q${i}">Qtd</label><input id="av-q${i}" data-av="qtd" data-i="${i}" type="number" min="1" value="${it.qtd}" inputmode="numeric" /></div>
+    ${avItens.length > 1 ? `<button class="btn-x" type="button" data-act="av-remover" data-i="${i}" aria-label="Tirar este item">${IC_X}</button>` : ''}
+  </div>`;
+}
+function desenharLinhasAv() {
+  normalizarAv();
+  const el = $('av-linhas');
+  if (el) el.innerHTML = avItens.map(linhaAvulsa).join('');
+}
+const itensAvulsa = () => { normalizarAv(); return avItens.map((it) => ({ id: it.id, tamanho: tamanhosDe(est.catalogo.find((x) => x.id === it.id)).length ? it.tam : '', qtd: it.qtd })); };
+
 function desenharBaixa() {
   const foco = document.activeElement;
   if (foco && foco.closest && foco.closest('#t-baixa') && /^(TEXTAREA|INPUT|SELECT)$/.test(foco.tagName)) return;   // não redesenha enquanto a pessoa digita
+  normalizarAv();
+  const maisAberto = rv('mais-aberto') === '1' || Boolean(rv('pedido')) || Boolean(pendente && pendente.corpo.acao === 'pedido');
   $('t-baixa').innerHTML = `
     <div class="secao-topo"><h2 id="h-baixa">Dar baixa</h2><p class="legenda">alguém comprou? desconte do estoque e crie o pedido</p></div>
     <div class="quadro">
-      <label for="pedido" style="margin-top:0">Mensagem do pedido (WhatsApp ou e-mail)</label>
-      <textarea id="pedido" data-rasc placeholder="Cole a mensagem inteira, com a lista de itens">${esc(rv('pedido'))}</textarea>
-      ${camposPagamento('pd', 'pendente')}
-      <div class="grade2" style="margin-top:18px;gap:10px">
-        <button class="btn" id="colar" type="button">Colar</button>
-        <button class="btn primario" id="conferir" type="button">Conferir</button>
-      </div>
-    </div>
-    <div class="quadro">
       <h3>Venda avulsa</h3>
-      <p class="ajuda">Para a venda combinada direto na conversa, sem passar pelo site.</p>
-      <label for="v-prod">Perfume</label>
-      ${opcoesSel('v-prod', rv('v-prod'), est.perfumes.map((p) => [p.id, p.nome]))}
-      <div class="grade2">
-        <div><label for="v-tam">Tamanho</label>${opcoesSel('v-tam', rv('v-tam'), est.tamanhos.map((s) => [s, s]))}</div>
-        <div><label for="v-qtd">Quantidade</label><input id="v-qtd" data-rasc type="number" min="1" value="${esc(rv('v-qtd', 1))}" inputmode="numeric" /></div>
-      </div>
+      <p class="ajuda">Escolha o que foi vendido. Vale para perfume, creme, body splash e acessório.</p>
+      <div id="av-linhas">${avItens.map(linhaAvulsa).join('')}</div>
+      <button class="link" type="button" data-act="av-add" style="margin-top:14px">+ Adicionar outro item</button>
       <div class="grade2">
         <div><label for="av-nome">Cliente (opcional)</label><input id="av-nome" data-rasc value="${esc(rv('av-nome'))}" maxlength="80" /></div>
         <div><label for="av-tel">WhatsApp (opcional)</label><input id="av-tel" data-rasc value="${esc(rv('av-tel'))}" inputmode="tel" maxlength="30" /></div>
       </div>
       ${camposPagamento('av', 'pago')}
-      <button class="btn cheio" id="conferir-avulsa" type="button" style="margin-top:22px">Conferir</button>
+      <button class="btn primario cheio" id="conferir-avulsa" type="button" style="margin-top:24px">Conferir</button>
     </div>
-    <div id="previa"></div>`;
+    <div id="previa"></div>
+    <details class="mais"${maisAberto ? ' open' : ''}>
+      <summary><span>Mensagem de pedido do site</span><small>colar do WhatsApp ou do e-mail</small></summary>
+      <div class="mais-corpo">
+        <label for="pedido" style="margin-top:0">Cole a mensagem inteira, com a lista de itens</label>
+        <textarea id="pedido" data-rasc placeholder="Olá Sposence! Acabei de fazer um pedido no site...">${esc(rv('pedido'))}</textarea>
+        ${camposPagamento('pd', 'pendente')}
+        <div class="grade2" style="margin-top:18px;gap:10px">
+          <button class="btn" id="colar" type="button">Colar</button>
+          <button class="btn primario" id="conferir" type="button">Conferir</button>
+        </div>
+      </div>
+    </details>`;
   if (pendente) mostrarPrevia(pendente.previa, false);
 }
-const limparRascunhoBaixa = () => { ['pedido', 'av-nome', 'av-tel', 'v-qtd'].forEach((k) => delete rasc[k]); };
+const limparRascunhoBaixa = () => { ['pedido', 'av-nome', 'av-tel'].forEach((k) => delete rasc[k]); avItens = [{ id: '', tam: '', qtd: 1 }]; };
+
+document.addEventListener('toggle', (ev) => { if (ev.target.matches && ev.target.matches('details.mais')) rasc['mais-aberto'] = ev.target.open ? '1' : ''; }, true);
+const mudouAv = (ev) => {
+  const t = ev.target;
+  if (!(t.dataset && t.dataset.av)) return;
+  const it = avItens[Number(t.dataset.i)];
+  if (!it) return;
+  if (t.dataset.av === 'qtd') { it.qtd = t.value; return; }
+  if (ev.type !== 'change') return;
+  if (t.dataset.av === 'prod') { it.id = t.value; it.tam = ''; desenharLinhasAv(); }
+  else it.tam = t.value;
+};
+document.addEventListener('input', mudouAv);
+document.addEventListener('change', mudouAv);
 
 document.addEventListener('input', (ev) => { const t = ev.target; if (t.dataset && 'rasc' in t.dataset) rasc[t.id] = t.value; });
 document.addEventListener('change', (ev) => {
@@ -1152,7 +1297,8 @@ const nDias = (n) => `${n} ${Math.abs(n) === 1 ? 'dia' : 'dias'}`;
 
 const trocaEstoque = () => `<div class="troca troca-vista" role="group" aria-label="O que mostrar">
   <button type="button" data-act="vista-estoque" data-v="prateleira" aria-pressed="${vistaEstoque === 'prateleira'}">Na prateleira</button>
-  <button type="button" data-act="vista-estoque" data-v="maturacao" aria-pressed="${vistaEstoque === 'maturacao'}">Em maturação <small>${est.maturacao.filter((l) => l.status === 'maturando').length}</small></button></div>`;
+  <button type="button" data-act="vista-estoque" data-v="maturacao" aria-pressed="${vistaEstoque === 'maturacao'}">Em maturação <small>${est.maturacao.filter((l) => l.status === 'maturando').length}</small></button>
+  <button type="button" data-act="vista-estoque" data-v="insumos" aria-pressed="${vistaEstoque === 'insumos'}">Insumos${est.insumos.some((i) => i.acabando) ? ' <small>!</small>' : ''}</button></div>`;
 
 function cartaoLote(l, i) {
   const feito = l.status === 'concluido';
@@ -1175,7 +1321,8 @@ function cartaoLote(l, i) {
     ${l.obs ? `<p class="detalhe" style="margin-top:12px">${esc(l.obs)}</p>` : ''}
     <div class="acoes">
       ${feito ? '' : `<button class="btn ${pronto ? 'primario ' : ''}pequeno" type="button" data-act="mat-concluir" data-id="${esc(l.id)}">Colocar no estoque</button>
-      <button class="btn pequeno" type="button" data-act="mat-editar" data-id="${esc(l.id)}">Editar</button>`}
+      <button class="btn pequeno" type="button" data-act="mat-editar" data-id="${esc(l.id)}">Editar</button>
+      <button class="btn pequeno" type="button" data-act="mat-chamar" data-id="${esc(l.id)}">Quem chamar</button>`}
       <button class="btn pequeno" type="button" data-act="mat-excluir" data-id="${esc(l.id)}">Excluir</button>
     </div>
   </li>`;
@@ -1269,6 +1416,428 @@ document.addEventListener('click', (ev) => {
 });
 
 
+/* ---------- clientes ---------- */
+let cli = null;              // { lista, chamar } vindos do servidor
+let cliVelho = true;         // os pedidos mudaram: buscar de novo
+let vistaCli = 'clientes';   // 'clientes' | 'lancamento'
+const filtroCli = { busca: '', perfil: 'todos' };
+const lancForm = { alvo: '', perfil: 'doces', publico: 'feminino', notas: '', nome: '' };
+let lanc = null;             // resultado do último simulador de lançamento
+let animCli = true;
+const PERFIS_ORDEM = ['doces', 'frescos', 'noturnos', 'elegantes'];
+const SING_PERFIL = { doces: 'doce', frescos: 'fresco', noturnos: 'noturno', elegantes: 'elegante' };
+const qtdPerfil = (k, n) => n + ' ' + (n === 1 ? SING_PERFIL[k] : k);
+const ROT_PERFIL = { doces: 'doces', frescos: 'frescos', noturnos: 'noturnos', elegantes: 'elegantes', 'sem perfil': 'sem compras ainda' };
+const ROT_AFIN = { alta: 'Alta', media: 'Média', baixa: 'Baixa', 'sem dados': 'Sem dados' };
+const normalNome = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const primeiroNome = (n) => String(n || '').trim().split(/\s+/)[0] || '';
+const assinaturaPed = () => (est ? `${est.pedidos.length}|${est.pedidos.map((p) => p.id + p.status + p.total).join(',')}` : '');
+const dinInt = (n) => 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const quandoDias = (d) => (d === 0 ? 'hoje' : d === 1 ? 'ontem' : `há ${d} dias`);
+
+async function carregarClientes(forcar) {
+  if (!forcar && cli && !cliVelho) return;
+  try {
+    const d = await api('clientes');
+    cli = d.clientes; cliVelho = false;
+    desenharClientes();
+  } catch (e) { if (!$('t-clientes').hidden) falhou(e); }
+}
+
+/* ----- peças visuais ----- */
+function barraGosto(perfil) {
+  const ativos = PERFIS_ORDEM.filter((k) => perfil[k]);
+  if (!ativos.length) return '<p class="gosto-vazio">sem compras de perfume ainda</p>';
+  const legenda = ativos.map((k) => qtdPerfil(k, perfil[k])).join(', ');
+  return `<div class="gosto" role="img" aria-label="Gosto: ${legenda}">${ativos.map((k) => `<i class="perfil-${k}" style="flex:${perfil[k]}"></i>`).join('')}</div>
+    <p class="gosto-legenda">${ativos.map((k) => `<span><b class="perfil-${k}"></b>${qtdPerfil(k, perfil[k])}</span>`).join('')}</p>`;
+}
+const pilulaAfin = (rotulo, pts) => `<span class="afin" data-r="${esc(rotulo)}">${ROT_AFIN[rotulo]}${rotulo === 'sem dados' ? '' : ` · ${pts}`}</span>`;
+const telefoneLink = (tel) => { const d = String(tel || '').replace(/\D/g, ''); return d.length >= 10 ? `https://wa.me/${d.startsWith('55') ? d : '55' + d}` : ''; };
+
+/* ----- mensagens para WhatsApp (você revisa e envia) ----- */
+const juntarMotivos = (m) => m.join(' e ').replace(/ e perfumes /g, ' e ');
+function msgRecompra(c, r) {
+  const quando = c.dias >= 25 ? 'Faz um tempinho desde o seu último pedido e lembrei de você. ' : '';
+  const gosto = r && r.motivos && r.motivos.length ? `Como você curte ${juntarMotivos(r.motivos)}, acho que` : 'Acho que';
+  return `Oi ${primeiroNome(c.nome)}, tudo bem? Aqui é da Sposence. ${quando}${r ? `${gosto} o ${r.nome} combina muito com você. Quer que eu separe um?` : 'Quer dar uma olhada nas novidades?'}`;
+}
+function msgLancamento(c, produto, motivos, inspirado) {
+  const porque = motivos && motivos.length ? `porque você curte ${juntarMotivos(motivos)}` : 'porque combina com o seu gosto';
+  return `Oi ${primeiroNome(c.nome)}, tudo bem? Aqui é da Sposence. Acabou de chegar o ${produto}${inspirado ? `, inspirado no ${inspirado}` : ''}. Pensei em você ${porque}. Quer experimentar?`;
+}
+const linkZap = (tel, texto) => { const base = telefoneLink(tel); return base ? `${base}?text=${encodeURIComponent(texto)}` : ''; };
+
+/* ----- aba Clientes ----- */
+function desenharClientes() {
+  const el = $('t-clientes');
+  const cabeca = `<header class="ped-cabeca">
+      <div><span class="eyebrow">Painel de clientes</span><h2 id="h-clientes">Quem <em>compra</em> de você</h2>
+      <p class="ped-lead">O gosto de cada cliente, calculado dos pedidos, e quem vale chamar agora.</p></div>
+      <div class="ped-acoes"><div class="troca troca-vista" role="group" aria-label="O que mostrar">
+        <button type="button" data-act="cli-vista" data-v="clientes" aria-pressed="${vistaCli === 'clientes'}">Clientes</button>
+        <button type="button" data-act="cli-vista" data-v="lancamento" aria-pressed="${vistaCli === 'lancamento'}">Simular lançamento</button></div></div>
+    </header>`;
+  if (!cli) { el.innerHTML = cabeca + '<p class="legenda">carregando os clientes…</p>'; return; }
+  el.classList.toggle('anim', animCli);
+  const lista = cli.lista;
+  const gastoTotal = lista.reduce((t, c) => t + c.gasto, 0);
+  const pedidosTotal = lista.reduce((t, c) => t + c.n_pedidos, 0);
+  const recorrentes = lista.filter((c) => c.n_pedidos >= 2).length;
+  const metricas = `<div class="ped-resumo">
+      <div class="ped-receber"><small>Para chamar agora</small><div class="num">${cli.chamar.length}</div><small>${cli.chamar.length ? 'passaram do ritmo de compra de cada um' : 'ninguém passou do ritmo ainda'}</small></div>
+      <div class="ped-abertos"><small>Clientes</small><div class="num">${lista.length}</div><small>${recorrentes} ${recorrentes === 1 ? 'voltou' : 'voltaram'} a comprar</small></div>
+      <div class="ped-mes"><small>Ticket médio</small><div class="num">${din(pedidosTotal ? gastoTotal / pedidosTotal : 0)}</div><small>por pedido</small></div>
+    </div>`;
+  el.innerHTML = cabeca + metricas + (vistaCli === 'lancamento' ? corpoLancamento() : corpoClientes());
+  animCli = false;
+}
+
+function cartaoChamar(c, i) {
+  const s = c.sugestao;
+  return `<li><article class="cli-chamar" style="--i:${i}" data-act="cli-abrir" data-id="${esc(c.id)}" tabindex="0" role="button" aria-label="Abrir o cliente ${esc(c.nome)}">
+    <div><h4 class="mini-nome">${esc(c.nome || 'Sem nome')}</h4>
+    <p class="detalhe">Última compra ${quandoDias(c.dias)}${c.n_pedidos > 1 ? `, costuma comprar a cada ${c.ritmo} dias` : ''}.</p>
+    ${s ? `<p class="detalhe" style="margin-top:6px">Sugestão: <b>${esc(s.nome)}</b> ${pilulaAfin(s.rotulo, s.afinidade)}</p>` : ''}</div>
+    <button class="btn pequeno primario" type="button" data-act="cli-chamar" data-id="${esc(c.id)}">Chamar</button>
+  </article></li>`;
+}
+
+function cartaoCliente(c, i) {
+  return `<li><article class="cli" style="--i:${i}" data-act="cli-abrir" data-id="${esc(c.id)}" tabindex="0" role="button" aria-label="Abrir o cliente ${esc(c.nome)}">
+    <div class="ped-topo"><div><span class="ped-num">${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}, ${dinInt(c.gasto)}</span><h3 class="ped-nome">${esc(c.nome || 'Sem nome')}</h3></div>
+      ${c.contato.nao_chamar ? '<span class="chip-st" data-st="cancelado">Não chamar</span>' : ''}</div>
+    ${barraGosto(c.perfil)}
+    ${c.notas.length ? `<p class="chips-notas">${c.notas.map((n) => `<span class="chip">${esc(n.rotulo)}</span>`).join('')}</p>` : ''}
+    <div class="ped-pe"><span class="ped-origem">última compra ${quandoDias(c.dias)}</span>${c.recomendacoes[0] ? `<span class="detalhe">${esc(c.recomendacoes[0].nome)} ${pilulaAfin(c.recomendacoes[0].rotulo, c.recomendacoes[0].afinidade)}</span>` : ''}</div>
+  </article></li>`;
+}
+
+function corpoClientes() {
+  const b = normalNome(filtroCli.busca);
+  const lista = cli.lista.filter((c) => (filtroCli.perfil === 'todos' || c.dominante === filtroCli.perfil) && (!b || normalNome(c.nome + ' ' + c.telefone).includes(b)));
+  const filtros = [['todos', 'Todos'], ...PERFIS_ORDEM.map((k) => [k, k[0].toUpperCase() + k.slice(1)])];
+  return `
+    ${cli.chamar.length ? `<h3 class="sub-titulo" style="margin-top:0">Para chamar agora</h3><p class="detalhe">Quem já passou do ritmo de compra de cada um, com a fragrância que mais combina.</p>
+      <ul class="cli-lista cli-chamar-lista">${cli.chamar.slice(0, 6).map(cartaoChamar).join('')}</ul>` : ''}
+    <h3 class="sub-titulo">Todos os clientes</h3>
+    <div class="busca"><input id="cli-busca" type="search" placeholder="Buscar por nome ou telefone" value="${esc(filtroCli.busca)}" aria-label="Buscar cliente" /></div>
+    <div class="filtros" role="group" aria-label="Filtrar pelo gosto">${filtros.map(([k, n]) => `<button type="button" data-cli-perfil="${k}" aria-pressed="${filtroCli.perfil === k}">${n}</button>`).join('')}</div>
+    ${lista.length ? `<ul class="cli-lista">${lista.map(cartaoCliente).join('')}</ul>`
+      : cli.lista.length ? '<div class="vazio"><span class="simbolo"></span><b>Nenhum cliente nesta busca</b>Tente outro nome ou outro filtro.</div>'
+      : '<div class="vazio"><span class="simbolo"></span><b>Os clientes aparecem sozinhos</b>Cada pedido que você registrar com nome ou WhatsApp cria o cliente aqui, com o gosto dele calculado das compras.</div>'}`;
+}
+
+/* ----- detalhe do cliente ----- */
+function abrirCliente(id, foco) {
+  const c = cli && cli.lista.find((x) => x.id === id);
+  if (!c) return;
+  const rolagem = $('folha').open && $('folha').dataset.cli === id ? $('folha').scrollTop : 0;
+  $('folha').dataset.cli = id;
+  const recs = c.recomendacoes;
+  const escolhida = recs.find((r) => r.disponivel) || recs[0] || null;
+  abrirFolha(c.nome || 'Cliente', `
+    <p class="legenda" style="margin-top:4px">${c.telefone ? esc(c.telefone) + ', ' : ''}cliente desde ${dataCurta(c.primeira)}/${c.primeira.slice(0, 4)}</p>
+    <section class="sec primeira"><h3>Gosto</h3>${barraGosto(c.perfil)}
+      ${c.notas.length ? `<p class="chips-notas">${c.notas.map((n) => `<span class="chip">${esc(n.rotulo)}</span>`).join('')}</p>` : ''}
+      <p class="detalhe">${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}, ${din(c.gasto)} no total${c.intervalo ? `, compra a cada ${c.intervalo} dias em média` : ''}. Última compra ${quandoDias(c.dias)}.</p></section>
+    <section class="sec"><h3>O que sugerir</h3>
+      ${recs.length ? `<ul class="det-itens">${recs.map((r) => `<li><span><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}<br><i>${r.motivos.length ? 'combina com ' + esc(r.motivos.join(' e ')) : 'sem motivo claro ainda'}${r.ja_comprou ? ', ela já tem' : ''}${r.disponivel ? '' : ', sem estoque agora'}</i></span>
+        <button class="btn pequeno" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">Usar</button></li>`).join('')}</ul>`
+        : '<p class="detalhe">Ainda não há compras de perfume para comparar.</p>'}</section>
+    <section class="sec" id="cli-sec-msg"><h3>Mensagem</h3>
+      <label for="cli-msg" style="margin-top:0">Você revisa e envia pelo WhatsApp</label>
+      <textarea id="cli-msg" data-cli="${esc(c.id)}" style="min-height:120px">${esc(msgRecompra(c, escolhida))}</textarea>
+      <div class="grade2" style="margin-top:12px;gap:10px">
+        ${c.telefone && telefoneLink(c.telefone) ? `<a class="btn primario" id="cli-zap" href="${esc(linkZap(c.telefone, msgRecompra(c, escolhida)))}" target="_blank" rel="noopener">Abrir no WhatsApp</a>` : '<span class="btn" aria-disabled="true" style="opacity:.5">Sem telefone</span>'}
+        <button class="btn" type="button" data-act="cli-chamei" data-id="${esc(c.id)}">Marquei como chamado</button></div>
+      ${c.contato.ultimo ? `<p class="detalhe" style="margin-top:10px">Última vez chamado em ${dataCurta(c.contato.ultimo)}.</p>` : ''}</section>
+    <section class="sec"><h3>Compras</h3>
+      <ul class="det-itens">${c.compras.map((x) => `<li><span>${x.qtd}× ${esc(x.nome)}</span><i>${dataCurta(x.ultima)}</i></li>`).join('')}</ul>
+      <h4 class="mini-nome" style="margin-top:16px">Pedidos</h4>
+      <ul class="det-itens">${c.pedidos.map((p) => `<li><button class="link" type="button" data-act="cli-pedido" data-id="${esc(p.id)}">nº ${p.numero}, ${dataCurta(p.data)}</button><b>${din(p.total)}</b></li>`).join('')}</ul></section>
+    <section class="sec"><h3>Anotações</h3>
+      <form data-form="cli-dados" data-id="${esc(c.id)}">
+        <textarea name="notas" style="min-height:84px" maxlength="600" placeholder="Ex.: prefere ser chamada à tarde; presenteia a irmã">${esc(c.contato.notas)}</textarea>
+        <label class="lembrar"><input type="checkbox" name="nao_chamar"${c.contato.nao_chamar ? ' checked' : ''} /> Não chamar (pediu para parar ou não quer promoções)</label>
+        <button class="btn cheio" type="submit">Salvar anotações</button></form></section>`);
+  $('folha').scrollTop = foco === 'mensagem' ? ($('cli-sec-msg').offsetTop - 12) : rolagem;
+}
+
+function usarSugestao(id, prodId) {
+  const c = cli.lista.find((x) => x.id === id);
+  const r = c.recomendacoes.find((x) => x.id === prodId);
+  const texto = msgRecompra(c, r);
+  $('cli-msg').value = texto;
+  const z = $('cli-zap'); if (z) z.href = linkZap(c.telefone, texto);
+  $('cli-msg').focus();
+}
+
+/* ----- simulador de lançamento ----- */
+function opcoesLancamento() {
+  const lotes = est.maturacao.filter((l) => l.status === 'maturando');
+  return `<optgroup label="Perfumes do catálogo">${est.perfumes.map((p) => `<option value="p:${esc(p.id)}">${esc(p.nome)}</option>`).join('')}</optgroup>
+    ${lotes.length ? `<optgroup label="Em maturação">${lotes.map((l) => `<option value="m:${esc(l.id)}">${esc(l.nome)}, pronto em ${dataBR(l.previsto)}</option>`).join('')}</optgroup>` : ''}
+    <option value="outro">Outra fragrância (descrever o perfil)</option>`;
+}
+function corpoLancamento() {
+  const sel = (id, atual, lista) => `<select id="${id}" data-lanc>${lista.map(([k, n]) => `<option value="${k}"${k === atual ? ' selected' : ''}>${n}</option>`).join('')}</select>`;
+  const custom = lancForm.alvo === 'outro' || lancForm.alvo.startsWith('m:') && !loteComProduto(lancForm.alvo.slice(2));
+  return `
+    <section class="quadro" style="margin-top:0">
+      <h3>Quem chamar para um lançamento</h3>
+      <p class="ajuda">Escolha a fragrância que vai lançar. O painel compara com o gosto de cada cliente e mostra quem tem mais chance de comprar.</p>
+      <label for="lanc-alvo">Fragrância</label>
+      <select id="lanc-alvo" data-lanc>${opcoesLancamento().replace(`value="${esc(lancForm.alvo)}"`, `value="${esc(lancForm.alvo)}" selected`)}</select>
+      <div id="lanc-custom"${custom ? '' : ' hidden'}>
+        <div class="grade2">
+          <div><label for="lanc-perfil">Perfil</label>${sel('lanc-perfil', lancForm.perfil, PERFIS_ORDEM.map((k) => [k, k[0].toUpperCase() + k.slice(1)]))}</div>
+          <div><label for="lanc-publico">Para quem</label>${sel('lanc-publico', lancForm.publico, [['feminino', 'Feminino'], ['masculino', 'Masculino'], ['compartilhavel', 'Unissex']])}</div>
+        </div>
+        <label for="lanc-notas">Notas (opcional, separadas por vírgula)</label>
+        <input id="lanc-notas" data-lanc value="${esc(lancForm.notas)}" placeholder="Ex.: baunilha, citrico" maxlength="120" />
+      </div>
+      <button class="btn primario cheio" type="button" data-act="lanc-rodar" style="margin-top:22px">Ver quem chamar</button>
+    </section>
+    <div id="lanc-res">${lanc ? resultadoLancamento() : ''}</div>`;
+}
+const loteComProduto = (id) => { const l = est.maturacao.find((x) => x.id === id); return Boolean(l && l.produto_id); };
+
+function resultadoLancamento() {
+  const r = lanc;
+  if (!r.total) return '<div class="vazio"><span class="simbolo"></span><b>Ainda não há clientes</b>Os clientes aparecem quando houver pedidos com nome ou WhatsApp.</div>';
+  const maxMedia = Math.max(1, ...r.segmentos.map((s) => s.media));
+  return `
+    <h3 class="sub-titulo">Chance por tipo de cliente${r.nome ? ` para ${esc(r.nome)}` : ''}</h3>
+    <ul class="segmentos">${r.segmentos.map((s, i) => `<li style="--i:${i}"><span class="seg-nome"><b class="perfil-${esc(s.perfil)}"></b>${esc(ROT_PERFIL[s.perfil] || s.perfil)}</span>
+      <div class="pg-barra" aria-hidden="true"><i style="--p:${(s.media / maxMedia).toFixed(3)}"></i></div>
+      <span class="seg-num">${s.media}<small> de 100, ${s.clientes} ${s.clientes === 1 ? 'cliente' : 'clientes'}${s.altas ? `, ${s.altas} com chance alta` : ''}</small></span></li>`).join('')}</ul>
+    <h3 class="sub-titulo">Quem chamar primeiro</h3>
+    <ul class="rank">${r.ranking.slice(0, 12).map((x, i) => `<li class="rank-item${x.nao_chamar ? ' fora' : ''}" style="--i:${i}">
+      <div><b>${esc(x.nome || 'Sem nome')}</b> ${pilulaAfin(x.rotulo, x.afinidade)}
+        <p class="detalhe">${x.motivos.length ? 'Combina com ' + esc(x.motivos.join(' e ')) + '. ' : ''}${x.ja_comprou ? 'Já comprou esta fragrância. ' : ''}${x.nao_chamar ? 'Marcado como não chamar. ' : x.chamado_ha !== null ? `Chamado ${quandoDias(x.chamado_ha)}. ` : ''}Última compra ${quandoDias(x.dias)}.</p></div>
+      ${(x.rotulo === 'alta' || x.rotulo === 'media') ? `<div class="acoes" style="margin:0;flex:none">
+        ${telefoneLink(x.telefone) && !x.nao_chamar ? `<a class="btn pequeno primario" target="_blank" rel="noopener" data-act="lanc-zap" data-id="${esc(x.id)}" href="${esc(linkZap(x.telefone, msgLancamento(x, r.nome || 'novo perfume', x.motivos, r.inspirado)))}">WhatsApp</a>` : ''}
+        <button class="btn pequeno" type="button" data-act="cli-chamei" data-id="${esc(x.id)}">Marquei</button></div>` : `<span class="detalhe" style="flex:none">pouco provável</span>`}</li>`).join('')}</ul>
+    ${r.ranking.length > 12 ? `<p class="detalhe">Mostrando 12 de ${r.ranking.length} clientes.</p>` : ''}`;
+}
+
+async function rodarLancamento() {
+  let corpo;
+  const alvo = lancForm.alvo;
+  if (alvo.startsWith('p:')) corpo = { produto_id: alvo.slice(2) };
+  else if (alvo.startsWith('m:') && loteComProduto(alvo.slice(2))) corpo = { produto_id: est.maturacao.find((l) => l.id === alvo.slice(2)).produto_id };
+  else {
+    const lote = alvo.startsWith('m:') ? est.maturacao.find((l) => l.id === alvo.slice(2)) : null;
+    corpo = { nome: lote ? lote.nome : '', perfil: lancForm.perfil, publico: lancForm.publico, notas: lancForm.notas };
+  }
+  try {
+    const d = await api('lancamento', corpo);
+    lanc = d.lancamento;
+    const p = corpo.produto_id && est.catalogo.find((x) => x.id === corpo.produto_id);
+    lanc.inspirado = p ? p.inspirado : '';
+    const el = $('lanc-res'); if (el) el.innerHTML = resultadoLancamento();
+  } catch (e) { falhou(e); }
+}
+
+/* ----- eventos de clientes ----- */
+document.addEventListener('keydown', (ev) => {
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches && ev.target.matches('article.cli, article.cli-chamar')) { ev.preventDefault(); ev.target.click(); }
+});
+document.addEventListener('input', (ev) => {
+  const t = ev.target;
+  if (t.id === 'cli-busca') { filtroCli.busca = t.value; const pos = t.selectionStart; desenharClientes(); const n = $('cli-busca'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
+  else if (t.id === 'cli-msg') { const c = cli.lista.find((x) => x.id === t.dataset.cli); const z = $('cli-zap'); if (c && z) z.href = linkZap(c.telefone, t.value); }
+  else if (t.id === 'lanc-notas') lancForm.notas = t.value;
+});
+document.addEventListener('change', (ev) => {
+  const t = ev.target;
+  if (t.id === 'lanc-alvo') { lancForm.alvo = t.value; $('lanc-custom').hidden = !(t.value === 'outro' || (t.value.startsWith('m:') && !loteComProduto(t.value.slice(2)))); }
+  else if (t.id === 'lanc-perfil') lancForm.perfil = t.value;
+  else if (t.id === 'lanc-publico') lancForm.publico = t.value;
+});
+
+/* ---------- ficha da fragrância ---------- */
+async function folhaFragrancia(id) {
+  const p = est.catalogo.find((x) => x.id === id);
+  if (!p) return;
+  const ctl = est.produtos.find((x) => x.id === id);
+  const nomeN = normalNome(p.nome);
+  const lotes = est.maturacao.filter((l) => l.status === 'maturando' && (l.produto_id === id || normalNome(l.nome) === nomeN));
+  let vendidos = 0, receita = 0;
+  est.pedidos.filter((x) => x.status !== 'cancelado').forEach((ped) => ped.itens.forEach((i) => { if (i.produto_id === id || normalNome(i.nome) === nomeN) { vendidos += i.qtd; receita += i.total; } }));
+  const n = p.notas || {};
+  abrirFolha(p.nome, `
+    <p class="legenda" style="margin-top:4px">${p.inspirado ? 'inspirado em ' + esc(p.inspirado) : esc(p.rotulo)}</p>
+    <p class="chips-notas" style="margin-top:12px">${p.perfil ? `<span class="chip">${esc(p.perfil)}</span>` : ''}${(p.tags || []).filter((t) => !['frescos', 'doces', 'noturnos', 'elegantes'].includes(t)).slice(0, 6).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}${p.status !== 'visivel' ? `<span class="chip-st" data-st="${p.status === 'oculto' ? 'cancelado' : 'separando'}">${p.status === 'oculto' ? 'oculto no site' : 'marcado como esgotado'}</span>` : ''}</p>
+    ${n.topo || n.coracao || n.fundo ? `<section class="sec"><h3>Notas</h3><ul class="det-itens">
+      ${n.topo ? `<li><span>Saída</span><i>${esc(n.topo)}</i></li>` : ''}${n.coracao ? `<li><span>Coração</span><i>${esc(n.coracao)}</i></li>` : ''}${n.fundo ? `<li><span>Fundo</span><i>${esc(n.fundo)}</i></li>` : ''}</ul>
+      ${p.descricao ? `<p class="detalhe">${esc(p.descricao)}</p>` : ''}</section>` : ''}
+    <section class="sec${n.topo || n.coracao || n.fundo ? '' : ' primeira'}"><h3>Preço e estoque</h3>
+      <p class="detalhe">${p.variantes.map((v) => `${esc(v.tamanho)}: <b>${din(v.preco)}</b>`).join(' · ')}</p>
+      ${ctl ? `<div class="total" style="margin:10px 0 0"><div class="qtd">${nf.format(ctl.ml_total)}<em>ml no total</em></div></div>
+        <p class="detalhe"><b>${nf.format(ctl.granel_ml)}</b> ml a granel${est.tamanhos.map((s) => ` · <b>${ctl.unidades[s]}</b> × ${s}`).join('')}. Dá para vender ${est.tamanhos.map((s) => `<b>${ctl.vende[s]}</b> de ${s}`).join(' ou ')}.</p>`
+        : '<p class="detalhe">Sem controle de ml. Registre uma entrada para começar a contar o estoque.</p>'}
+      <div class="acoes">
+        <button class="btn pequeno" type="button" data-act="entrada" data-id="${esc(id)}">${IC_MAIS} Entrada</button>
+        ${ctl && ctl.granel_ml > 0 ? `<button class="btn pequeno" type="button" data-act="envasar" data-id="${esc(id)}">Envasar</button>` : ''}
+        ${ctl ? `<button class="btn pequeno" type="button" data-act="corrigir" data-id="${esc(id)}">Corrigir</button>` : ''}
+        <button class="btn pequeno" type="button" data-act="precos" data-id="${esc(id)}">Preços</button></div></section>
+    ${lotes.length ? `<section class="sec"><h3>Em maturação</h3><ul class="det-itens">${lotes.map((l) => `<li><span>${nf.format(l.ml)} ml, começou em ${dataBR(l.inicio)}</span><b>${l.dias_restantes > 0 ? `pronto em ${dataBR(l.previsto)} (${nDias(l.dias_restantes)})` : 'pronto'}</b></li>`).join('')}</ul></section>` : ''}
+    <section class="sec"><h3>Vendas</h3><p class="detalhe">${vendidos ? `<b>${vendidos}</b> ${vendidos === 1 ? 'frasco vendido' : 'frascos vendidos'}, ${din(receita)} no total.` : 'Ainda não vendeu nos pedidos registrados.'}</p></section>
+    <section class="sec"><h3>Quem chamar</h3><div id="frag-chamar"><p class="detalhe">calculando a afinidade dos clientes…</p></div></section>`);
+  if (p.categoria !== 'perfumes') return;
+  try {
+    const d = await api('lancamento', { produto_id: id });
+    const box = $('frag-chamar');
+    if (!box || !$('folha').open || $('folha-titulo').textContent !== p.nome) return;
+    const top = d.lancamento.ranking.filter((x) => !x.ja_comprou && !x.nao_chamar && x.afinidade > 0).slice(0, 3);
+    box.innerHTML = top.length
+      ? `<ul class="det-itens">${top.map((x) => `<li><span><button class="link" type="button" data-act="cli-abrir" data-id="${esc(x.id)}">${esc(x.nome || 'Sem nome')}</button> ${pilulaAfin(x.rotulo, x.afinidade)}<br><i>${x.motivos.length ? 'combina com ' + esc(x.motivos.join(' e ')) : ''}</i></span></li>`).join('')}</ul>
+         <button class="btn pequeno" type="button" data-act="lanc-produto" data-id="${esc(id)}">Ver todos os clientes</button>`
+      : '<p class="detalhe">Ainda não há clientes com gosto parecido. Quando houver pedidos, a lista aparece aqui.</p>';
+  } catch (_) { const box = $('frag-chamar'); if (box) box.innerHTML = '<p class="detalhe">Não consegui calcular agora.</p>'; }
+}
+
+function folhaSenha() {
+  abrirFolha('Mudar a senha do painel', `
+    <p class="legenda" style="margin:4px 0 16px">por segurança, a senha não muda por aqui</p>
+    <ol class="passos"><li>Abra o projeto <b>sposence</b> na Vercel, em <b>Settings</b>, depois <b>Environment Variables</b>.</li>
+    <li>Edite o valor de <b>ADMIN_PASSWORD</b> (marque Production e Preview) e salve.</li>
+    <li>Em <b>Deployments</b>, faça um <b>Redeploy</b> do mais recente. A senha nova vale depois disso.</li></ol>
+    <button class="btn cheio" type="button" data-fechar style="margin-top:20px">Entendi</button>`);
+}
+
+/* ---------- busca geral ---------- */
+let buscaItens = [];
+let buscaSel = 0;
+const irEstoque = (vista) => { irPara('estoque'); vistaEstoque = vista; animMat = true; desenharEstoque(); };
+const verPedidos = (f) => { irPara('pedidos'); vistaPed = 'lista'; filtroPed.cat = f; animPed = true; desenharPedidos(); };
+const irClientes = (v) => { irPara('clientes'); vistaCli = v; animCli = true; desenharClientes(); carregarClientes(); };
+
+function comandos() {
+  const c = (grupo, t, k, run) => ({ grupo, titulo: t, sub: '', hay: normalNome(t + ' ' + k), run });
+  return [
+    c('Opções', 'Dar baixa em uma venda', 'baixa venda pedido colar vender mensagem whatsapp', () => irPara('baixa')),
+    c('Opções', 'Registrar entrada de estoque', 'entrada estoque adicionar granel ml frascos chegou', () => folhaEntrada()),
+    c('Opções', 'Envasar perfume', 'envasar frascos granel encher', () => folhaEntrada(undefined, 'env')),
+    c('Opções', 'Ver o estoque na prateleira', 'estoque prateleira ml total frascos', () => irEstoque('prateleira')),
+    c('Opções', 'Ver perfumes em maturação', 'maturacao maturando lotes datas lancar prazo', () => irEstoque('maturacao')),
+    c('Opções', 'Novo lote em maturação', 'novo lote maturacao registrar', () => { irEstoque('maturacao'); folhaLote(); }),
+    c('Opções', 'Ver insumos', 'insumos vidros etiquetas saquinhos base creme embalagem', () => irEstoque('insumos')),
+    c('Opções', 'Novo insumo', 'novo insumo cadastrar embalagem', () => { irEstoque('insumos'); folhaInsumoNovo(); }),
+    c('Opções', 'Pedidos em aberto', 'pedidos abertos entregar andamento', () => verPedidos('abertos')),
+    c('Opções', 'Pedidos com pagamento a receber', 'receber parcelas pagamento pendente devendo', () => verPedidos('receber')),
+    c('Opções', 'Pedidos entregues', 'entregues concluidos finalizados', () => verPedidos('entregues')),
+    c('Opções', 'Pedidos cancelados', 'cancelados', () => verPedidos('cancelados')),
+    c('Opções', 'Ver pedidos no quadro por etapa', 'quadro kanban etapas arrastar', () => { irPara('pedidos'); vistaPed = 'quadro'; animPed = true; desenharPedidos(); }),
+    c('Opções', 'Quem chamar agora', 'clientes chamar recompra contato retomar', () => irClientes('clientes')),
+    c('Opções', 'Simular o lançamento de um perfume', 'lancamento lancar clientes chance vendas simulador', () => irClientes('lancamento')),
+    c('Opções', 'Novo produto no catálogo', 'novo produto perfume creme catalogo criar cadastrar', () => { irPara('catalogo'); folhaProduto(); }),
+    c('Opções', 'Produtos ocultos ou esgotados no site', 'ocultos esgotados fora do site catalogo', () => { irPara('catalogo'); filtro.cat = 'fora'; desenharCatalogo(); }),
+    c('Opções', 'Ver o histórico de movimentos', 'historico movimentos registro', () => irPara('historico')),
+    c('Opções', 'Desfazer o último movimento', 'desfazer ultimo voltar', () => { if (!est.historico.length) { aviso('Não há nada para desfazer.', true); return; } confirmar('Desfazer o último movimento?', est.historico[0].descricao, 'Desfazer', async () => { await api('desfazer'); aviso('Desfeito.'); }); }),
+    c('Configurações', 'Trocar entre tema claro e escuro', 'tema escuro claro modo noite aparencia', () => alternarTema()),
+    c('Configurações', 'Mudar a senha do painel', 'senha trocar mudar seguranca acesso', () => folhaSenha()),
+    c('Configurações', 'Sair do painel', 'sair logout encerrar sessao desconectar', () => sair()),
+  ];
+}
+
+function indiceBusca() {
+  const itens = [];
+  for (const p of est.catalogo) {
+    const ctl = est.produtos.find((x) => x.id === p.id);
+    if (p.categoria === 'perfumes') {
+      itens.push({ grupo: 'Fragrâncias', titulo: p.nome, chip: p.perfil || '',
+        sub: [p.inspirado ? 'inspirado em ' + p.inspirado : '', ctl ? `${nf.format(ctl.ml_total)} ml` : '', p.status !== 'visivel' ? (p.status === 'oculto' ? 'oculto no site' : 'esgotado') : ''].filter(Boolean).join(' · '),
+        hay: normalNome([p.nome, p.inspirado, p.perfil, (p.tags || []).join(' '), p.notas ? Object.values(p.notas).join(' ') : '', p.descricao].join(' ')), run: () => folhaFragrancia(p.id) });
+    } else {
+      itens.push({ grupo: 'Produtos', titulo: p.nome, chip: p.rotulo, sub: precoTexto(p), hay: normalNome(p.nome + ' ' + p.rotulo), run: () => { irPara('catalogo'); filtroCatalogoPara(p.nome); } });
+    }
+  }
+  for (const ped of est.pedidos.slice(0, 200)) {
+    itens.push({ grupo: 'Pedidos', titulo: `nº ${ped.numero}, ${(ped.cliente && ped.cliente.nome) || 'sem nome'}`, chip: ROTULO_ETAPA[ped.status],
+      sub: `${din(ped.total)} · ${resumoItens(ped)}`,
+      hay: normalNome(`${ped.numero} ${ped.cliente ? ped.cliente.nome + ' ' + ped.cliente.telefone : ''} ${ped.itens.map((i) => i.nome).join(' ')} ${ROTULO_ETAPA[ped.status]}`), run: () => { irPara('pedidos'); abrirPedido(ped.id); } });
+  }
+  if (cli) for (const c of cli.lista) {
+    itens.push({ grupo: 'Clientes', titulo: c.nome || 'Sem nome', chip: c.dominante || '', sub: `${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'} · última compra ${quandoDias(c.dias)}`, hay: normalNome(`${c.nome} ${c.telefone} ${c.dominante || ''}`), run: () => { irPara('clientes'); abrirCliente(c.id); } });
+  }
+  for (const i of est.insumos) itens.push({ grupo: 'Estoque', titulo: i.nome, chip: '', sub: `${nf.format(i.qtd)} ${i.unidade}${i.acabando ? ' · acabando' : ''}`, hay: normalNome(i.nome + ' insumo'), run: () => irEstoque('insumos') });
+  for (const l of est.maturacao.filter((x) => x.status === 'maturando')) itens.push({ grupo: 'Estoque', titulo: `${l.nome}, em maturação`, chip: '', sub: `${nf.format(l.ml)} ml · pronto em ${dataBR(l.previsto)}`, hay: normalNome(l.nome + ' maturacao lote'), run: () => irEstoque('maturacao') });
+  return itens.concat(comandos());
+}
+function filtroCatalogoPara(nome) { filtro.busca = nome; filtro.cat = 'todos'; desenharCatalogo(); }
+
+const LIMITES = { 'Fragrâncias': 8, Produtos: 4, Pedidos: 5, Clientes: 5, Estoque: 4, 'Opções': 7, 'Configurações': 3 };
+const ORDEM_GRUPOS = ['Fragrâncias', 'Produtos', 'Pedidos', 'Clientes', 'Estoque', 'Opções', 'Configurações'];
+function buscar(q) {
+  const tokens = normalNome(q).split(/\s+/).filter(Boolean);
+  const todosItens = indiceBusca();
+  let achados;
+  if (!tokens.length) achados = todosItens.filter((i) => i.grupo === 'Fragrâncias').slice(0, 5).concat(todosItens.filter((i) => i.grupo !== 'Fragrâncias' && (i.grupo === 'Opções' || i.grupo === 'Configurações')).slice(0, 8));
+  else {
+    achados = todosItens.map((i) => {
+      if (!tokens.every((t) => i.hay.includes(t))) return null;
+      const tit = normalNome(i.titulo);
+      return { ...i, s: 1 + (tit.startsWith(tokens[0]) ? 3 : tit.includes(tokens[0]) ? 2 : 0) };
+    }).filter(Boolean).sort((a, b) => b.s - a.s || a.titulo.localeCompare(b.titulo, 'pt-BR'));
+  }
+  const cont = {};
+  const lim = achados.filter((i) => { cont[i.grupo] = (cont[i.grupo] || 0) + 1; return tokens.length ? cont[i.grupo] <= LIMITES[i.grupo] : true; });
+  return ORDEM_GRUPOS.flatMap((g) => lim.filter((i) => i.grupo === g));
+}
+
+function desenharBusca() {
+  buscaItens = buscar($('busca-q').value);
+  buscaSel = Math.min(buscaSel, Math.max(0, buscaItens.length - 1));
+  let ultimo = '';
+  const html = buscaItens.map((i, n) => {
+    const cab = i.grupo !== ultimo ? `<li class="busca-grupo" role="presentation">${esc(i.grupo)}</li>` : '';
+    ultimo = i.grupo;
+    return `${cab}<li role="option" id="busca-i${n}" class="busca-item" data-n="${n}" aria-selected="${n === buscaSel}">
+      <div><span class="busca-t">${esc(i.titulo)}</span>${i.sub ? `<span class="busca-s">${esc(i.sub)}</span>` : ''}</div>${i.chip ? `<span class="chip">${esc(i.chip)}</span>` : ''}</li>`;
+  }).join('');
+  $('busca-res').innerHTML = html || '<li class="busca-vazio" role="presentation">Nada encontrado. Tente o nome da fragrância, uma nota (baunilha, cítrico) ou uma opção como "tema" ou "senha".</li>';
+  $('busca-q').setAttribute('aria-activedescendant', buscaItens.length ? `busca-i${buscaSel}` : '');
+}
+function abrirBusca() {
+  if (!est || $('app').hidden) return;
+  if (!$('busca-geral').open) $('busca-geral').showModal();
+  $('busca-q').value = ''; buscaSel = 0; desenharBusca(); $('busca-q').focus();
+  if (cliVelho) carregarClientes().then(() => { if ($('busca-geral').open) desenharBusca(); });
+}
+function escolherBusca(n) {
+  const item = buscaItens[n];
+  if (!item) return;
+  $('busca-geral').close();
+  setTimeout(() => item.run(), 60);
+}
+function moverBusca(d) {
+  if (!buscaItens.length) return;
+  buscaSel = (buscaSel + d + buscaItens.length) % buscaItens.length;
+  document.querySelectorAll('#busca-res [role=option]').forEach((el) => el.setAttribute('aria-selected', Number(el.dataset.n) === buscaSel));
+  const el = $('busca-i' + buscaSel); if (el) el.scrollIntoView({ block: 'nearest' });
+  $('busca-q').setAttribute('aria-activedescendant', 'busca-i' + buscaSel);
+}
+
+$('busca-btn').addEventListener('click', abrirBusca);
+$('busca-q').addEventListener('input', () => { buscaSel = 0; desenharBusca(); });
+$('busca-q').addEventListener('keydown', (ev) => {
+  if (ev.key === 'ArrowDown') { ev.preventDefault(); moverBusca(1); }
+  else if (ev.key === 'ArrowUp') { ev.preventDefault(); moverBusca(-1); }
+  else if (ev.key === 'Enter') { ev.preventDefault(); escolherBusca(buscaSel); }
+});
+$('busca-res').addEventListener('click', (ev) => { const li = ev.target.closest('[data-n]'); if (li) escolherBusca(Number(li.dataset.n)); });
+$('busca-res').addEventListener('mousemove', (ev) => { const li = ev.target.closest('[data-n]'); if (li && Number(li.dataset.n) !== buscaSel) { buscaSel = Number(li.dataset.n); moverBusca(0); } });
+$('busca-geral').addEventListener('click', (ev) => { if (ev.target === $('busca-geral') || ev.target.closest('[data-fechar-busca]')) $('busca-geral').close(); });
+document.addEventListener('keydown', (ev) => {
+  const digitando = ev.target.matches && ev.target.matches('input, textarea, select, [contenteditable]');
+  if ((ev.key === 'k' || ev.key === 'K') && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); abrirBusca(); }
+  else if (ev.key === '/' && !digitando && !ev.ctrlKey && !ev.metaKey && !ev.altKey) { ev.preventDefault(); abrirBusca(); }
+});
+
+
 const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
 function desenharHistorico() {
   $('t-historico').innerHTML = `
@@ -1279,9 +1848,9 @@ function desenharHistorico() {
     : '<div class="vazio"><span class="simbolo"></span><b>Nada por aqui ainda</b>Entradas, baixas e correções aparecem nesta lista.</div>'}`;
 }
 
-function desenharInsumos() {
-  $('t-insumos').innerHTML = `
-    <div class="secao-topo"><h2 id="h-insumos">Insumos</h2><p class="legenda">o que você usa para fazer e embalar</p></div>
+// Insumos agora ficam dentro de Estoque (ao lado de Prateleira e Maturação)
+function htmlInsumos() {
+  return `
     <p class="detalhe" style="margin:-6px 0 20px">Cada perfume que sai desconta um vidro do tamanho, uma etiqueta e um saquinho.</p>
     <button class="btn primario" data-act="insumo-novo" type="button">${IC_MAIS} Novo insumo</button>
     ${est.insumos.length ? `<ul class="lista" style="margin-top:26px;border-top:1px solid var(--forte)">${est.insumos.map((i) => `
@@ -1297,6 +1866,12 @@ function desenharInsumos() {
       </li>`).join('')}</ul>`
     : '<div class="vazio"><span class="simbolo"></span><b>Nenhum insumo ainda</b>Cadastre vidros, etiquetas e o que mais você usa, para saber quando comprar.</div>'}`;
 }
+function desenharInsumosNoEstoque() {
+  const el = $('t-estoque');
+  el.classList.remove('anim');
+  el.innerHTML = `<div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>${trocaEstoque()}${htmlInsumos()}`;
+}
+
 
 const CATS = [['todos', 'Todos'], ['perfumes', 'Perfumes'], ['skincare', 'Cremes'], ['body_splashes', 'Body splash'], ['merchandise', 'Acessórios'], ['fora', 'Fora do site']];
 function precoTexto(p) {
@@ -1326,6 +1901,7 @@ function desenharCatalogo() {
           ${[['visivel', 'Visível'], ['esgotado', 'Esgotado'], ['oculto', 'Oculto']].map(([k, n]) => `<button type="button" data-act="status" data-st="${k}" data-id="${esc(p.id)}" aria-pressed="${p.status === k}">${n}</button>`).join('')}
         </div>
         <div class="links">
+          ${p.categoria === 'perfumes' ? `<button type="button" data-act="frag" data-id="${esc(p.id)}">Ficha</button>` : ''}
           <button type="button" data-act="precos" data-id="${esc(p.id)}">Preços</button>
           ${p.criado_no_painel ? `<button type="button" data-act="editar" data-id="${esc(p.id)}">Editar</button><button type="button" class="rm" data-act="remover" data-id="${esc(p.id)}">Excluir</button>` : ''}
         </div>
@@ -1523,7 +2099,9 @@ document.addEventListener('click', async (ev) => {
     return;
   }
   const ir = t.closest('[data-go]');
-  if (ir) { irPara(ir.dataset.go); return; }
+  if (ir) { if (ir.dataset.go === 'insumos') irEstoque('insumos'); else irPara(ir.dataset.go); return; }
+  const cp = t.closest('[data-cli-perfil]');
+  if (cp) { filtroCli.perfil = cp.dataset.cliPerfil; desenharClientes(); return; }
   const pl = t.closest('[data-ped-lista]');
   if (pl) { vistaPed = 'lista'; try { localStorage.setItem('sp-ped-vista', 'lista'); } catch (_) {} filtroPed.cat = pl.dataset.pedLista; animPed = true; desenharPedidos(); return; }
   const pf = t.closest('[data-ped-filtro]');
@@ -1537,6 +2115,25 @@ document.addEventListener('click', async (ev) => {
     if (act === 'entrada') folhaEntrada(id);
     else if (act === 'envasar') folhaEntrada(id, 'env');
     else if (act === 'ped-abrir') abrirPedido(id);
+    else if (act === 'cli-vista') { vistaCli = b.dataset.v; animCli = true; desenharClientes(); }
+    else if (act === 'cli-abrir') abrirCliente(id);
+    else if (act === 'cli-chamar') abrirCliente(id, 'mensagem');
+    else if (act === 'cli-usar') usarSugestao(id, b.dataset.prod);
+    else if (act === 'cli-pedido') { irPara('pedidos'); abrirPedido(id); }
+    else if (act === 'cli-chamei') {
+      try {
+        await api('cliente_contato', { id });
+        aviso('Contato registrado.');
+        if (lanc) { const x = lanc.ranking.find((r) => r.id === id); if (x) { x.ultimo_contato = est.hoje; x.chamado_ha = 0; } const el = $('lanc-res'); if (el) el.innerHTML = resultadoLancamento(); }
+        if ($('folha').open && $('folha').dataset.cli === id) abrirCliente(id);
+      } catch (e) { falhou(e); }
+    }
+    else if (act === 'lanc-rodar') rodarLancamento();
+    else if (act === 'lanc-produto') { lancForm.alvo = 'p:' + id; vistaCli = 'lancamento'; fecharFolha(); irPara('clientes'); animCli = true; desenharClientes(); rodarLancamento(); }
+    else if (act === 'mat-chamar') { lancForm.alvo = 'm:' + id; vistaCli = 'lancamento'; irPara('clientes'); animCli = true; desenharClientes(); rodarLancamento(); }
+    else if (act === 'frag') folhaFragrancia(id);
+    else if (act === 'av-add') { avItens.push({ id: '', tam: '', qtd: 1 }); desenharLinhasAv(); }
+    else if (act === 'av-remover') { avItens.splice(Number(b.dataset.i), 1); if (!avItens.length) avItens = [{ id: '', tam: '', qtd: 1 }]; desenharLinhasAv(); }
     else if (act === 'ped-vista') { vistaPed = b.dataset.v; try { localStorage.setItem('sp-ped-vista', vistaPed); } catch (_) {} animPed = true; desenharPedidos(); }
     else if (act === 'vista-estoque') { vistaEstoque = b.dataset.v; animMat = true; desenharEstoque(); }
     else if (act === 'mat-novo') folhaLote();
@@ -1586,7 +2183,7 @@ document.addEventListener('click', async (ev) => {
   if (t.id === 'tentar') entrar(senha, true).catch(() => {});
   else if (t.id === 'colar') { try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { aviso('Não consegui ler a área de transferência. Cole no campo.', true); } }
   else if (t.id === 'conferir') conferir({ acao: 'pedido', texto: $('pedido').value, pagamento: lerPagamento('pd') });
-  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }], cliente: { nome: $('av-nome').value, telefone: $('av-tel').value }, pagamento: lerPagamento('av') });
+  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: itensAvulsa(), cliente: { nome: $('av-nome').value, telefone: $('av-tel').value }, pagamento: lerPagamento('av') });
   else if (t.id === 'confirmar' && pendente) {
     t.disabled = true;
     try {
@@ -1640,6 +2237,8 @@ document.addEventListener('submit', async (ev) => {
     } else if (f.dataset.form === 'insumo-novo') {
       await api('insumo_criar', v);
       aviso('Insumo criado.');
+    } else if (f.dataset.form === 'cli-dados') {
+      await api('cliente_dados', { id: f.dataset.id, notas: v.notas, nao_chamar: Boolean(f.elements.nao_chamar.checked) }); aviso('Anotações salvas.'); abrirCliente(f.dataset.id); return;
     } else if (f.dataset.form === 'mat-lote') {
       const id = f.dataset.id;
       await api(id ? 'maturacao_editar' : 'maturacao_criar', { id, produto_id: v.produto_id, nome: v.nome, ml: v.ml, inicio: v.inicio, dias: v.dias, obs: v.obs });

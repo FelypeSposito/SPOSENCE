@@ -63,6 +63,7 @@ export async function carregar() {
   e.pedidos ??= [];
   e.proximo_pedido ??= 1;
   e.maturacao ??= [];
+  e.clientes_extra ??= {};
   return e;
 }
 export const salvar = (e) => gravarJSON(CHAVE, e);
@@ -118,6 +119,11 @@ export function estado(e) {
       nome: p.name,
       categoria: p.category,
       rotulo: ROTULO[p.category] || p.category,
+      perfil: p.profile,
+      inspirado: p.inspired_by,
+      descricao: p.description,
+      tags: p.tags,
+      notas: p.notes ? { topo: p.notes.top, coracao: p.notes.heart, fundo: p.notes.base } : undefined,
       status: e.catalogo.status[p.id] || 'visivel',
       criado_no_painel: extras.has(p.id),
       controlado: Boolean(e.produtos[p.id]),
