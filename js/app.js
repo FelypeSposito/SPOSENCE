@@ -753,6 +753,31 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- Build Navbar HTML (shared) ----
+// ---- Submenu do ícone de perfil (aparece ao passar o mouse) ----
+function contaMenuHtml() {
+  let on = false, nome = '';
+  try { on = localStorage.getItem('sp_conta_on') === '1'; nome = localStorage.getItem('sp_conta_nome') || ''; } catch (_) {}
+  const safe = String(nome).replace(/[&<>"']/g, '');
+  const item = (href, icone, texto) => `<a role="menuitem" href="${href}"><i class="ph ${icone}" aria-hidden="true"></i><span>${texto}</span></a>`;
+  if (!on) {
+    return `<p class="conta-menu__t">Sua <em>conta</em></p><p class="conta-menu__s">Guarde o seu gosto e receba indicações que combinam com você.</p>`
+      + item('conta.html', 'ph-sign-in', 'Entrar com o Google') + item('privacidade.html', 'ph-shield-check', 'Privacidade');
+  }
+  return `<p class="conta-menu__t">Olá${safe ? ', <em>' + safe + '</em>' : ''}</p>`
+    + item('conta.html', 'ph-user-circle', 'Meu perfil') + item('conta.html#perfumes', 'ph-drop', 'Meus perfumes') + item('conta.html#pedidos', 'ph-package', 'Meus pedidos')
+    + `<button type="button" role="menuitem" data-conta-sair><i class="ph ph-sign-out" aria-hidden="true"></i><span>Sair</span></button>`;
+}
+function atualizarMenuConta() {
+  document.querySelectorAll('.conta-menu__in').forEach((el) => { el.innerHTML = contaMenuHtml(); });
+}
+document.addEventListener('click', async (ev) => {
+  if (!ev.target.closest('[data-conta-sair]')) return;
+  try { await fetch('/api/conta', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ acao: 'sair' }) }); } catch (_) {}
+  try { localStorage.removeItem('sp_conta_on'); localStorage.removeItem('sp_conta_nome'); } catch (_) {}
+  atualizarMenuConta();
+  if (/conta\.html$/.test(location.pathname)) location.reload();
+});
+
 function buildNavbar(activePage) {
   const pages = [
     { href: 'index.html', label: 'Início' },
@@ -777,9 +802,12 @@ function buildNavbar(activePage) {
         </form>
         <div class="search-dropdown" id="search-dropdown-desk"></div>
       </div>
-      <a href="conta.html" class="navbar__cart navbar__conta" aria-label="Minha conta"${activePage === 'conta.html' ? ' aria-current="page"' : ''}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
-      </a>
+      <div class="navbar__conta-wrap">
+        <a href="conta.html" class="navbar__cart navbar__conta" aria-label="Minha conta" aria-haspopup="menu"${activePage === 'conta.html' ? ' aria-current="page"' : ''}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        </a>
+        <div class="conta-menu" role="menu" aria-label="Minha conta"><div class="conta-menu__in">${contaMenuHtml()}</div></div>
+      </div>
       <button class="navbar__cart" data-open-cart aria-label="Carrinho">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="navbar__cart-count" style="display:none">0</span>

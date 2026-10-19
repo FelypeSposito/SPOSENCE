@@ -112,43 +112,63 @@
   }
   // deixa o carrinho das outras páginas avisar a conta, e já manda o carrinho que está neste aparelho
   function entrouAgora() {
-    try { localStorage.setItem('sp_conta_on', '1'); } catch (_) {}
+    try { localStorage.setItem('sp_conta_on', '1'); localStorage.setItem('sp_conta_nome', String(conta.nome || '').split(' ')[0]); } catch (_) {}
+    if (typeof atualizarMenuConta === 'function') atualizarMenuConta();
     const ids = carrinhoLocal();
     if (ids.join() !== (conta.carrinho || []).join()) chamar({ acao: 'salvar', carrinho: ids });
   }
 
   /* ---------- perfumes ---------- */
   const foto = (p) => encodeURI(p.image || '');
+  const imagem = (p) => foto(p) || 'img/simbolo-loader.png';
   function cartao(p, i, novo) {
     const nao = ed.naocurte.has(p.id);
     const no = carrinhoLocal().includes(p.id);
-    const b = (l, rotulo) => `<button type="button" class="pf-b" data-lista="${l}" data-id="${esc(p.id)}" aria-pressed="${ed[l].has(p.id)}">${rotulo}</button>`;
-    return `<article class="pf reveal reveal-delay-${(i % 4) + 1}${nao ? ' nao' : ''}${novo ? ' pulsa' : ''}" data-id="${esc(p.id)}">
-      <div class="pf-foto"><span class="pf-img" style="background-image:url('${foto(p)}')"></span>${no ? '<span class="pf-car">No carrinho</span>' : ''}
-        <button type="button" class="pf-x" data-lista="naocurte" data-id="${esc(p.id)}" aria-pressed="${nao}" aria-label="${nao ? 'Voltar a mostrar' : 'Não curto'} ${esc(p.name)}" title="${nao ? 'Desfazer' : 'Não curto'}">${nao ? '<i class="ph ph-arrow-counter-clockwise"></i>' : '<i class="ph ph-x"></i>'}</button>
-      </div>
-      <p class="pf-nome">${esc(p.name)}</p>
-      <div class="pf-bot">${nao ? '<span class="pf-nao">Não curto</span>' : `${b('usou', 'Já usei')}${b('desejos', 'Quero')}`}</div>
+    const b = (l, rotulo) => `<button type="button" class="h-size" data-lista="${l}" data-id="${esc(p.id)}" aria-pressed="${ed[l].has(p.id)}">${rotulo}</button>`;
+    return `<article class="h-card pf${nao ? ' nao' : ''}${novo ? ' pulsa' : ''}" data-id="${esc(p.id)}" style="--i:${i}">
+      <span class="h-card__media"><img src="${imagem(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+        ${no ? '<span class="h-chip pf-car">No carrinho</span>' : ''}
+        <button type="button" class="h-icon-btn pf-x" data-lista="naocurte" data-id="${esc(p.id)}" aria-pressed="${nao}" aria-label="${nao ? 'Voltar a mostrar' : 'Não curto'} ${esc(p.name)}" title="${nao ? 'Desfazer' : 'Não curto'}">${nao ? '<i class="ph ph-arrow-counter-clockwise"></i>' : '<i class="ph ph-x"></i>'}</button></span>
+      <div class="h-card__body"><h4 class="h-card__name">${esc(p.name)}</h4>
+        <div class="h-sizes pf-bot">${nao ? '<span class="pf-nao">Não curto</span>' : `${b('usou', 'Já usei')}${b('desejos', 'Quero')}`}</div></div>
     </article>`;
   }
   const FRASE = { doces: 'Baunilha, caramelo e aconchego.', frescos: 'Cítricos, brisa e leveza.', noturnos: 'Intensos e sedutores.', elegantes: 'Florais nobres e orientais.' };
-  const COR = { doces: '#daa753', frescos: '#b9ba86', noturnos: '#4a2509', elegantes: '#6b6943' };
+  const ICONE = { frescos: 'ph-waves', doces: 'ph-cookie', noturnos: 'ph-moon-stars', elegantes: 'ph-sparkle' };
+  const abertos = new Set();
   const marcadosDe = (k) => PERFUMES.filter((p) => p.profile === k && (ed.usou.has(p.id) || ed.desejos.has(p.id))).length;
+  const contagemTxt = (k) => { const n = marcadosDe(k), t = PERFUMES.filter((p) => p.profile === k).length; return n ? `${n} de ${t} marcados` : `${t} fragrâncias`; };
   function listaPerfumes() {
     const q = normal(busca);
     const ok = (p) => (!q || normal(p.name + ' ' + (p.inspired_by || '')).includes(q)) && (filtro === 'todos' || ed[filtro].has(p.id));
-    const blocos = PERFIS.map(([k, nome]) => {
-      const todos = PERFUMES.filter((p) => p.profile === k);
-      const itens = todos.filter(ok);
+    const forcar = Boolean(q) || filtro !== 'todos';
+    const blocos = PERFIS.map(([k, nome], n) => {
+      const itens = PERFUMES.filter((p) => p.profile === k).filter(ok);
       if (!itens.length) return '';
-      return `<section class="fam-bloco reveal" data-fam="${k}" style="--cor:${COR[k]}">
-        <header class="fam-cab"><span class="fam-ponto" aria-hidden="true"></span><div><h3>${nome}</h3><p>${FRASE[k]}</p></div><span class="fam-cont" data-cont="${k}">${marcadosDe(k)} de ${todos.length}</span></header>
-        <div class="pf-fila">${itens.map((p, i) => cartao(p, i)).join('')}</div></section>`;
+      const aberto = forcar || abertos.has(k);
+      const miniaturas = PERFUMES.filter((p) => p.profile === k).slice(0, 3).map((p) => `<img src="${imagem(p)}" alt="" loading="lazy" decoding="async">`).join('');
+      return `<section class="fam-acc reveal reveal-delay-${n % 4 + 1}${aberto ? ' aberto' : ''}" data-fam="${k}">
+        <button type="button" class="fam-topo" data-fam-toggle="${k}" aria-expanded="${aberto}" aria-controls="corpo-${k}">
+          <i class="ph ${ICONE[k]} fam-ic" aria-hidden="true"></i>
+          <span class="fam-tx"><span class="fam-nome">${nome}</span><span class="fam-desc">${FRASE[k]}</span></span>
+          <span class="fam-thumbs" aria-hidden="true">${miniaturas}</span>
+          <span class="fam-cont" data-cont="${k}">${contagemTxt(k)}</span>
+          <span class="fam-seta" aria-hidden="true"><i class="ph ph-plus"></i></span>
+        </button>
+        <div class="fam-corpo" id="corpo-${k}"><div class="fam-in"><div class="h-grid fam-grade">${itens.map((p, i) => cartao(p, i)).join('')}</div></div></div></section>`;
     }).join('');
     return blocos || (filtro === 'todos' ? '<p class="conta-nota">Nenhum perfume encontrado.</p>'
       : '<div class="pf-vazio"><b>Nada por aqui ainda</b><span>Marque perfumes na aba Todos e eles aparecem aqui.</span></div>');
   }
-  const atualizarContagens = () => PERFIS.forEach(([k]) => { const el = document.querySelector(`[data-cont="${k}"]`); if (el) el.textContent = `${marcadosDe(k)} de ${PERFUMES.filter((p) => p.profile === k).length}`; });
+  const atualizarContagens = () => PERFIS.forEach(([k]) => { const el = document.querySelector(`[data-cont="${k}"]`); if (el) el.textContent = contagemTxt(k); });
+  function alternarBloco(k) {
+    const bloco = document.querySelector(`.fam-acc[data-fam="${k}"]`); if (!bloco) return;
+    const abre = !bloco.classList.contains('aberto');
+    abre ? abertos.add(k) : abertos.delete(k);
+    bloco.classList.toggle('aberto', abre);
+    bloco.querySelector('.fam-topo').setAttribute('aria-expanded', abre);
+    if (abre) { bloco.classList.add('abrindo'); setTimeout(() => bloco.classList.remove('abrindo'), 1400); }
+  }
 
   // animações do site: .reveal + .visible (observer próprio, porque a página é montada depois do carregamento)
   const reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -157,7 +177,7 @@
     raiz.querySelectorAll('.reveal:not(.visible)').forEach((el) => { if (semAnimar || reduzido || !observador) el.classList.add('visible'); else observador.observe(el); });
   }
   const abas = () => [['todos', 'Todos', PERFUMES.length], ['usou', 'Já usei', ed.usou.size], ['desejos', 'Quero', ed.desejos.size], ['naocurte', 'Não curto', ed.naocurte.size]]
-    .map(([k, n, c]) => `<button type="button" class="cp-aba" data-aba="${k}" aria-pressed="${filtro === k}">${n} <small>${c}</small></button>`).join('');
+    .map(([k, n, c]) => `<button type="button" class="h-tab" data-aba="${k}" aria-pressed="${filtro === k}">${n} <small>${c}</small></button>`).join('');
 
   /* ---------- conta ---------- */
   const chip = (grupo, k, nome, ativo) => `<button type="button" class="conta-pill" data-grupo="${grupo}" data-k="${esc(k)}" aria-pressed="${ativo}">${esc(nome)}</button>`;
@@ -175,7 +195,7 @@
         </div>
 
         <section class="conta-card gosto-card reveal" aria-labelledby="t-gosto">
-          <h2 id="t-gosto">O seu gosto</h2>
+          <h2 id="t-gosto">O seu <em>gosto</em></h2>
           <div id="gosto-auto" aria-live="polite">${blocoGosto()}</div>
           <details class="ajuste">
             <summary>Ajustar à mão</summary>
@@ -185,10 +205,10 @@
           </details>
         </section>
 
-        <section class="conta-card reveal reveal-delay-1" aria-labelledby="t-perfumes">
-          <h2 id="t-perfumes">Seus perfumes</h2>
+        <section class="conta-card reveal reveal-delay-1" id="perfumes" aria-labelledby="t-perfumes">
+          <h2 id="t-perfumes">Seus <em>perfumes</em></h2>
           <p class="conta-sub">Toque em <b>Já usei</b> ou <b>Quero</b>. Se não curte um, toque no X da foto.</p>
-          <div class="cp-abas" id="cp-abas" role="group" aria-label="Filtrar a lista">${abas()}</div>
+          <div class="h-tabs cp-abas" id="cp-abas" role="group" aria-label="Filtrar a lista">${abas()}</div>
           <input id="conta-busca" type="search" class="conta-campo" placeholder="Buscar fragrância" aria-label="Buscar fragrância" value="${esc(busca)}" autocomplete="off" />
           <div class="pf-blocos" id="conta-perfumes">${listaPerfumes()}</div>
         </section>
@@ -207,7 +227,7 @@
           <p class="conta-nota">${aceitou ? `Você aceitou em ${esc(String(c.consentimento.data).slice(8, 10) + '/' + String(c.consentimento.data).slice(5, 7) + '/' + String(c.consentimento.data).slice(0, 4))}. ` : ''}Você pode mudar de ideia quando quiser, é só desmarcar e salvar. Veja como tratamos os seus dados na <a href="privacidade.html">política de privacidade</a>.</p>
         </div>
 
-        ${pedidos.length ? `<div class="conta-card"><h2>Meus pedidos</h2><ul class="conta-pedidos">${pedidos.map((p) => `<li><div><b>Pedido nº ${p.numero}</b><small>${esc(p.data.slice(8, 10) + '/' + p.data.slice(5, 7))}, ${esc(p.itens.join(' · '))}</small></div><span>${din(p.total)}</span></li>`).join('')}</ul></div>` : ''}
+        ${pedidos.length ? `<div class="conta-card" id="pedidos"><h2>Meus pedidos</h2><ul class="conta-pedidos">${pedidos.map((p) => `<li><div><b>Pedido nº ${p.numero}</b><small>${esc(p.data.slice(8, 10) + '/' + p.data.slice(5, 7))}, ${esc(p.itens.join(' · '))}</small></div><span>${din(p.total)}</span></li>`).join('')}</ul></div>` : ''}
 
         <div class="conta-card">
           <h2>Seus dados</h2>
@@ -231,7 +251,9 @@
         <div class="conta-acoes"><button type="button" class="h-btn h-btn--ghost" data-acao="cancelar">Cancelar</button><button type="button" class="h-btn h-btn--primary" data-acao="confirmar-excluir">Excluir</button></div>
       </dialog>`;
     revelar($('conta-app'));
+    if (location.hash && !ancorado) { ancorado = true; const alvo = document.querySelector(location.hash.replace(/[^#\w-]/g, '')); if (alvo) setTimeout(() => window.scrollTo({ top: alvo.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' }), 350); }
   }
+  let ancorado = false;
 
   const marcarSujo = () => { sujo = true; const b = $('conta-barra'); if (b) b.hidden = false; };
 
@@ -259,9 +281,10 @@
   const redesenharLista = () => { const el = $('conta-perfumes'); el.innerHTML = listaPerfumes(); revelar(el, true); $('cp-abas').innerHTML = abas(); };
 
   document.addEventListener('click', async (ev) => {
-    const alvo = ev.target.closest('[data-grupo], [data-lista], [data-acao], [data-aba]');
+    const alvo = ev.target.closest('[data-grupo], [data-lista], [data-acao], [data-aba], [data-fam-toggle]');
     if (!alvo || !conta) return;
     const d = alvo.dataset;
+    if (d.famToggle) { alternarBloco(d.famToggle); return; }
     if (d.aba) { filtro = d.aba; redesenharLista(); return; }
     if (d.grupo) {
       const s = ed[d.grupo]; const k = d.k;
@@ -274,14 +297,14 @@
       const antigo = alvo.closest('.pf');
       const p = porId.get(d.id);
       const ficaNaLista = filtro === 'todos' || ed[filtro].has(d.id);
-      if (ficaNaLista) { const t = document.createElement('div'); t.innerHTML = cartao(p, 0, true); const novo = t.firstElementChild; novo.classList.add('visible'); antigo.replaceWith(novo); } else { const bloco = antigo.closest('.fam-bloco'); antigo.remove(); if (bloco && !bloco.querySelector('.pf')) bloco.remove(); }
+      if (ficaNaLista) { const t = document.createElement('div'); t.innerHTML = cartao(p, Number(antigo.style.getPropertyValue('--i')) || 0, true); const novo = t.firstElementChild; antigo.replaceWith(novo); } else { const bloco = antigo.closest('.fam-acc'); antigo.remove(); if (bloco && !bloco.querySelector('.pf')) bloco.remove(); }
       atualizarContagens();
       const ab = $('cp-abas'); if (ab) ab.innerHTML = abas();
       marcarSujo(); atualizarGosto(); return;
     }
     const acao = d.acao;
     if (acao === 'salvar') salvar();
-    else if (acao === 'sair') { await chamar({ acao: 'sair' }); try { localStorage.removeItem('sp_conta_on'); } catch (_) {} conta = null; pedidos = []; iniciar(); }
+    else if (acao === 'sair') { await chamar({ acao: 'sair' }); try { localStorage.removeItem('sp_conta_on'); localStorage.removeItem('sp_conta_nome'); } catch (_) {} if (typeof atualizarMenuConta === 'function') atualizarMenuConta(); conta = null; pedidos = []; iniciar(); }
     else if (acao === 'exportar') {
       const { status, d: dados } = await chamar({ acao: 'exportar' });
       if (status !== 200) { aviso(dados.erro || 'Não consegui baixar agora.'); return; }
@@ -294,7 +317,7 @@
     else if (acao === 'confirmar-excluir') {
       const { status, d: dados } = await chamar({ acao: 'excluir' });
       if (status !== 200) { aviso(dados.erro || 'Não consegui excluir agora.'); return; }
-      try { localStorage.removeItem('sp_conta_on'); } catch (_) {}
+      try { localStorage.removeItem('sp_conta_on'); localStorage.removeItem('sp_conta_nome'); } catch (_) {} if (typeof atualizarMenuConta === 'function') atualizarMenuConta();
       conta = null; pedidos = []; iniciar(); aviso('Conta excluída.');
     }
   });
@@ -313,7 +336,7 @@
       const config = await fetch('/api/conta').then((r) => r.json());
       const { status, d } = await chamar({ acao: 'eu' });
       if (status === 200) { conta = d.conta; pedidos = d.pedidos || []; carregarEdicao(); entrouAgora(); desenharConta(); return; }
-      try { localStorage.removeItem('sp_conta_on'); } catch (_) {}
+      try { localStorage.removeItem('sp_conta_on'); localStorage.removeItem('sp_conta_nome'); } catch (_) {} if (typeof atualizarMenuConta === 'function') atualizarMenuConta();
       desenharEntrar(config.clientId);
     } catch (_) {
       $('conta-app').innerHTML = '<div class="conta-card"><h2>Sem conexão</h2><p class="conta-sub">Não consegui abrir a sua conta agora. Tente de novo em instantes.</p></div>';
