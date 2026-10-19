@@ -1,10 +1,14 @@
-// Regras do estoque da Sposence (usadas pela API do admin e pela API pública).
+// Regras do estoque e do catálogo online da Sposence (usadas pelo painel e pelo site público).
 //
-// Estado guardado: { tamanhos, produtos: { id: { granel_ml, unidades: { "30ml": n } } }, historico }
-// - granel_ml: perfume pronto ainda não envasado
-// - unidades: frascos já envasados, por tamanho
+// Estado guardado:
+//   tamanhos              tamanhos de perfume controlados ("30ml", "50ml")
+//   produtos              { id: { granel_ml, unidades: { "30ml": n } } }
+//   catalogo.status       { id: "oculto" | "esgotado" }     (sem registro = visível)
+//   catalogo.precos       { id: { "30ml": 90 } }            (muda o preço de um produto do site)
+//   catalogo.extras       produtos criados pelo painel
+//   historico             movimentos de estoque, para desfazer
+//
 // Cada baixa usa primeiro os frascos prontos do tamanho e, se não houver, tira do granel.
-// Toda mudança vira uma lista de movimentos, que permite desfazer.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -14,6 +18,8 @@ import { lerJSON, gravarJSON } from './_redis.js';
 const RAIZ = process.cwd();
 const CHAVE = 'sposence:estoque';
 const MAX_HISTORICO = 200;
+export const PERFIS = ['frescos', 'doces', 'noturnos', 'elegantes'];
+export const GENEROS = ['feminino', 'masculino', 'compartilhavel'];
 
 let _catalogo;
 export function catalogo() {
@@ -25,12 +31,19 @@ export function catalogo() {
   return _catalogo;
 }
 
+// Produtos do site (js/data.js) mais os criados pelo painel.
+export const todos = (e) => [...catalogo(), ...(e.catalogo?.extras || [])];
+
 export async function carregar() {
   let e = await lerJSON(CHAVE);
   if (!e) {
     e = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'estoque.json'), 'utf8'));
     await gravarJSON(CHAVE, e);
   }
+  e.catalogo ??= {};
+  e.catalogo.status ??= {};
+  e.catalogo.precos ??= {};
+  e.catalogo.extras ??= [];
   return e;
 }
 export const salvar = (e) => gravarJSON(CHAVE, e);
@@ -43,31 +56,195 @@ export function disponivel(item, size) {
   return (item.unidades?.[size] || 0) + Math.floor((item.granel_ml || 0) / ml(size));
 }
 
-// O que o site público precisa saber: quantos frascos dá pra vender de cada tamanho.
+// Todo o perfume que existe, em ml: granel + o que já está nos frascos.
+export function mlTotal(item, tamanhos) {
+  return (item.granel_ml || 0) + tamanhos.reduce((soma, s) => soma + (item.unidades?.[s] || 0) * ml(s), 0);
+}
+
+// O que o site público precisa: estoque por tamanho, status, preços e produtos novos.
 export function publico(e) {
   const produtos = {};
   for (const [id, item] of Object.entries(e.produtos)) {
     produtos[id] = Object.fromEntries(e.tamanhos.map((s) => [s, disponivel(item, s)]));
   }
-  return { produtos };
+  return { produtos, status: e.catalogo.status, precos: e.catalogo.precos, extras: e.catalogo.extras };
 }
 
+const ROTULO = { perfumes: 'Perfume', body_splashes: 'Body splash', skincare: 'Creme', merchandise: 'Acessório' };
+
 export function estado(e) {
-  const nomes = new Map(catalogo().map((p) => [p.id, p.name]));
+  const lista = todos(e);
+  const nomes = new Map(lista.map((p) => [p.id, p.name]));
+  const produtos = Object.entries(e.produtos).map(([id, item]) => ({
+    id,
+    nome: nomes.get(id) || id,
+    granel_ml: item.granel_ml || 0,
+    unidades: Object.fromEntries(e.tamanhos.map((s) => [s, item.unidades?.[s] || 0])),
+    vende: Object.fromEntries(e.tamanhos.map((s) => [s, disponivel(item, s)])),
+    ml_total: mlTotal(item, e.tamanhos),
+    status: e.catalogo.status[id] || 'visivel',
+  }));
+  const extras = new Set(e.catalogo.extras.map((p) => p.id));
   return {
     tamanhos: e.tamanhos,
-    produtos: Object.entries(e.produtos).map(([id, item]) => ({
-      id,
-      nome: nomes.get(id) || id,
-      granel_ml: item.granel_ml || 0,
-      unidades: Object.fromEntries(e.tamanhos.map((s) => [s, item.unidades?.[s] || 0])),
-      vende: Object.fromEntries(e.tamanhos.map((s) => [s, disponivel(item, s)])),
+    produtos,
+    resumo: {
+      ml_total: produtos.reduce((s, p) => s + p.ml_total, 0),
+      frascos_prontos: produtos.reduce((s, p) => s + e.tamanhos.reduce((t, k) => t + p.unidades[k], 0), 0),
+      esgotados: produtos.filter((p) => e.tamanhos.every((s) => p.vende[s] === 0)).length,
+    },
+    perfumes: lista.filter((p) => p.category === 'perfumes').map((p) => ({ id: p.id, nome: p.name })),
+    catalogo: lista.map((p) => ({
+      id: p.id,
+      nome: p.name,
+      categoria: p.category,
+      rotulo: ROTULO[p.category] || p.category,
+      status: e.catalogo.status[p.id] || 'visivel',
+      criado_no_painel: extras.has(p.id),
+      controlado: Boolean(e.produtos[p.id]),
+      variantes: precosDe(e, p),
+      dados: extras.has(p.id) ? dadosEditaveis(p) : undefined,
     })),
-    catalogo: catalogo().filter((p) => p.category === 'perfumes').map((p) => ({ id: p.id, nome: p.name })),
     historico: e.historico.slice(-30).reverse().map((h) => ({ id: h.id, data: h.data, tipo: h.tipo, descricao: h.descricao })),
   };
 }
 
+// Preço atual de cada variante (com o ajuste do painel, se houver).
+function precosDe(e, p) {
+  const ajuste = e.catalogo.precos[p.id] || {};
+  if (p.variants?.length) {
+    // tamanhos fora de linha (sem contagem de estoque, como o 100ml) não entram
+    return p.variants.filter((v) => !((v.outOfStock || v.available === false) && typeof v.stock !== 'number'))
+      .map((v) => ({ tamanho: v.size, preco: ajuste[v.size] ?? v.price }));
+  }
+  return [{ tamanho: 'unico', preco: ajuste.unico ?? p.price }];
+}
+
+function dadosEditaveis(p) {
+  const preco = (s) => p.variants?.find((v) => v.size === s)?.price;
+  return {
+    tipo: p.category === 'perfumes' ? 'perfume' : 'creme',
+    nome: p.name,
+    inspirado: p.inspired_by || '',
+    perfil: p.profile || '',
+    genero: GENEROS.find((g) => p.tags?.includes(g)) || '',
+    topo: p.notes?.top || '',
+    coracao: p.notes?.heart || '',
+    base: p.notes?.base || '',
+    descricao: p.description || '',
+    imagem: p.image || '',
+    preco30: preco('30ml'),
+    preco50: preco('50ml'),
+    preco: p.category === 'skincare' ? p.variants?.[0]?.price : undefined,
+  };
+}
+
+// ---------- Catálogo: criar, editar, status, preços ----------
+const erro = (msg, status = 400) => Object.assign(new Error(msg), { status });
+const limpar = (s, max = 300) => String(s ?? '').replace(/[<>"`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+const slug = (s) => normal(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function preco(v, nome) {
+  const n = Number(String(v).replace(',', '.'));
+  if (!Number.isFinite(n) || n <= 0 || n > 9999) throw erro(`Preço inválido em ${nome}.`);
+  return Math.round(n * 100) / 100;
+}
+
+function imagem(v) {
+  const s = limpar(v, 500);
+  if (!s) return undefined;
+  if (!/^(https:\/\/[^\s']+|img\/[^\s'"]+)$/.test(s)) throw erro('A foto precisa ser um link https:// ou um caminho img/…');
+  return s;
+}
+
+function montarProduto(d, id) {
+  const nome = limpar(d.nome, 80);
+  if (!nome) throw erro('Dê um nome ao produto.');
+  const descricao = limpar(d.descricao, 400);
+  const foto = imagem(d.imagem);
+  if (d.tipo === 'perfume') {
+    const perfil = PERFIS.includes(d.perfil) ? d.perfil : 'elegantes';
+    const genero = GENEROS.includes(d.genero) ? d.genero : 'compartilhavel';
+    const p = {
+      id,
+      name: nome,
+      inspired_by: limpar(d.inspirado, 80),
+      profile: perfil,
+      notes: { top: limpar(d.topo, 120), heart: limpar(d.coracao, 120), base: limpar(d.base, 120) },
+      description: descricao,
+      category: 'perfumes',
+      concentration: '27%',
+      variants: [{ size: '30ml', price: preco(d.preco30, '30 ml') }, { size: '50ml', price: preco(d.preco50, '50 ml') }],
+      tags: [perfil, genero],
+    };
+    if (foto) p.image = foto;
+    return p;
+  }
+  if (d.tipo === 'creme') {
+    const p = {
+      id,
+      name: nome,
+      type: 'Creme Corporal',
+      volume: '100g',
+      description: descricao,
+      category: 'skincare',
+      variants: [{ size: '100g', price: preco(d.preco, 'preço') }],
+      tags: ['hidratação', 'corpo'],
+    };
+    if (foto) p.image = foto;
+    return p;
+  }
+  throw erro('Escolha se é perfume ou creme.');
+}
+
+export function criarProduto(e, d) {
+  const base = slug(d.nome) || 'produto';
+  let id = base;
+  for (let i = 2; todos(e).some((p) => p.id === id); i++) id = `${base}-${i}`;
+  const p = montarProduto(d, id);
+  e.catalogo.extras.push(p);
+  // perfume novo entra no controle de estoque e fica esgotado até a primeira entrada
+  if (p.category === 'perfumes') e.produtos[id] = { granel_ml: 0, unidades: {} };
+  return p;
+}
+
+export function editarProduto(e, id, d) {
+  const i = e.catalogo.extras.findIndex((p) => p.id === id);
+  if (i < 0) throw erro('Só dá pra editar produtos criados pelo painel.');
+  e.catalogo.extras[i] = montarProduto({ ...d, tipo: e.catalogo.extras[i].category === 'perfumes' ? 'perfume' : 'creme' }, id);
+  delete e.catalogo.precos[id];
+}
+
+export function removerProduto(e, id) {
+  const i = e.catalogo.extras.findIndex((p) => p.id === id);
+  if (i < 0) throw erro('Só dá pra remover produtos criados pelo painel. Os outros você pode ocultar.');
+  e.catalogo.extras.splice(i, 1);
+  delete e.catalogo.status[id];
+  delete e.catalogo.precos[id];
+  delete e.produtos[id];
+}
+
+export function definirStatus(e, id, status) {
+  if (!todos(e).some((p) => p.id === id)) throw erro('Produto não encontrado.');
+  if (status === 'visivel') delete e.catalogo.status[id];
+  else if (status === 'oculto' || status === 'esgotado') e.catalogo.status[id] = status;
+  else throw erro('Status inválido.');
+}
+
+export function definirPrecos(e, id, precos) {
+  const p = todos(e).find((x) => x.id === id);
+  if (!p) throw erro('Produto não encontrado.');
+  const validos = new Set(precosDe(e, p).map((v) => v.tamanho));
+  const novo = {};
+  for (const [tam, valor] of Object.entries(precos || {})) {
+    if (!validos.has(tam)) throw erro(`Tamanho inválido: ${tam}`);
+    novo[tam] = preco(valor, tam === 'unico' ? 'preço' : tam);
+  }
+  if (Object.keys(novo).length) e.catalogo.precos[id] = novo;
+  else delete e.catalogo.precos[id];
+}
+
+// ---------- Pedidos e estoque ----------
 // Linhas do pedido do site: "- 2x Light Blue (30ml) | R$ 170,00" (no WhatsApp podem vir com *negrito*)
 export function itensDoPedido(texto) {
   const itens = [];
@@ -97,7 +274,7 @@ export function simularBaixa(e, itens) {
   const problemas = [];
   const movs = [];
   for (const it of itens) {
-    const produto = catalogo().find((p) => normal(p.name) === normal(it.nome));
+    const produto = todos(e).find((p) => normal(p.name) === normal(it.nome));
     const item = produto && copia[produto.id];
     if (!item || !e.tamanhos.includes(it.variante)) {
       linhas.push({ ok: null, texto: `${it.qtd}x ${it.nome} (${it.variante}): sem controle de estoque, nada a descontar` });
@@ -136,16 +313,16 @@ export function registrar(e, { tipo, descricao, movs, hash }) {
 
 export function desfazerUltimo(e) {
   const h = e.historico[e.historico.length - 1];
-  if (!h) throw new Error('Não há nada para desfazer.');
+  if (!h) throw erro('Não há nada para desfazer.');
   for (const m of h.movs) aplicarMov(e, m, -1);
   e.historico.pop();
   return h;
 }
 
 export function movimentosDeEntrada(e, { id, ml: granel, tamanho, qtd }) {
-  if (!catalogo().some((p) => p.id === id)) throw new Error(`Produto "${id}" não existe no catálogo do site.`);
+  if (!todos(e).some((p) => p.id === id && p.category === 'perfumes')) throw erro(`Perfume "${id}" não existe no catálogo.`);
   if (granel) return [{ id, campo: 'granel_ml', delta: granel }];
-  if (!e.tamanhos.includes(tamanho)) throw new Error(`Tamanho inválido: ${tamanho}`);
+  if (!e.tamanhos.includes(tamanho)) throw erro(`Tamanho inválido: ${tamanho}`);
   return [{ id, campo: tamanho, delta: qtd }];
 }
 
@@ -153,7 +330,7 @@ export function movimentosDeEntrada(e, { id, ml: granel, tamanho, qtd }) {
 export function movimentosDeAjuste(e, { id, granel_ml, unidades }) {
   const atual = e.produtos[id] || { granel_ml: 0, unidades: {} };
   const movs = [];
-  if (granel_ml !== atual.granel_ml && granel_ml != null) movs.push({ id, campo: 'granel_ml', delta: granel_ml - (atual.granel_ml || 0) });
+  if (granel_ml != null && granel_ml !== (atual.granel_ml || 0)) movs.push({ id, campo: 'granel_ml', delta: granel_ml - (atual.granel_ml || 0) });
   for (const s of e.tamanhos) {
     const novo = unidades?.[s];
     const antes = atual.unidades?.[s] || 0;

@@ -1,41 +1,54 @@
-// Estoque ao vivo: ajusta as quantidades de js/data.js com o que o painel (admin.html) registrou.
-// Carrega depois de data.js e antes de app.js.
-//
-// As páginas se desenham na hora, então usamos duas camadas:
-//  1. a última resposta guardada no navegador é aplicada na hora (sem piscar);
-//  2. em seguida buscamos a resposta nova, que vale para o carrinho e para a próxima página.
-// Se a busca falhar, o site segue com os números do data.js.
+// Aplica ao js/data.js o que o painel (admin.html) mudou: produtos novos, produtos ocultos
+// ou esgotados, preços e quantidades em estoque.
+// Roda de forma síncrona logo depois de /api/catalogo.js (que define window.SP_REMOTO) e
+// antes do app.js, então as páginas já nascem certas. Sem SP_REMOTO, não faz nada.
 (function () {
-  if (typeof SPOSENCE_DATA === 'undefined') return;
-  var CACHE = 'sp-estoque-v1';
-  var base = /github\.io$/.test(location.hostname) || location.protocol === 'file:' ? 'https://sposence.com.br' : '';
+  var R = window.SP_REMOTO;
+  if (!R || typeof SPOSENCE_DATA === 'undefined') return;
 
-  function aplicar(estoque) {
-    if (!estoque || !estoque.produtos) return;
-    var todos = [].concat(SPOSENCE_DATA.perfumes || [], SPOSENCE_DATA.body_splashes || [], SPOSENCE_DATA.skincare || []);
-    todos.forEach(function (p) {
-      var tamanhos = estoque.produtos[p.id];
-      if (!tamanhos || !p.variants) return;
-      p.variants.forEach(function (v) {
-        if (!(v.size in tamanhos)) return;
-        var n = tamanhos[v.size];
-        v.stock = n;
-        if (n > 0) { delete v.available; delete v.outOfStock; }
-        else { v.available = false; v.outOfStock = true; }
-      });
-    });
-  }
+  var grupos = {
+    perfumes: SPOSENCE_DATA.perfumes || [],
+    skincare: SPOSENCE_DATA.skincare || [],
+    body_splashes: SPOSENCE_DATA.body_splashes || [],
+    merchandise: SPOSENCE_DATA.merchandise || [],
+  };
+  var status = R.status || {};
+  var precos = R.precos || {};
+  var estoque = R.produtos || {};
 
-  try { aplicar(JSON.parse(localStorage.getItem(CACHE))); } catch (_) {}
+  // 1. produtos criados no painel
+  (R.extras || []).forEach(function (p) {
+    var lista = grupos[p.category];
+    if (lista && !lista.some(function (x) { return x.id === p.id; })) lista.push(p);
+  });
 
-  var limite = new AbortController();
-  setTimeout(function () { limite.abort(); }, 5000);
-  fetch(base + '/api/estoque', { signal: limite.signal, cache: 'no-store' })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (estoque) {
-      if (!estoque) return;
-      aplicar(estoque);
-      try { localStorage.setItem(CACHE, JSON.stringify(estoque)); } catch (_) {}
-    })
-    .catch(function () {});
+  Object.keys(grupos).forEach(function (chave) {
+    var lista = grupos[chave];
+    for (var i = lista.length - 1; i >= 0; i--) {
+      var p = lista[i];
+
+      // 2. oculto sai do site; esgotado fica visível, sem compra
+      if (status[p.id] === 'oculto') { lista.splice(i, 1); continue; }
+      if (status[p.id] === 'esgotado') { p.available = false; p.outOfStock = true; }
+
+      // 3. preços ajustados no painel
+      var ajuste = precos[p.id];
+      if (ajuste) {
+        if ('unico' in ajuste) p.price = ajuste.unico;
+        (p.variants || []).forEach(function (v) { if (v.size in ajuste) v.price = ajuste[v.size]; });
+      }
+
+      // 4. quantidades em estoque (30 ml e 50 ml dos perfumes controlados)
+      var tamanhos = estoque[p.id];
+      if (tamanhos && p.variants) {
+        p.variants.forEach(function (v) {
+          if (!(v.size in tamanhos)) return;
+          var n = tamanhos[v.size];
+          v.stock = n;
+          if (n > 0) { delete v.available; delete v.outOfStock; }
+          else { v.available = false; v.outOfStock = true; }
+        });
+      }
+    }
+  });
 })();

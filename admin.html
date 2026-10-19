@@ -4,153 +4,289 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="theme-color" content="#2b1200" />
-  <title>Estoque | Sposence</title>
+  <meta name="color-scheme" content="light dark" />
+  <title>Painel | Sposence</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" />
+  <script>
+    // aplica o tema antes de desenhar, para não piscar
+    try { var t = localStorage.getItem('sp-admin-tema'); if (t) document.documentElement.dataset.tema = t; } catch (_) {}
+  </script>
   <style>
     @font-face { font-family: 'Philosopher'; src: url('fonts/Philosopher-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
     @font-face { font-family: 'Philosopher'; src: url('fonts/Philosopher-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
+    /* Claro: o creme e o marrom da marca */
     :root {
-      --bg: #fef9f2; --card: #f8f3ed; --line: #e6e2dc; --ink: #1d1b18; --muted: #83746b;
-      --brown: #2b1200; --gold: #DAA753; --ok: #3f6b3a; --bad: #9b2c1f; --warn: #8a5a00;
+      --bg: #fbf6ee; --surface: #fffdf9; --card: #f4eee4; --line: #e6dccd; --line-strong: #cdbfac;
+      --ink: #231a12; --muted: #7a6a5c; --accent: #8c5f12; --gold: #daa753; --track: #e6dccd;
+      --btn: #2b1200; --on-btn: #ffffff; --ok: #3d6a38; --ok-bg: #e5efe1; --bad: #a3321f; --bad-bg: #f7e3df; --warn: #86550a; --warn-bg: #f6ebd3;
+      --shadow: 0 1px 2px rgba(43,18,0,.06), 0 8px 24px rgba(43,18,0,.06);
+      --nav-bg: rgba(255,253,249,.92);
     }
+    /* Escuro: café torrado, com o dourado como única cor */
+    :root[data-tema="dark"] {
+      --bg: #140e09; --surface: #1b140e; --card: #231a13; --line: #35291f; --line-strong: #4b3b2d;
+      --ink: #f3eadf; --muted: #a8957f; --accent: #e8b865; --gold: #daa753; --track: #35291f;
+      --btn: #daa753; --on-btn: #2b1200; --ok: #93c98a; --ok-bg: #1f2c1d; --bad: #f09280; --bad-bg: #3a201b; --warn: #e8b865; --warn-bg: #33270f;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --nav-bg: rgba(27,20,14,.92);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-tema="light"]) {
+        --bg: #140e09; --surface: #1b140e; --card: #231a13; --line: #35291f; --line-strong: #4b3b2d;
+        --ink: #f3eadf; --muted: #a8957f; --accent: #e8b865; --gold: #daa753; --track: #35291f;
+        --btn: #daa753; --on-btn: #2b1200; --ok: #93c98a; --ok-bg: #1f2c1d; --bad: #f09280; --bad-bg: #3a201b; --warn: #e8b865; --warn-bg: #33270f;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+        --nav-bg: rgba(27,20,14,.92);
+      }
+    }
+
     * { box-sizing: border-box; margin: 0; }
-    body { font: 16px/1.45 'Manrope', system-ui, sans-serif; color: var(--ink); background: var(--bg); min-height: 100dvh; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
-    h1, h2 { font-family: 'Philosopher', serif; font-weight: 700; color: var(--brown); }
-    header { position: sticky; top: 0; z-index: 5; background: var(--brown); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
-    header h1 { color: #fff; font-size: 22px; letter-spacing: .02em; }
-    header button { background: none; border: 0; color: #f3bb90; font: inherit; font-size: 14px; padding: 8px; }
-    main { max-width: 640px; margin: 0 auto; padding: 16px; }
-    section[hidden], #login[hidden], #app[hidden] { display: none; }
-    h2 { font-size: 20px; margin-bottom: 12px; }
-    .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
-    .card h3 { font-size: 17px; font-weight: 700; color: var(--brown); }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .chip { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; }
-    .chip b { color: var(--brown); }
-    .sell { font-size: 13px; color: var(--muted); margin-top: 8px; }
-    label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin: 12px 0 4px; }
-    input, select, textarea { width: 100%; font: inherit; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
-    textarea { min-height: 150px; resize: vertical; }
-    button.main { width: 100%; margin-top: 14px; padding: 14px; border: 0; border-radius: 12px; background: var(--brown); color: #fff; font: inherit; font-weight: 700; }
-    button.ghost { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--brown); font: inherit; font-weight: 600; }
-    button.small { padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--brown); font: inherit; font-size: 13px; font-weight: 600; }
-    button:disabled { opacity: .5; }
-    .preview li { list-style: none; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-    .preview li:last-child { border: 0; }
-    .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); }
-    .msg { padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; }
-    .msg.ok { background: #e7f0e4; } .msg.bad { background: #f6e1de; }
-    .hist { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-    .hist small { color: var(--muted); display: block; }
-    nav { position: fixed; inset: auto 0 0 0; display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
-    nav button { background: none; border: 0; padding: 12px 4px; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); }
-    nav button[aria-current="true"] { color: var(--brown); box-shadow: inset 0 3px 0 var(--gold); }
-    #login { max-width: 360px; margin: 18vh auto 0; padding: 16px; text-align: center; }
-    #login h1 { font-size: 34px; margin-bottom: 4px; }
-    #login p { color: var(--muted); margin-bottom: 20px; }
-    .edit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .edit label { margin-top: 8px; }
-    .vazio { color: var(--muted); text-align: center; padding: 24px 0; }
-    @media (prefers-reduced-motion: no-preference) { section { animation: in .18s ease-out; } @keyframes in { from { opacity: 0; transform: translateY(4px); } } }
+    html { color-scheme: light; }
+    :root[data-tema="dark"] { color-scheme: dark; }
+    @media (prefers-color-scheme: dark) { :root:not([data-tema="light"]) { color-scheme: dark; } }
+    body { font: 16px/1.5 'Manrope', system-ui, sans-serif; color: var(--ink); background: var(--bg); min-height: 100dvh; padding-bottom: calc(92px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color: transparent; }
+    h1, h2, h3, .num { font-family: 'Philosopher', Georgia, serif; font-weight: 700; }
+    [hidden] { display: none !important; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+
+    /* Topo */
+    .topo { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topo-in { max-width: 720px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .topo h1 { font-size: 24px; letter-spacing: .01em; flex: 1; line-height: 1.1; }
+    .topo h1 small { display: block; font: 500 12px/1.3 'Manrope', sans-serif; color: var(--muted); letter-spacing: 0; }
+    .icone { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+    .icone svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .texto-btn { background: none; border: 0; color: var(--muted); padding: 10px 6px; font-size: 14px; font-weight: 600; }
+
+    main { max-width: 720px; margin: 0 auto; padding: 20px 16px; }
+    h2 { font-size: 26px; line-height: 1.15; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+
+    /* Resumo do estoque */
+    .resumo { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin: 16px 0 12px; }
+    .stat { background: var(--card); border-radius: 16px; padding: 14px; }
+    .stat .num { font-size: 30px; line-height: 1; display: block; font-variant-numeric: tabular-nums; }
+    .stat .num small { font-size: 15px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+    .stat span.l { font-size: 12.5px; color: var(--muted); display: block; margin-top: 6px; line-height: 1.25; }
+    .stat.principal { background: var(--btn); color: var(--on-btn); }
+    .stat.principal span.l, .stat.principal .num small { color: inherit; opacity: .78; }
+
+    /* Cartões */
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
+    .card-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .card h3 { font-size: 20px; line-height: 1.2; }
+    .ml-grande { font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; margin-top: 12px; }
+    .ml-grande small { font: 500 13px 'Manrope', sans-serif; color: var(--muted); margin-left: 6px; }
+    .barra { height: 6px; background: var(--track); border-radius: 99px; overflow: hidden; margin: 10px 0 12px; }
+    .barra i { display: block; height: 100%; background: var(--gold); border-radius: 99px; min-width: 3px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { background: var(--card); border-radius: 99px; padding: 4px 11px; font-size: 13px; color: var(--muted); }
+    .chip b { color: var(--ink); font-variant-numeric: tabular-nums; }
+    .nota { font-size: 13px; color: var(--muted); margin-top: 10px; }
+    .selo { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--warn-bg); color: var(--warn); white-space: nowrap; }
+    .selo.bad { background: var(--bad-bg); color: var(--bad); }
+    .selo.ok { background: var(--ok-bg); color: var(--ok); }
+    .acoes { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+    /* Botões */
+    .btn { min-height: 46px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--line-strong); background: var(--surface); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn.primario { background: var(--btn); color: var(--on-btn); border-color: transparent; }
+    .btn.perigo { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+    .btn.cheio { width: 100%; }
+    .btn.pequeno { min-height: 38px; padding: 0 14px; font-size: 14px; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    /* Formulários */
+    label, .rotulo { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin: 14px 0 6px; }
+    input, select, textarea { width: 100%; min-height: 48px; padding: 11px 13px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: .7; }
+    .grade2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grade3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .ajuda { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--card); padding: 3px; border-radius: 12px; gap: 3px; }
+    .seg button { min-height: 40px; border: 0; border-radius: 9px; background: none; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+    .seg button[data-st="oculto"][aria-pressed="true"] { color: var(--bad); }
+    .seg button[data-st="esgotado"][aria-pressed="true"] { color: var(--warn); }
+
+    /* Catálogo */
+    .barra-busca { display: flex; gap: 8px; margin-bottom: 10px; }
+    .filtros { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin: 0 -16px 8px; padding-inline: 16px; scrollbar-width: none; }
+    .filtros::-webkit-scrollbar { display: none; }
+    .filtros button { flex: none; min-height: 36px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line-strong); background: none; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .filtros button[aria-pressed="true"] { background: var(--btn); color: var(--on-btn); border-color: transparent; }
+    .linha { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .linha:last-child { border: 0; }
+    .linha .nome { font-weight: 700; line-height: 1.3; }
+    .linha .meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .linha .seg { margin-top: 10px; }
+    .links { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .links button { background: none; border: 0; padding: 8px 10px 8px 0; font-size: 14px; font-weight: 700; color: var(--accent); }
+    .links button.rm { color: var(--bad); }
+    .esmaecido .nome { opacity: .55; }
+
+    /* Histórico e prévia */
+    .hist { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .hist:last-child { border: 0; }
+    .hist .t { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .previa li { list-style: none; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+    .previa li:last-child { border: 0; }
+    .previa .ok { color: var(--ok); } .previa .aviso { color: var(--warn); } .previa .bad { color: var(--bad); }
+    .vazio { text-align: center; color: var(--muted); padding: 36px 12px; }
+    .vazio b { display: block; color: var(--ink); font-family: 'Philosopher', serif; font-size: 20px; margin-bottom: 4px; }
+
+    /* Navegação */
+    nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom)); width: min(calc(100% - 24px), 520px); z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 20px; padding: 6px; box-shadow: var(--shadow); }
+    nav button { background: none; border: 0; border-radius: 14px; min-height: 56px; display: grid; place-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 6px 2px; }
+    nav button svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    nav button[aria-current="true"] { background: var(--btn); color: var(--on-btn); }
+
+    /* Janelas */
+    dialog { border: 0; padding: 0; background: var(--surface); color: var(--ink); width: min(100%, 520px); max-height: 92dvh; margin: auto auto 0; border-radius: 24px 24px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,.35); overflow: auto; }
+    dialog::backdrop { background: rgba(10,6,3,.55); }
+    @media (min-width: 640px) { dialog { margin: auto; border-radius: 24px; } }
+    .folha { padding: 20px 18px calc(22px + env(safe-area-inset-bottom)); }
+    .folha-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .folha h2 { margin: 0; font-size: 24px; }
+    .fechar { width: 40px; height: 40px; border-radius: 12px; border: 0; background: var(--card); font-size: 20px; line-height: 1; }
+    @media (prefers-reduced-motion: no-preference) {
+      dialog[open] { animation: sobe .22s cubic-bezier(.2,.8,.2,1); }
+      dialog[open]::backdrop { animation: fade .22s ease-out; }
+      @keyframes sobe { from { transform: translateY(24px); opacity: 0; } }
+      @keyframes fade { from { opacity: 0; } }
+      .barra i { transition: width .4s cubic-bezier(.2,.8,.2,1); }
+    }
+
+    /* Aviso */
+    #aviso { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 40; width: min(calc(100% - 32px), 440px); }
+    .toast { background: var(--ink); color: var(--bg); padding: 13px 16px; border-radius: 14px; font-size: 14.5px; font-weight: 600; box-shadow: var(--shadow); margin-top: 8px; }
+    .toast.bad { background: var(--bad); color: #fff; }
+
+    /* Login */
+    #login { max-width: 360px; margin: 0 auto; padding: 22vh 20px 0; text-align: center; }
+    #login h1 { font-size: 44px; line-height: 1; }
+    #login p { color: var(--muted); margin: 8px 0 26px; }
+    #login .erro { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--bad-bg); color: var(--bad); font-size: 14px; }
+
+    @media (max-width: 380px) { .resumo { grid-template-columns: 1fr 1fr; } .stat.principal { grid-column: 1 / -1; } }
   </style>
 </head>
 <body>
 
-  <div id="login">
+  <div id="login" hidden>
     <h1>Sposence</h1>
-    <p>Painel de estoque</p>
+    <p>Painel de estoque e catálogo</p>
     <form id="login-form">
+      <label for="senha" class="rotulo" style="position:absolute;left:-9999px">Senha</label>
       <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required />
-      <button class="main" type="submit">Entrar</button>
-      <div id="login-erro" class="msg bad" hidden></div>
+      <button class="btn primario cheio" type="submit" style="margin-top:12px">Entrar</button>
+      <div id="login-erro" class="erro" role="alert" hidden></div>
     </form>
   </div>
 
   <div id="app" hidden>
-    <header><h1>Estoque</h1><button id="sair" type="button">Sair</button></header>
+    <header class="topo">
+      <div class="topo-in">
+        <h1>Sposence<small id="sub-topo">Painel</small></h1>
+        <button class="icone" id="tema" type="button" aria-label="Alternar tema claro e escuro">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"/></svg>
+        </button>
+        <button class="texto-btn" id="sair" type="button">Sair</button>
+      </div>
+    </header>
+
     <main>
-      <section id="t-estoque"></section>
-
-      <section id="t-baixa" hidden>
-        <h2>Dar baixa num pedido</h2>
-        <div class="card">
-          <label for="pedido">Cole a mensagem do pedido do WhatsApp</label>
-          <textarea id="pedido" placeholder="Olá Sposence! Acabei de fazer um pedido…&#10;- 1x Light Blue (30ml) | R$ 85,00"></textarea>
-          <button class="ghost" id="colar" type="button">Colar do celular</button>
-          <button class="main" id="conferir" type="button">Conferir</button>
-        </div>
-        <div class="card">
-          <h3>Ou venda avulsa</h3>
-          <label for="v-prod">Perfume</label><select id="v-prod"></select>
-          <div class="edit" style="grid-template-columns:1fr 1fr">
-            <div><label for="v-tam">Tamanho</label><select id="v-tam"></select></div>
-            <div><label for="v-qtd">Quantidade</label><input id="v-qtd" type="number" min="1" value="1" inputmode="numeric" /></div>
-          </div>
-          <button class="ghost" id="conferir-avulsa" type="button">Conferir</button>
-        </div>
-        <div id="previa"></div>
-      </section>
-
-      <section id="t-entrada" hidden>
-        <h2>Entrada de estoque</h2>
-        <div class="card">
-          <label for="e-prod">Perfume</label><select id="e-prod"></select>
-          <label for="e-tipo">O que chegou</label>
-          <select id="e-tipo"><option value="ml">ml a granel (perfume pronto, sem envasar)</option><option value="un">frascos já envasados</option></select>
-          <div id="e-tam-box" hidden><label for="e-tam">Tamanho do frasco</label><select id="e-tam"></select></div>
-          <label for="e-qtd" id="e-qtd-label">Quantos ml</label>
-          <input id="e-qtd" type="number" min="1" inputmode="numeric" placeholder="180" />
-          <button class="main" id="adicionar" type="button">Adicionar ao estoque</button>
-        </div>
-        <div id="entrada-msg"></div>
-      </section>
-
-      <section id="t-historico" hidden></section>
+      <section id="t-estoque" aria-labelledby="h-estoque"></section>
+      <section id="t-baixa" aria-labelledby="h-baixa" hidden></section>
+      <section id="t-catalogo" aria-labelledby="h-catalogo" hidden></section>
+      <section id="t-historico" aria-labelledby="h-historico" hidden></section>
     </main>
-    <nav aria-label="Seções">
-      <button data-tab="estoque" aria-current="true" type="button">Estoque</button>
-      <button data-tab="baixa" type="button">Dar baixa</button>
-      <button data-tab="entrada" type="button">Entrada</button>
-      <button data-tab="historico" type="button">Histórico</button>
+
+    <nav aria-label="Seções do painel">
+      <button data-tab="estoque" aria-current="true" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V5h6v3"/></svg>Estoque</button>
+      <button data-tab="baixa" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>Dar baixa</button>
+      <button data-tab="catalogo" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Catálogo</button>
+      <button data-tab="historico" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>Histórico</button>
     </nav>
   </div>
 
-<script>
-const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const guardar = {
-  ler: () => { try { return localStorage.getItem('sp-admin') || ''; } catch (_) { return ''; } },
-  gravar: (v) => { try { v ? localStorage.setItem('sp-admin', v) : localStorage.removeItem('sp-admin'); } catch (_) {} },
-};
-let senha = guardar.ler();
-let est = null;
-let pendente = null; // o que está esperando confirmação: { acao, texto | itens }
+  <dialog id="folha" aria-labelledby="folha-titulo"><div class="folha" id="folha-corpo"></div></dialog>
+  <div id="aviso" role="status" aria-live="polite"></div>
 
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf = new Intl.NumberFormat('pt-BR');
+const brl = (n) => 'R$ ' + (Number.isInteger(Number(n)) ? String(n) : Number(n).toFixed(2).replace('.', ','));
+const guardar = {
+  ler: (k) => { try { return localStorage.getItem(k) || ''; } catch (_) { return ''; } },
+  gravar: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (_) {} },
+};
+const ICONE_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+
+let senha = guardar.ler('sp-admin');
+let est = null;
+let pendente = null;            // pedido esperando confirmação
+const filtro = { busca: '', cat: 'todos' };
+
+/* ---------- servidor ---------- */
 async function api(acao, corpo = {}) {
   const r = await fetch('/api/admin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-admin-senha': senha },
     body: JSON.stringify({ acao, ...corpo }),
   });
-  const dados = await r.json().catch(() => ({ erro: 'Resposta inesperada do servidor.' }));
+  const dados = await r.json().catch(() => ({ erro: 'O servidor respondeu algo inesperado. Tente de novo.' }));
   if (r.status === 401) { sair(); throw new Error(dados.erro); }
-  if (!r.ok) throw Object.assign(new Error(dados.erro || 'Erro.'), { dados });
+  if (!r.ok) throw Object.assign(new Error(dados.erro || 'Algo deu errado.'), { dados });
+  if (dados.estado) { est = dados.estado; desenharTudo(); }
   return dados;
 }
 
-function sair() { senha = ''; guardar.gravar(''); $('app').hidden = true; $('login').hidden = false; }
+function aviso(msg, ruim) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (ruim ? ' bad' : '');
+  el.textContent = msg;
+  $('aviso').appendChild(el);
+  setTimeout(() => el.remove(), ruim ? 6000 : 3200);
+}
+const falhou = (e) => aviso(e.message, true);
 
+/* ---------- tema ---------- */
+function temaAtual() {
+  return document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+}
+function iconeTema() {
+  const escuro = temaAtual() === 'dark';
+  $('tema').innerHTML = escuro
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"/></svg>';
+  $('tema').setAttribute('aria-label', escuro ? 'Mudar para o tema claro' : 'Mudar para o tema escuro');
+}
+$('tema').addEventListener('click', () => {
+  const novo = temaAtual() === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.tema = novo;
+  guardar.gravar('sp-admin-tema', novo);
+  document.querySelector('meta[name="theme-color"]')?.remove();
+  iconeTema();
+});
+iconeTema();
+
+/* ---------- entrada no painel ---------- */
+function sair() { senha = ''; guardar.gravar('sp-admin', ''); $('app').hidden = true; $('login').hidden = false; }
 async function entrar(tentativa) {
   senha = tentativa;
-  const d = await api('estado');
-  guardar.gravar(senha);
-  est = d.estado;
+  await api('estado');
+  guardar.gravar('sp-admin', senha);
   $('login').hidden = true; $('app').hidden = false;
-  desenhar();
 }
-
 $('login-form').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   $('login-erro').hidden = true;
@@ -159,121 +295,330 @@ $('login-form').addEventListener('submit', async (ev) => {
 });
 $('sair').addEventListener('click', sair);
 
-document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => {
-  document.querySelectorAll('nav button').forEach((x) => x.setAttribute('aria-current', x === b));
-  ['estoque', 'baixa', 'entrada', 'historico'].forEach((t) => { $('t-' + t).hidden = t !== b.dataset.tab; });
+/* ---------- abas ---------- */
+const ABAS = ['estoque', 'baixa', 'catalogo', 'historico'];
+const TITULOS = { estoque: 'Estoque', baixa: 'Dar baixa', catalogo: 'Catálogo', historico: 'Histórico' };
+function irPara(aba) {
+  document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
+  ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
+  $('sub-topo').textContent = TITULOS[aba];
   window.scrollTo(0, 0);
-}));
+}
+document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => irPara(b.dataset.tab)));
 
-function desenhar() {
-  // Estoque
-  $('t-estoque').innerHTML = '<h2>O que tem agora</h2>' + (est.produtos.length ? est.produtos.map((p) => `
-    <div class="card" data-id="${esc(p.id)}">
-      <div class="row" style="justify-content:space-between"><h3>${esc(p.nome)}</h3><button class="small" data-editar="${esc(p.id)}" type="button">Corrigir</button></div>
-      <div class="row" style="margin-top:8px">
-        <span class="chip"><b>${p.granel_ml}</b> ml a granel</span>
-        ${est.tamanhos.map((s) => `<span class="chip"><b>${p.unidades[s]}</b> × ${s}</span>`).join('')}
-      </div>
-      <div class="sell">No site dá pra vender: ${est.tamanhos.map((s) => `${p.vende[s]} de ${s}`).join(' · ')}</div>
-      <div class="edit-box" hidden></div>
-    </div>`).join('') : '<p class="vazio">Nenhum perfume no controle ainda. Use a aba Entrada.</p>');
+/* ---------- janela (bottom sheet) ---------- */
+function abrirFolha(titulo, html) {
+  $('folha-corpo').innerHTML = `<div class="folha-topo"><h2 id="folha-titulo">${esc(titulo)}</h2><button class="fechar" type="button" data-fechar aria-label="Fechar">×</button></div>${html}`;
+  if (!$('folha').open) $('folha').showModal();
+}
+const fecharFolha = () => $('folha').open && $('folha').close();
+$('folha').addEventListener('click', (ev) => { if (ev.target === $('folha') || ev.target.closest('[data-fechar]')) fecharFolha(); });
 
-  // Selects
-  const opcoes = est.catalogo.map((p) => `<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join('');
-  const tams = est.tamanhos.map((s) => `<option>${s}</option>`).join('');
-  const manter = (el, html) => { const v = el.value; el.innerHTML = html; if (v) el.value = v; };
-  manter($('v-prod'), opcoes); manter($('e-prod'), opcoes);
-  manter($('v-tam'), tams); manter($('e-tam'), tams);
-
-  // Histórico
-  $('t-historico').innerHTML = '<h2>Últimos movimentos</h2>' + (est.historico.length ? est.historico.map((h, i) => `
-    <div class="hist"><div>${esc(h.descricao)}<small>${esc(h.data)} · ${esc(h.tipo)}</small></div>
-    ${i === 0 ? '<button class="small" id="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('') : '<p class="vazio">Nada por aqui ainda.</p>');
+function confirmar(titulo, texto, rotulo, aoConfirmar) {
+  abrirFolha(titulo, `<p class="sub" style="margin-top:8px">${esc(texto)}</p>
+    <button class="btn perigo cheio" id="sim" type="button">${esc(rotulo)}</button>
+    <button class="btn cheio" type="button" data-fechar style="margin-top:8px">Cancelar</button>`);
+  $('sim').addEventListener('click', async () => { $('sim').disabled = true; try { await aoConfirmar(); fecharFolha(); } catch (e) { falhou(e); $('sim').disabled = false; } });
 }
 
-// Corrigir o estoque de um produto
-document.addEventListener('click', async (ev) => {
-  const ed = ev.target.closest('[data-editar]');
-  if (ed) {
-    const p = est.produtos.find((x) => x.id === ed.dataset.editar);
-    const box = ed.closest('.card').querySelector('.edit-box');
-    box.hidden = !box.hidden;
-    if (box.hidden) return;
-    box.innerHTML = `<div class="edit">
-      <div><label>ml granel</label><input type="number" min="0" inputmode="numeric" data-f="granel" value="${p.granel_ml}"></div>
-      ${est.tamanhos.map((s) => `<div><label>${s}</label><input type="number" min="0" inputmode="numeric" data-f="${s}" value="${p.unidades[s]}"></div>`).join('')}
-    </div><button class="main" data-salvar="${esc(p.id)}" type="button">Salvar correção</button>`;
-    return;
-  }
-  const sv = ev.target.closest('[data-salvar]');
-  if (sv) {
-    const box = sv.closest('.edit-box');
-    const unidades = {};
-    est.tamanhos.forEach((s) => { unidades[s] = box.querySelector(`[data-f="${s}"]`).value; });
-    sv.disabled = true;
-    try { est = (await api('ajustar', { id: sv.dataset.salvar, granel_ml: box.querySelector('[data-f="granel"]').value, unidades })).estado; desenhar(); }
-    catch (e) { alert(e.message); sv.disabled = false; }
-    return;
-  }
-  if (ev.target.id === 'desfazer') {
-    if (!confirm('Desfazer o último movimento?')) return;
-    try { est = (await api('desfazer')).estado; desenhar(); } catch (e) { alert(e.message); }
-  }
-});
+/* ---------- desenho ---------- */
+function desenharTudo() { desenharEstoque(); desenharBaixa(); desenharCatalogo(); desenharHistorico(); }
 
-// Baixa: conferir e confirmar
+const statusSelo = (s) => s === 'oculto' ? '<span class="selo bad">Oculto no site</span>' : s === 'esgotado' ? '<span class="selo">Marcado como esgotado</span>' : '';
+
+function desenharEstoque() {
+  const r = est.resumo;
+  const maior = Math.max(1, ...est.produtos.map((p) => p.ml_total));
+  $('t-estoque').innerHTML = `
+    <h2 id="h-estoque">Estoque</h2>
+    <p class="sub">Tudo que você tem de perfume agora.</p>
+    <div class="resumo">
+      <div class="stat principal"><span class="num">${nf.format(r.ml_total)}<small>ml</small></span><span class="l">de perfume no total</span></div>
+      <div class="stat"><span class="num">${r.frascos_prontos}</span><span class="l">frascos prontos</span></div>
+      <div class="stat"><span class="num">${r.esgotados}</span><span class="l">sem estoque</span></div>
+    </div>
+    <button class="btn primario cheio" data-act="entrada" type="button">${ICONE_X} Registrar entrada</button>
+    <div style="height:16px"></div>
+    ${est.produtos.length ? est.produtos.map((p) => `
+      <article class="card" data-id="${esc(p.id)}">
+        <div class="card-topo"><h3>${esc(p.nome)}</h3>${statusSelo(p.status)}</div>
+        <div class="ml-grande num">${nf.format(p.ml_total)}<small>ml no total</small></div>
+        <div class="barra" aria-hidden="true"><i style="width:${Math.round((p.ml_total / maior) * 100)}%"></i></div>
+        <div class="chips">
+          <span class="chip"><b>${nf.format(p.granel_ml)}</b> ml a granel</span>
+          ${est.tamanhos.map((s) => `<span class="chip"><b>${p.unidades[s]}</b> × ${s}</span>`).join('')}
+        </div>
+        <p class="nota">Dá pra vender no site: ${est.tamanhos.map((s) => `<b>${p.vende[s]}</b> de ${s}`).join(' ou ')}</p>
+        <div class="acoes">
+          <button class="btn pequeno" data-act="entrada" data-id="${esc(p.id)}" type="button">${ICONE_X} Entrada</button>
+          <button class="btn pequeno" data-act="corrigir" data-id="${esc(p.id)}" type="button">Corrigir</button>
+        </div>
+      </article>`).join('')
+    : `<div class="vazio"><b>Nenhum perfume no controle ainda</b>Registre a primeira entrada para ver o estoque aqui.</div>`}`;
+}
+
+function desenharBaixa() {
+  if ($('pedido') && document.activeElement === $('pedido')) return; // não apaga o que está sendo digitado
+  const guardado = $('pedido')?.value || '';
+  $('t-baixa').innerHTML = `
+    <h2 id="h-baixa">Dar baixa</h2>
+    <p class="sub">Alguém comprou? Desconte do estoque em dois toques.</p>
+    <div class="card">
+      <label for="pedido" style="margin-top:0">Mensagem do pedido (WhatsApp ou e-mail)</label>
+      <textarea id="pedido" placeholder="Cole aqui a mensagem inteira, com a lista de itens">${esc(guardado)}</textarea>
+      <div class="grade2" style="margin-top:12px">
+        <button class="btn" id="colar" type="button">Colar</button>
+        <button class="btn primario" id="conferir" type="button">Conferir</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Venda avulsa</h3>
+      <p class="ajuda">Para a venda combinada direto na conversa, sem passar pelo site.</p>
+      <label for="v-prod">Perfume</label>
+      <select id="v-prod">${est.perfumes.map((p) => `<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join('')}</select>
+      <div class="grade2">
+        <div><label for="v-tam">Tamanho</label><select id="v-tam">${est.tamanhos.map((s) => `<option>${s}</option>`).join('')}</select></div>
+        <div><label for="v-qtd">Quantidade</label><input id="v-qtd" type="number" min="1" value="1" inputmode="numeric" /></div>
+      </div>
+      <button class="btn cheio" id="conferir-avulsa" type="button" style="margin-top:14px">Conferir</button>
+    </div>
+    <div id="previa"></div>`;
+  if (pendente) mostrarPrevia(pendente.previa, false);
+}
+
+function desenharHistorico() {
+  $('t-historico').innerHTML = `
+    <h2 id="h-historico">Histórico</h2>
+    <p class="sub">Os últimos movimentos. Errou? Dá pra desfazer o mais recente.</p>
+    <div class="card">${est.historico.length ? est.historico.map((h, i) => `
+      <div class="hist"><div><div>${esc(h.descricao)}</div><div class="t">${esc(h.data)} · ${esc({ pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', ajuste: 'correção' }[h.tipo] || h.tipo)}</div></div>
+      ${i === 0 ? '<button class="btn pequeno" data-act="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('')
+      : '<div class="vazio"><b>Nada por aqui ainda</b>Entradas, baixas e correções aparecem nesta lista.</div>'}</div>`;
+}
+
+const CATS = [['todos', 'Todos'], ['perfumes', 'Perfumes'], ['skincare', 'Cremes'], ['body_splashes', 'Body splash'], ['merchandise', 'Acessórios'], ['fora', 'Fora do site']];
+function precoTexto(p) {
+  const v = p.variantes.map((x) => x.preco).filter((x) => x != null);
+  if (!v.length) return 'Sem preço';
+  const a = Math.min(...v), b = Math.max(...v);
+  return a === b ? brl(a) : `${brl(a)} a ${brl(b)}`;
+}
+function desenharCatalogo() {
+  const busca = filtro.busca.trim().toLowerCase();
+  const lista = est.catalogo.filter((p) =>
+    (filtro.cat === 'todos' || (filtro.cat === 'fora' ? p.status !== 'visivel' : p.categoria === filtro.cat)) &&
+    (!busca || p.nome.toLowerCase().includes(busca)));
+  const foco = document.activeElement?.id === 'busca';
+  $('t-catalogo').innerHTML = `
+    <h2 id="h-catalogo">Catálogo</h2>
+    <p class="sub">O que aparece no site. Mudou aqui, muda para os clientes em segundos.</p>
+    <div class="barra-busca">
+      <input id="busca" type="search" placeholder="Buscar produto" value="${esc(filtro.busca)}" aria-label="Buscar produto" />
+      <button class="btn primario" data-act="novo" type="button" style="flex:none">${ICONE_X} Novo</button>
+    </div>
+    <div class="filtros" role="group" aria-label="Filtrar por tipo">${CATS.map(([k, n]) => `<button type="button" data-cat="${k}" aria-pressed="${filtro.cat === k}">${n}</button>`).join('')}</div>
+    <div class="card">${lista.length ? lista.map((p) => `
+      <div class="linha${p.status === 'oculto' ? ' esmaecido' : ''}" data-id="${esc(p.id)}">
+        <div class="nome">${esc(p.nome)}</div>
+        <div class="meta">${esc(p.rotulo)} · ${precoTexto(p)}${p.criado_no_painel ? ' · criado no painel' : ''}${p.controlado ? ' · com estoque' : ''}</div>
+        <div class="seg" role="group" aria-label="Situação de ${esc(p.nome)} no site">
+          ${[['visivel', 'Visível'], ['esgotado', 'Esgotado'], ['oculto', 'Oculto']].map(([k, n]) => `<button type="button" data-act="status" data-st="${k}" data-id="${esc(p.id)}" aria-pressed="${p.status === k}">${n}</button>`).join('')}
+        </div>
+        <div class="links">
+          <button type="button" data-act="precos" data-id="${esc(p.id)}">Preços</button>
+          ${p.criado_no_painel ? `<button type="button" data-act="editar" data-id="${esc(p.id)}">Editar</button><button type="button" class="rm" data-act="remover" data-id="${esc(p.id)}">Excluir</button>` : ''}
+        </div>
+      </div>`).join('') : '<div class="vazio"><b>Nada encontrado</b>Tente outra busca ou outro filtro.</div>'}</div>`;
+  if (foco) { const b = $('busca'); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }
+}
+
+/* ---------- baixa ---------- */
 function mostrarPrevia(d, erro) {
-  const linhas = (d.linhas || []).map((l) => `<li class="${l.ok === true ? 'ok' : 'warn'}">${esc(l.texto)}</li>`).join('');
+  const linhas = (d.linhas || []).map((l) => `<li class="${l.ok === true ? 'ok' : 'aviso'}">${esc(l.texto)}</li>`).join('');
   const probs = (d.problemas || []).map((t) => `<li class="bad">${esc(t)}</li>`).join('');
-  $('previa').innerHTML = `<div class="card preview">
-    <h3>${erro ? 'Não deu pra dar baixa' : 'Confira antes de confirmar'}</h3>
+  $('previa').innerHTML = `<div class="card previa">
+    <h3>${erro ? 'Não deu para dar baixa' : 'Confira antes de confirmar'}</h3>
     <ul style="margin-top:6px">${linhas}${probs}</ul>
-    ${erro ? '' : '<button class="main" id="confirmar" type="button">Confirmar baixa</button>'}
+    ${erro ? '' : '<button class="btn primario cheio" id="confirmar" type="button" style="margin-top:12px">Confirmar baixa</button>'}
   </div>`;
 }
 async function conferir(corpo) {
   $('previa').innerHTML = '';
   try {
     const d = await api(corpo.acao, { ...corpo, confirmar: false });
-    pendente = corpo; mostrarPrevia(d, false);
+    pendente = { corpo, previa: d }; mostrarPrevia(d, false);
   } catch (e) {
     pendente = null;
-    if (e.dados && e.dados.linhas) mostrarPrevia(e.dados, true);
-    else $('previa').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`;
+    if (e.dados?.linhas) mostrarPrevia(e.dados, true); else falhou(e);
   }
 }
-$('conferir').addEventListener('click', () => conferir({ acao: 'pedido', texto: $('pedido').value }));
-$('conferir-avulsa').addEventListener('click', () => conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }] }));
-$('colar').addEventListener('click', async () => {
-  try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { alert('Não consegui acessar a área de transferência. Cole manualmente no campo.'); }
-});
+
+/* ---------- formulários ---------- */
+const optsPerfumes = (sel) => est.perfumes.map((p) => `<option value="${esc(p.id)}"${p.id === sel ? ' selected' : ''}>${esc(p.nome)}</option>`).join('');
+
+function folhaEntrada(id) {
+  abrirFolha('Registrar entrada', `
+    <form data-form="entrada">
+      <label for="e-prod">Perfume</label><select id="e-prod" name="id">${optsPerfumes(id)}</select>
+      <div class="rotulo">O que chegou</div>
+      <div class="seg" id="e-tipo"><button type="button" data-v="ml" aria-pressed="true">ml a granel</button><button type="button" data-v="un" aria-pressed="false">Frascos prontos</button></div>
+      <p class="ajuda" id="e-ajuda">Perfume maturado, ainda sem envasar. Ex.: 180 ml.</p>
+      <div id="e-tam-box" hidden><label for="e-tam">Tamanho do frasco</label><select id="e-tam" name="tamanho">${est.tamanhos.map((s) => `<option>${s}</option>`).join('')}</select></div>
+      <label for="e-qtd" id="e-qtd-l">Quantos ml</label>
+      <input id="e-qtd" name="qtd" type="number" min="1" inputmode="numeric" placeholder="180" required />
+      <button class="btn primario cheio" type="submit" style="margin-top:18px">Adicionar ao estoque</button>
+    </form>`);
+}
+
+function folhaCorrigir(id) {
+  const p = est.produtos.find((x) => x.id === id);
+  abrirFolha(`Corrigir ${p.nome}`, `
+    <form data-form="corrigir" data-id="${esc(id)}">
+      <p class="sub" style="margin-top:6px">Digite os valores certos. O painel guarda só a diferença no histórico.</p>
+      <label for="c-granel" style="margin-top:0">ml a granel</label><input id="c-granel" name="granel" type="number" min="0" inputmode="numeric" value="${p.granel_ml}" />
+      <div class="grade2">${est.tamanhos.map((s) => `<div><label for="c-${s}">Frascos de ${s}</label><input id="c-${s}" name="${s}" type="number" min="0" inputmode="numeric" value="${p.unidades[s]}" /></div>`).join('')}</div>
+      <button class="btn primario cheio" type="submit" style="margin-top:18px">Salvar correção</button>
+    </form>`);
+}
+
+function folhaPrecos(id) {
+  const p = est.catalogo.find((x) => x.id === id);
+  abrirFolha(`Preços de ${p.nome}`, `
+    <form data-form="precos" data-id="${esc(id)}">
+      <p class="sub" style="margin-top:6px">Vale para o site inteiro, na hora.</p>
+      <div class="${p.variantes.length > 1 ? 'grade2' : ''}">${p.variantes.map((v) => `<div><label for="p-${esc(v.tamanho)}">${v.tamanho === 'unico' ? 'Preço (R$)' : esc(v.tamanho) + ' (R$)'}</label><input id="p-${esc(v.tamanho)}" name="${esc(v.tamanho)}" inputmode="decimal" value="${esc(String(v.preco).replace('.', ','))}" required /></div>`).join('')}</div>
+      <button class="btn primario cheio" type="submit" style="margin-top:18px">Salvar preços</button>
+    </form>`);
+}
+
+const PERFIS = [['frescos', 'Frescos'], ['doces', 'Doces'], ['noturnos', 'Noturnos'], ['elegantes', 'Elegantes']];
+const GENEROS = [['feminino', 'Feminino'], ['masculino', 'Masculino'], ['compartilhavel', 'Unissex']];
+const opt = (lista, sel) => lista.map(([k, n]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${n}</option>`).join('');
+
+function folhaProduto(id) {
+  const edit = id ? est.catalogo.find((x) => x.id === id) : null;
+  const d = edit?.dados || { tipo: 'perfume' };
+  abrirFolha(edit ? `Editar ${edit.nome}` : 'Novo produto', `
+    <form data-form="produto" data-id="${esc(id || '')}">
+      ${edit ? `<input type="hidden" name="tipo" value="${d.tipo}">` : `
+      <div class="rotulo">O que é</div>
+      <div class="seg" id="p-tipo"><button type="button" data-v="perfume" aria-pressed="true">Perfume</button><button type="button" data-v="creme" aria-pressed="false">Creme</button></div>
+      <input type="hidden" name="tipo" value="perfume">`}
+      <label for="f-nome">Nome</label><input id="f-nome" name="nome" value="${esc(d.nome || '')}" placeholder="Ex.: J'adore" required maxlength="80" />
+      <div data-so="perfume">
+        <label for="f-insp">Inspirado em</label><input id="f-insp" name="inspirado" value="${esc(d.inspirado || '')}" placeholder="Ex.: Dior J'adore" maxlength="80" />
+        <div class="grade2">
+          <div><label for="f-perfil">Perfil</label><select id="f-perfil" name="perfil">${opt(PERFIS, d.perfil || 'elegantes')}</select></div>
+          <div><label for="f-gen">Para quem</label><select id="f-gen" name="genero">${opt(GENEROS, d.genero || 'compartilhavel')}</select></div>
+        </div>
+        <div class="rotulo">Notas</div>
+        <input name="topo" value="${esc(d.topo || '')}" placeholder="Saída: pera, melão" aria-label="Notas de saída" maxlength="120" />
+        <input name="coracao" value="${esc(d.coracao || '')}" placeholder="Coração: jasmim, rosa" aria-label="Notas de coração" maxlength="120" style="margin-top:8px" />
+        <input name="base" value="${esc(d.base || '')}" placeholder="Fundo: baunilha, almíscar" aria-label="Notas de fundo" maxlength="120" style="margin-top:8px" />
+        <div class="grade2">
+          <div><label for="f-p30">Preço 30 ml (R$)</label><input id="f-p30" name="preco30" inputmode="decimal" value="${esc(d.preco30 ?? 85)}" /></div>
+          <div><label for="f-p50">Preço 50 ml (R$)</label><input id="f-p50" name="preco50" inputmode="decimal" value="${esc(d.preco50 ?? 165)}" /></div>
+        </div>
+      </div>
+      <div data-so="creme" hidden>
+        <label for="f-pc">Preço (R$)</label><input id="f-pc" name="preco" inputmode="decimal" value="${esc(d.preco ?? 35)}" />
+      </div>
+      <label for="f-desc">Descrição</label><textarea id="f-desc" name="descricao" maxlength="400" placeholder="Duas frases que façam a pessoa querer sentir o cheiro.">${esc(d.descricao || '')}</textarea>
+      <label for="f-img">Link da foto (opcional)</label><input id="f-img" name="imagem" value="${esc(d.imagem || '')}" placeholder="https://… ou img/nome.jpg" inputmode="url" />
+      <p class="ajuda">Sem foto, o site mostra a logo da Sposence.</p>
+      ${edit ? '' : '<p class="ajuda" data-so="perfume">Depois de criar, registre o estoque. Até lá ele aparece como esgotado no site.</p>'}
+      <button class="btn primario cheio" type="submit" style="margin-top:18px">${edit ? 'Salvar alterações' : 'Criar produto'}</button>
+    </form>`);
+  mostrarCamposDoTipo(d.tipo);
+}
+function mostrarCamposDoTipo(tipo) {
+  document.querySelectorAll('#folha [data-so]').forEach((el) => { el.hidden = el.dataset.so !== tipo; });
+}
+
+/* ---------- eventos ---------- */
 document.addEventListener('click', async (ev) => {
-  if (ev.target.id !== 'confirmar' || !pendente) return;
-  ev.target.disabled = true;
-  try {
-    const d = await api(pendente.acao, { ...pendente, confirmar: true });
-    est = d.estado; desenhar(); pendente = null; $('pedido').value = '';
-    $('previa').innerHTML = `<div class="msg ok">${d.nada_a_descontar ? 'Nenhum item desse pedido tem estoque controlado, nada foi descontado.' : 'Baixa feita. O site já está atualizado.'}</div>`;
-  } catch (e) { $('previa').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`; }
+  const t = ev.target;
+  const seg = t.closest('#e-tipo button, #p-tipo button');
+  if (seg) {
+    seg.parentElement.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b === seg));
+    if (seg.parentElement.id === 'e-tipo') {
+      const un = seg.dataset.v === 'un';
+      $('e-tam-box').hidden = !un;
+      $('e-qtd-l').textContent = un ? 'Quantos frascos' : 'Quantos ml';
+      $('e-qtd').placeholder = un ? '4' : '180';
+      $('e-ajuda').textContent = un ? 'Frascos já envasados e etiquetados.' : 'Perfume maturado, ainda sem envasar. Ex.: 180 ml.';
+    } else {
+      seg.closest('form').elements.tipo.value = seg.dataset.v;
+      mostrarCamposDoTipo(seg.dataset.v);
+    }
+    return;
+  }
+  const cat = t.closest('[data-cat]');
+  if (cat) { filtro.cat = cat.dataset.cat; desenharCatalogo(); return; }
+
+  const b = t.closest('[data-act]');
+  if (b) {
+    const { act, id } = b.dataset;
+    if (act === 'entrada') folhaEntrada(id);
+    else if (act === 'corrigir') folhaCorrigir(id);
+    else if (act === 'precos') folhaPrecos(id);
+    else if (act === 'novo') folhaProduto();
+    else if (act === 'editar') folhaProduto(id);
+    else if (act === 'desfazer') confirmar('Desfazer o último movimento?', est.historico[0]?.descricao || '', 'Desfazer', async () => { await api('desfazer'); aviso('Desfeito.'); });
+    else if (act === 'remover') {
+      const p = est.catalogo.find((x) => x.id === id);
+      confirmar(`Excluir ${p.nome}?`, 'O produto sai do site e do painel. Esta ação não tem volta. Para só tirar do site por um tempo, use "Oculto".', 'Excluir produto', async () => { await api('produto_remover', { id }); aviso('Produto excluído.'); });
+    } else if (act === 'status') {
+      try { await api('produto_status', { id, status: b.dataset.st }); aviso({ visivel: 'Visível no site.', esgotado: 'Marcado como esgotado.', oculto: 'Tirado do site.' }[b.dataset.st]); } catch (e) { falhou(e); }
+    }
+    return;
+  }
+  if (t.id === 'colar') { try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { aviso('Não consegui ler a área de transferência. Cole no campo.', true); } }
+  else if (t.id === 'conferir') conferir({ acao: 'pedido', texto: $('pedido').value });
+  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }] });
+  else if (t.id === 'confirmar' && pendente) {
+    t.disabled = true;
+    try {
+      const d = await api(pendente.corpo.acao, { ...pendente.corpo, confirmar: true });
+      pendente = null; $('pedido') && ($('pedido').value = ''); $('previa').innerHTML = '';
+      aviso(d.nada_a_descontar ? 'Nenhum item desse pedido tem estoque controlado.' : 'Baixa feita. O site já está atualizado.');
+    } catch (e) { falhou(e); t.disabled = false; }
+  }
 });
 
-// Entrada
-$('e-tipo').addEventListener('change', () => {
-  const un = $('e-tipo').value === 'un';
-  $('e-tam-box').hidden = !un;
-  $('e-qtd-label').textContent = un ? 'Quantos frascos' : 'Quantos ml';
-  $('e-qtd').placeholder = un ? '4' : '180';
-});
-$('adicionar').addEventListener('click', async () => {
-  const un = $('e-tipo').value === 'un';
-  const corpo = un ? { id: $('e-prod').value, tamanho: $('e-tam').value, qtd: $('e-qtd').value } : { id: $('e-prod').value, ml: $('e-qtd').value };
+document.addEventListener('input', (ev) => { if (ev.target.id === 'busca') { filtro.busca = ev.target.value; desenharCatalogo(); } });
+
+document.addEventListener('submit', async (ev) => {
+  const f = ev.target.closest('form[data-form]');
+  if (!f) return;
+  ev.preventDefault();
+  const v = Object.fromEntries(new FormData(f));
+  const botao = f.querySelector('[type=submit]');
+  botao.disabled = true;
   try {
-    est = (await api('entrada', corpo)).estado; desenhar(); $('e-qtd').value = '';
-    $('entrada-msg').innerHTML = '<div class="msg ok">Entrada registrada. O site já está atualizado.</div>';
-  } catch (e) { $('entrada-msg').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`; }
+    if (f.dataset.form === 'entrada') {
+      const un = $('e-tipo').querySelector('[aria-pressed=true]').dataset.v === 'un';
+      await api('entrada', un ? { id: v.id, tamanho: v.tamanho, qtd: v.qtd } : { id: v.id, ml: v.qtd });
+      aviso('Entrada registrada. O site já está atualizado.');
+    } else if (f.dataset.form === 'corrigir') {
+      const unidades = {}; est.tamanhos.forEach((s) => { unidades[s] = v[s]; });
+      await api('ajustar', { id: f.dataset.id, granel_ml: v.granel, unidades });
+      aviso('Correção salva.');
+    } else if (f.dataset.form === 'precos') {
+      await api('produto_precos', { id: f.dataset.id, precos: v });
+      aviso('Preços atualizados.');
+    } else if (f.dataset.form === 'produto') {
+      const id = f.dataset.id;
+      await api(id ? 'produto_editar' : 'produto_criar', { ...v, id });
+      aviso(id ? 'Produto atualizado.' : 'Produto criado. Registre o estoque para vender.');
+      if (!id) irPara(v.tipo === 'perfume' ? 'estoque' : 'catalogo');
+    }
+    fecharFolha();
+  } catch (e) { falhou(e); botao.disabled = false; }
 });
 
-if (senha) entrar(senha).catch(() => {});
+if (senha) entrar(senha).catch(() => { $('login').hidden = false; });
+else $('login').hidden = false;
 </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ const ARQUIVO_LOCAL = path.join(os.tmpdir(), 'sposence-estoque-local.json');
 async function comando(...args) {
   if (!URL_BASE || !TOKEN) throw new Error('Banco de dados não configurado (KV_REST_API_URL / KV_REST_API_TOKEN).');
   const r = await fetch(URL_BASE, {
+    signal: AbortSignal.timeout(4000),
     method: 'POST',
     headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(args),
