@@ -467,6 +467,22 @@
     .mais[open] summary::after { transform: rotate(-135deg); }
     .mais-corpo { padding: 4px 0 20px; }
     .mais:focus-within summary:focus-visible { outline-offset: 2px; }
+    /* Listas suspensas: a nativa herda as cores do tema; a do computador é a do painel */
+    select option, select optgroup { background: var(--papel); color: var(--tinta); }
+    .drop { position: fixed; inset: auto; margin: 0; padding: 6px; border: 1px solid var(--forte); border-radius: 14px; background: var(--papel); color: var(--tinta); box-shadow: 0 24px 50px -20px rgba(20, 12, 4, .5); overflow: hidden; }
+    .drop:popover-open { display: flex; flex-direction: column; }
+    .drop:focus { outline: none; }
+    .drop-busca { padding: 4px 4px 8px; border-bottom: 1px solid var(--linha); margin-bottom: 4px; flex: none; }
+    .drop-busca input { min-height: 42px; border: 1px solid var(--forte); border-radius: 10px; padding: 0 12px; background: color-mix(in srgb, var(--tinta) 4%, transparent); }
+    .drop-busca input:focus { border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); }
+    .drop-lista { list-style: none; padding: 0; margin: 0; overflow-y: auto; overscroll-behavior: contain; }
+    .drop-grupo { font-family: 'Philosopher', serif; font-style: italic; color: var(--suave); font-size: 15px; padding: 10px 10px 4px; }
+    .drop-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; min-height: 42px; border-radius: 10px; cursor: pointer; font-size: 15.5px; }
+    .drop-item.ativo { background: color-mix(in srgb, var(--acento) 16%, transparent); }
+    .drop-item[aria-selected="true"] { font-weight: 700; }
+    .drop-item[aria-selected="true"]::after { content: ''; flex: none; width: 6px; height: 11px; border-right: 2px solid var(--acento); border-bottom: 2px solid var(--acento); transform: rotate(45deg) translate(-2px, -2px); }
+    .drop-item[aria-disabled="true"] { opacity: .45; cursor: default; }
+    .drop-vazio { padding: 18px 12px; color: var(--suave); text-align: center; font-family: 'Philosopher', serif; font-style: italic; }
     @media (prefers-reduced-motion: no-preference) {
       dialog[open] { animation: sobe .32s var(--ease); }
       dialog[open]::backdrop { animation: fade .25s ease-out; }
@@ -1835,6 +1851,130 @@ document.addEventListener('keydown', (ev) => {
   const digitando = ev.target.matches && ev.target.matches('input, textarea, select, [contenteditable]');
   if ((ev.key === 'k' || ev.key === 'K') && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); abrirBusca(); }
   else if (ev.key === '/' && !digitando && !ev.ctrlKey && !ev.metaKey && !ev.altKey) { ev.preventDefault(); abrirBusca(); }
+});
+
+
+/* ---------- listas suspensas no padrão do painel ---------- */
+// No computador (mouse) a lista nativa dá lugar a esta, com busca nas listas longas e teclado.
+// No celular continua a lista nativa do aparelho, que já é boa.
+const dropFino = () => matchMedia('(pointer: fine)').matches && typeof HTMLElement.prototype.showPopover === 'function';
+let dropAberta = null;   // { sel, el }
+
+function fecharDrop(devolverFoco) {
+  if (!dropAberta) return;
+  const { sel, el } = dropAberta;
+  dropAberta = null;
+  try { el.hidePopover(); } catch (_) {}
+  el.remove();
+  if (devolverFoco) sel.focus();
+}
+
+function abrirDrop(sel) {
+  if (dropAberta) { const mesmo = dropAberta.sel === sel; fecharDrop(false); if (mesmo) return; }
+  // opções, com os títulos dos grupos
+  const itens = [];
+  [...sel.children].forEach((c) => {
+    if (c.tagName === 'OPTGROUP') { itens.push({ grupo: c.label }); [...c.children].forEach((o) => itens.push({ o })); }
+    else if (c.tagName === 'OPTION') itens.push({ o: c });
+  });
+  const opcoes = itens.filter((i) => i.o);
+  const comBusca = opcoes.length > 8;
+
+  const el = document.createElement('div');
+  el.className = 'drop';
+  el.setAttribute('popover', 'manual');   // quem fecha somos nós (clique fora, Esc, escolher)
+  el.tabIndex = -1;
+  el.innerHTML = `${comBusca ? '<div class="drop-busca"><input type="search" placeholder="Buscar" aria-label="Buscar na lista" autocomplete="off" spellcheck="false" /></div>' : ''}<ul class="drop-lista" role="listbox"></ul>`;
+  // dentro de uma janela aberta, a lista precisa morar nela, senão fica "bloqueada" pela janela
+  (sel.closest('dialog') || document.body).appendChild(el);
+  const lista = el.querySelector('.drop-lista');
+  let ativo = Math.max(0, opcoes.findIndex((i) => i.o === sel.selectedOptions[0]));
+
+  const desenhar = (q = '') => {
+    const t = normalNome(q);
+    let visiveis = 0;
+    let html = '';
+    let grupoPendente = '';
+    itens.forEach((i) => {
+      if (i.grupo !== undefined) { grupoPendente = i.grupo; return; }
+      const idx = opcoes.indexOf(i);
+      if (t && !normalNome(i.o.textContent).includes(t)) return;
+      if (grupoPendente) { html += `<li class="drop-grupo" role="presentation">${esc(grupoPendente)}</li>`; grupoPendente = ''; }
+      html += `<li class="drop-item${idx === ativo ? ' ativo' : ''}" role="option" data-i="${idx}" aria-selected="${i.o === sel.selectedOptions[0]}"${i.o.disabled ? ' aria-disabled="true"' : ''}>${esc(i.o.textContent)}</li>`;
+      visiveis++;
+    });
+    lista.innerHTML = visiveis ? html : '<li class="drop-vazio" role="presentation">Nada encontrado</li>';
+  };
+  const visiveisIdx = () => [...lista.querySelectorAll('.drop-item:not([aria-disabled="true"])')].map((li) => Number(li.dataset.i));
+  const mover = (d) => {
+    const v = visiveisIdx();
+    if (!v.length) return;
+    const pos = v.indexOf(ativo);
+    ativo = v[Math.min(v.length - 1, Math.max(0, (pos < 0 ? 0 : pos + d)))];
+    lista.querySelectorAll('.drop-item').forEach((li) => li.classList.toggle('ativo', Number(li.dataset.i) === ativo));
+    const li = lista.querySelector('.drop-item.ativo'); if (li) li.scrollIntoView({ block: 'nearest' });
+  };
+  const escolher = (idx) => {
+    const o = opcoes[idx] && opcoes[idx].o;
+    if (!o || o.disabled) return;
+    sel.value = o.value;
+    sel.dispatchEvent(new Event('input', { bubbles: true }));
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    fecharDrop(true);
+  };
+
+  desenhar();
+  // posição: logo abaixo do campo, ou acima se faltar espaço
+  const r = sel.getBoundingClientRect();
+  const largura = Math.max(r.width, 240);
+  const abaixo = innerHeight - r.bottom - 12;
+  const acima = r.top - 12;
+  el.style.width = `${largura}px`;
+  el.style.left = `${Math.max(8, Math.min(r.left, innerWidth - largura - 8))}px`;
+  if (abaixo < 260 && acima > abaixo) { el.style.top = 'auto'; el.style.bottom = `${innerHeight - r.top + 4}px`; el.style.maxHeight = `${Math.min(380, acima)}px`; }
+  else { el.style.top = `${r.bottom + 4}px`; el.style.maxHeight = `${Math.min(380, abaixo)}px`; }
+
+  dropAberta = { sel, el };
+  el.showPopover();
+  const li = lista.querySelector('.drop-item.ativo'); if (li) li.scrollIntoView({ block: 'nearest' });
+  const campo = el.querySelector('input');
+  if (!campo) el.focus();
+  if (campo) { campo.focus(); campo.addEventListener('input', () => { ativo = -1; desenhar(campo.value); const v = visiveisIdx(); ativo = v[0] ?? -1; desenhar(campo.value); }); }
+
+  el.addEventListener('click', (ev) => { const x = ev.target.closest('.drop-item'); if (x) escolher(Number(x.dataset.i)); });
+  el.addEventListener('mousemove', (ev) => { const x = ev.target.closest('.drop-item:not([aria-disabled="true"])'); if (x && Number(x.dataset.i) !== ativo) { ativo = Number(x.dataset.i); lista.querySelectorAll('.drop-item').forEach((n) => n.classList.toggle('ativo', Number(n.dataset.i) === ativo)); } });
+  el.addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowDown') { ev.preventDefault(); mover(1); }
+    else if (ev.key === 'ArrowUp') { ev.preventDefault(); mover(-1); }
+    else if (ev.key === 'Enter') { ev.preventDefault(); escolher(ativo); }
+    else if (ev.key === 'Tab') fecharDrop(false);
+  });
+  el.addEventListener('toggle', (ev) => { if (ev.newState === 'closed') fecharDrop(false); });
+}
+
+const eSelectPropria = (s) => s && !s.multiple && !s.disabled && !s.dataset.nativo && dropFino();
+document.addEventListener('mousedown', (ev) => {
+  const alvo = ev.target;
+  const s = alvo.closest && alvo.closest('select');
+  // clicar fora da lista aberta fecha
+  if (dropAberta && !(alvo.closest && alvo.closest('.drop')) && !(s && s === dropAberta.sel)) fecharDrop(false);
+  if (eSelectPropria(s)) { ev.preventDefault(); s.focus(); }   // impede a lista nativa
+}, true);
+document.addEventListener('click', (ev) => {
+  const s = ev.target.closest && ev.target.closest('select');
+  if (!eSelectPropria(s)) return;
+  ev.preventDefault();
+  abrirDrop(s);   // abre, ou fecha se já era a lista dele
+}, true);
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape' && dropAberta) { ev.preventDefault(); ev.stopPropagation(); fecharDrop(true); }
+}, true);
+addEventListener('resize', () => fecharDrop(false));
+document.addEventListener('scroll', (ev) => { if (dropAberta && !(ev.target.closest && ev.target.closest('.drop'))) fecharDrop(false); }, true);
+document.addEventListener('keydown', (ev) => {
+  const s = ev.target;
+  if (!(s && s.tagName === 'SELECT') || s.dataset.nativo || !dropFino()) return;
+  if ([' ', 'Enter', 'ArrowDown', 'ArrowUp'].includes(ev.key)) { ev.preventDefault(); abrirDrop(s); }
 });
 
 
