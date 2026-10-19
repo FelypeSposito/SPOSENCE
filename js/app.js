@@ -572,11 +572,29 @@ function initNavbar() {
   burger?.addEventListener('click', toggleMobileMenu);
   document.getElementById('menu-close')?.addEventListener('click', toggleMobileMenu);
   // Fechar ao clicar em links ou fora do menu (se necessário)
-  mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  // Link que leva a outra página: o menu fica como está até a página trocar (fechar antes fazia os links
+  // sumirem de uma vez e a tela piscar). Âncora, e-mail, WhatsApp ou aba nova: o menu inteiro some, com o conteúdo intacto.
+  const fecharMenuSemPiscar = () => {
+    mobileMenu.classList.add('sai');
     mobileMenu.classList.remove('open', 'is-search');
     burger.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    setTimeout(() => mobileMenu.classList.remove('sai'), 650);
+  };
+  mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href') || '';
+    const abrePagina = !/^(#|mailto:|tel:)/.test(href) && a.target !== '_blank' && !e.defaultPrevented
+      && e.button === 0 && !(e.ctrlKey || e.metaKey || e.shiftKey || e.altKey);
+    if (!abrePagina) fecharMenuSemPiscar();
   }));
+  // voltar pelo histórico (cache da página): o menu não pode voltar aberto
+  window.addEventListener('pageshow', (e) => {
+    if (!e.persisted || !mobileMenu) return;
+    mobileMenu.classList.remove('open', 'is-search', 'sai');
+    burger?.classList.remove('is-open');
+    document.body.style.overflow = '';
+  });
 
   // Botão de limpar a busca do menu
   const mobInput = document.getElementById('mob-search-input');

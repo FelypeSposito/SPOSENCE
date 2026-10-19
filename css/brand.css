@@ -613,3 +613,9 @@ body.sp .conta-menu__in > :is(a, button):focus-visible { outline: 2px solid var(
 @media (prefers-reduced-motion: reduce) {
   body.sp .conta-menu__in, body.sp .conta-menu__in > :is(a, button) { transition: none; }
 }
+
+/* menu do celular fechando por âncora/e-mail/aba nova: o conteúdo fica como estava e só o menu inteiro desaparece */
+body.sp .mobile-menu.sai .mobile-menu__close,
+body.sp .mobile-menu.sai .mobile-menu__search,
+body.sp .mobile-menu.sai .mobile-menu__footer { opacity: 1; transform: none; transition: none; }
+body.sp .mobile-menu.sai .mobile-menu__links a { opacity: 1; transform: none; filter: none; transition: color 0.3s ease; animation: none; }
