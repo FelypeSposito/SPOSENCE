@@ -1,4 +1,5 @@
-// POST /api/admin — painel da Sposence. Exige a senha (variável ADMIN_PASSWORD) no cabeçalho x-admin-senha.
+// POST /api/admin — painel da Sposence. Exige usuário (ADMIN_USER, padrão "sposence") e senha (ADMIN_PASSWORD)
+// nos cabeçalhos x-admin-usuario e x-admin-senha.
 //
 // Corpo: { acao, ... }
 //   estado
@@ -49,10 +50,18 @@ const JANELA_SEGUNDOS = 600;  // ...a cada 10 minutos
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 const digest = (s) => crypto.createHash('sha256').update(String(s)).digest();
 
+// Usuário (ADMIN_USER, sem diferenciar maiúsculas; se não existir, vale "sposence") e senha (ADMIN_PASSWORD).
+// As duas comparações sempre rodam, para não revelar qual das duas errou.
+const normalizarUsuario = (s) => String(s || '').normalize('NFC').trim().toLowerCase();
 function senhaCorreta(req) {
   const esperada = process.env.ADMIN_PASSWORD;
   if (!esperada) throw Object.assign(new Error('Falta configurar ADMIN_PASSWORD na Vercel.'), { status: 500 });
-  return crypto.timingSafeEqual(digest(req.headers['x-admin-senha'] || ''), digest(esperada));
+  const usuarioEsperado = normalizarUsuario(process.env.ADMIN_USER || 'sposence');
+  let enviado = '';
+  try { enviado = decodeURIComponent(req.headers['x-admin-usuario'] || ''); } catch (_) { enviado = ''; }
+  const usuarioOk = crypto.timingSafeEqual(digest(normalizarUsuario(enviado)), digest(usuarioEsperado));
+  const senhaOk = crypto.timingSafeEqual(digest(req.headers['x-admin-senha'] || ''), digest(esperada));
+  return usuarioOk && senhaOk;
 }
 
 const inteiro = (v, max = 100000) => {
@@ -75,7 +84,7 @@ export default async function handler(req, res) {
       const restantes = LIMITE_TENTATIVAS - (await contar(chave, JANELA_SEGUNDOS));
       await dormir(600);
       return res.status(401).json({
-        erro: restantes > 0 && restantes <= 3 ? `Senha incorreta. Restam ${restantes} ${restantes === 1 ? 'tentativa' : 'tentativas'}.` : 'Senha incorreta.',
+        erro: restantes > 0 && restantes <= 3 ? `Usuário ou senha incorretos. Restam ${restantes} ${restantes === 1 ? 'tentativa' : 'tentativas'}.` : 'Usuário ou senha incorretos.',
       });
     }
     const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};

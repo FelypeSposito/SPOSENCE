@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="light" />
   <title>Bancada | Sposence</title>
   <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
   <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" />
   <script>
     // aplica o tema antes de desenhar, para não piscar
-    try { var t = localStorage.getItem('sp-admin-tema'); if (t) document.documentElement.dataset.tema = t; } catch (_) {}
+    document.documentElement.dataset.tema = 'light';
+    try { var t = localStorage.getItem('sp-admin-tema'); if (t === 'dark') document.documentElement.dataset.tema = 'dark'; } catch (_) {}
   </script>
   <style>
     @font-face { font-family: 'Philosopher'; src: url('fonts/Philosopher-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
@@ -930,7 +931,8 @@
           <h1 class="entra" style="--i:0">Entre na <em>bancada.</em></h1>
           <p class="apoio entra" style="--i:1">Estoque, insumos e catálogo da Sposence, onde você estiver.</p>
           <form id="login-form" class="entra" style="--i:2" novalidate>
-            <input class="so-leitor" type="text" name="usuario" value="bancada" autocomplete="username" tabindex="-1" aria-hidden="true" />
+            <label for="usuario">Usuário</label>
+            <input id="usuario" name="usuario" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" aria-describedby="login-msg" />
             <label for="senha">Senha</label>
             <div class="campo-senha" id="grupo-senha">
               <input id="senha" type="password" autocomplete="current-password" aria-describedby="login-msg" autocapitalize="off" spellcheck="false" />
@@ -1019,8 +1021,10 @@ const guardar = {
 const sessao = {
   ler: () => { try { return localStorage.getItem('sp-admin') || sessionStorage.getItem('sp-admin') || ''; } catch (_) { return ''; } },
   persistente: () => { try { return !!localStorage.getItem('sp-admin'); } catch (_) { return false; } },
-  gravar: (v, lembrar) => { try { localStorage.removeItem('sp-admin'); sessionStorage.removeItem('sp-admin'); (lembrar ? localStorage : sessionStorage).setItem('sp-admin', v); } catch (_) {} },
-  limpar: () => { try { localStorage.removeItem('sp-admin'); sessionStorage.removeItem('sp-admin'); } catch (_) {} },
+  gravar: (v, lembrar, usuario = '') => { try { ['sp-admin', 'sp-admin-user'].forEach((k) => { localStorage.removeItem(k); sessionStorage.removeItem(k); }); (lembrar ? localStorage : sessionStorage).setItem('sp-admin', v); (lembrar ? localStorage : sessionStorage).setItem('sp-admin-user', usuario); localStorage.setItem('sp-admin-ultimo-usuario', usuario); } catch (_) {} },
+  usuario: () => { try { return localStorage.getItem('sp-admin-user') || sessionStorage.getItem('sp-admin-user') || ''; } catch (_) { return ''; } },
+  ultimoUsuario: () => { try { return localStorage.getItem('sp-admin-ultimo-usuario') || ''; } catch (_) { return ''; } },
+  limpar: () => { try { ['sp-admin', 'sp-admin-user'].forEach((k) => { localStorage.removeItem(k); sessionStorage.removeItem(k); }); } catch (_) {} },
 };
 const IC_OLHO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const IC_OLHO_RISCADO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>';
@@ -1030,6 +1034,7 @@ const IC_SOL = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle c
 const IC_LUA = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.5A8 8 0 1 1 10.5 4a6.2 6.2 0 0 0 9.5 9.5Z"/></svg>';
 
 let senha = sessao.ler();
+let usuario = sessao.usuario();
 let est = null;
 let pendente = null;            // pedido esperando confirmação
 let primeiraVez = true;         // a prateleira só anima na primeira vez
@@ -1039,7 +1044,7 @@ const filtro = { busca: '', cat: 'todos' };
 async function api(acao, corpo = {}) {
   const r = await fetch('/api/admin', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-admin-senha': senha },
+    headers: { 'Content-Type': 'application/json', 'x-admin-senha': senha, 'x-admin-usuario': encodeURIComponent(usuario) },
     body: JSON.stringify({ acao, ...corpo }),
   });
   const dados = await r.json().catch(() => ({ erro: 'O servidor respondeu algo inesperado. Tente de novo.' }));
@@ -1077,7 +1082,7 @@ function acaoDesfazer(antes) {
 const falhou = (e) => aviso(e.message, true);
 
 /* ---------- tema ---------- */
-const temaAtual = () => document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+const temaAtual = () => document.documentElement.dataset.tema || 'light';
 function iconeTema() {
   const escuro = temaAtual() === 'dark';
   for (const id of ['tema', 'tema-login']) {
@@ -1105,11 +1110,12 @@ function mostrarLogin(msg = '') {
   $('login').hidden = false;
   document.querySelector('.entrada__foto img').loading = 'eager';   // a foto só baixa quando a tela de entrada aparece
   $('senha').value = '';
+  if (!$('usuario').value) $('usuario').value = sessao.ultimoUsuario();
   mensagemLogin(msg, 'dica');
-  if (matchMedia('(hover: hover)').matches) $('senha').focus();   // no celular o teclado não abre sozinho
+  if (matchMedia('(hover: hover)').matches) ($('usuario').value ? $('senha') : $('usuario')).focus();   // no celular o teclado não abre sozinho
 }
 function sair(motivo = '') {
-  senha = ''; est = null; pendente = null;
+  senha = ''; usuario = ''; est = null; pendente = null;
   sessao.limpar();
   if ($('folha').open) $('folha').close();
   $('app').hidden = true;
@@ -1117,8 +1123,8 @@ function sair(motivo = '') {
 }
 const esqueleto = () => '<h2 id="h-pedidos">Pedidos</h2><p class="legenda">abrindo a bancada…</p><div style="margin-top:28px;border-top:1px solid var(--forte)">' + [1, 2, 3].map(() => '<div class="esq"><i class="a"></i><div><i class="b"></i><i class="c"></i><i class="d"></i></div></div>').join('') + '</div>';
 
-async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente()) {
-  senha = tentativa;
+async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente(), quem = usuario) {
+  senha = tentativa; usuario = quem;
   if (comEsqueleto) { $('login').hidden = true; $('app').hidden = false; $('t-pedidos').innerHTML = esqueleto(); }
   try {
     await api('estado');
@@ -1128,7 +1134,7 @@ async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente()) {
     }
     throw e;
   }
-  sessao.gravar(senha, lembrar);
+  sessao.gravar(senha, lembrar, usuario);
   $('senha').value = ''; $('senha').type = 'password'; mensagemLogin('', '');
   $('login').hidden = true; $('app').hidden = false;
   irPara('inicio');
@@ -1152,6 +1158,7 @@ function falhaLogin(texto) {
   g.classList.remove('tremer'); void g.offsetWidth; g.classList.add('tremer');
   campoSenha.focus(); campoSenha.select();
 }
+$('usuario').addEventListener('input', () => { if ($('login-msg').dataset.tipo === 'erro') mensagemLogin('', ''); });
 campoSenha.addEventListener('input', () => {
   campoSenha.removeAttribute('aria-invalid');
   if ($('login-msg').dataset.tipo === 'erro') mensagemLogin('', '');
@@ -1165,11 +1172,13 @@ campoSenha.addEventListener('keyup', (ev) => {
 
 $('login-form').addEventListener('submit', async (ev) => {
   ev.preventDefault();
+  const quem = $('usuario').value.trim();
+  if (!quem) { mensagemLogin('Digite o usuário.', 'erro'); $('usuario').focus(); return; }
   if (!campoSenha.value) { falhaLogin('Digite a senha.'); return; }
   const botao = $('entrar');
   const rotulo = botao.querySelector('span');
   botao.disabled = true; botao.setAttribute('aria-busy', 'true'); rotulo.textContent = 'Entrando…';
-  try { await entrar(campoSenha.value, false, $('lembrar').checked); }
+  try { await entrar(campoSenha.value, false, $('lembrar').checked, quem); }
   catch (e) { falhaLogin(e.message); }
   finally { botao.disabled = false; botao.removeAttribute('aria-busy'); rotulo.textContent = 'Entrar na bancada'; }
 });
