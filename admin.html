@@ -99,6 +99,11 @@
     .selo { display: inline-block; font-family: 'Philosopher', serif; font-style: italic; font-size: 15px; color: var(--perigo); margin-left: 8px; }
     .acoes { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 
+    .qtd { font-family: 'Philosopher', serif; font-size: 38px; line-height: 1; margin-top: 10px; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+    .qtd em { font-size: 17px; color: var(--suave); margin-left: 6px; letter-spacing: 0; }
+    .nome-linha { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+    .link { background: none; border: 0; padding: 0; min-height: 0; color: var(--acento); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+
     /* Botões: pílula, como no site */
     .btn { min-height: 48px; padding: 0 22px; border-radius: 99px; border: 1px solid var(--forte); background: transparent; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: transform .18s var(--ease), background-color .18s; }
     .btn:active { transform: scale(.98) translateY(1px); }
@@ -164,7 +169,7 @@
 
     /* Navegação */
     nav { position: fixed; inset: auto 0 0 0; z-index: 20; background: var(--bg); border-top: 1px solid var(--linha); padding-bottom: env(safe-area-inset-bottom); }
-    nav .in { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+    nav .in { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
     nav button { position: relative; background: none; border: 0; min-height: 62px; display: grid; justify-items: center; align-content: center; gap: 3px; font-size: 12.5px; font-weight: 600; color: var(--suave); transition: color .2s; }
     nav button svg { width: 24px; height: 24px; }
     nav button::before { content: ''; position: absolute; top: -1px; left: 22%; right: 22%; height: 2px; background: var(--acento); transform: scaleX(0); transition: transform .35s var(--ease); }
@@ -255,6 +260,7 @@
     <main>
       <section id="t-estoque" aria-labelledby="h-estoque"></section>
       <section id="t-baixa" aria-labelledby="h-baixa" hidden></section>
+      <section id="t-insumos" aria-labelledby="h-insumos" hidden></section>
       <section id="t-catalogo" aria-labelledby="h-catalogo" hidden></section>
       <section id="t-historico" aria-labelledby="h-historico" hidden></section>
     </main>
@@ -262,6 +268,7 @@
     <nav aria-label="Seções do painel"><div class="in">
       <button data-tab="estoque" aria-current="true" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v3.2c0 1-3.5 2-3.5 5.3V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-3.3-3.5-4.3-3.5-5.3V3"/><path d="M7 14h10"/></svg>Estoque</button>
       <button data-tab="baixa" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>Dar baixa</button>
+      <button data-tab="insumos" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg>Insumos</button>
       <button data-tab="catalogo" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14"/><path d="M3.5 5h.01M3.5 12h.01M3.5 19h.01"/></svg>Catálogo</button>
       <button data-tab="historico" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5V8h3.5"/><path d="M12 8v4.2l2.8 1.8"/></svg>Histórico</button>
     </div></nav>
@@ -371,7 +378,7 @@ $('login-form').addEventListener('submit', async (ev) => {
 $('sair').addEventListener('click', sair);
 
 /* ---------- abas ---------- */
-const ABAS = ['estoque', 'baixa', 'catalogo', 'historico'];
+const ABAS = ['estoque', 'baixa', 'insumos', 'catalogo', 'historico'];
 function irPara(aba) {
   document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
@@ -395,7 +402,7 @@ function confirmar(titulo, texto, rotulo, aoConfirmar) {
 }
 
 /* ---------- desenho ---------- */
-function desenharTudo() { desenharEstoque(); desenharBaixa(); desenharCatalogo(); desenharHistorico(); }
+function desenharTudo() { desenharEstoque(); desenharBaixa(); desenharInsumos(); desenharCatalogo(); desenharHistorico(); }
 
 // O vidro: casco com estrias; o líquido sobe conforme os ml (transform, sem recalcular layout)
 function vidro(id, nivel) {
@@ -432,6 +439,7 @@ function desenharEstoque() {
       <div class="num">${nf.format(r.ml_total)}<em>ml</em></div>
       <p>de essência no total, em <b>${r.frascos_prontos}</b> frascos prontos e no granel${r.esgotados ? `. <b>${r.esgotados}</b> ${r.esgotados === 1 ? 'perfume está' : 'perfumes estão'} sem estoque` : ''}.</p>
     </div>
+    ${est.insumos.some((i) => i.acabando) ? `<p class="detalhe" style="margin:-6px 0 20px">Insumos acabando: <b>${esc(est.insumos.filter((i) => i.acabando).map((i) => i.nome.toLowerCase()).join(', '))}</b>. <button class="link" data-go="insumos" type="button">Ver insumos</button></p>` : ''}
     <button class="btn primario" data-act="entrada" type="button">${IC_MAIS} Registrar entrada</button>
     ${pratos ? `<ol class="prateleira">${est.produtos.map((p, i) => `
       <li class="item" style="--i:${i}" data-id="${esc(p.id)}">
@@ -480,7 +488,7 @@ function desenharBaixa() {
   if (pendente) mostrarPrevia(pendente.previa, false);
 }
 
-const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', ajuste: 'correção' };
+const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', ajuste: 'correção' };
 function desenharHistorico() {
   $('t-historico').innerHTML = `
     <div class="secao-topo"><h2 id="h-historico">Histórico</h2><p class="legenda">os últimos movimentos; o mais recente dá pra desfazer</p></div>
@@ -488,6 +496,25 @@ function desenharHistorico() {
       <div class="hist"><div><div>${esc(h.descricao)}</div><div class="t">${esc(h.data)}, ${esc(TIPOS[h.tipo] || h.tipo)}</div></div>
       ${i === 0 ? '<button class="btn pequeno" data-act="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('')}</div>`
     : '<div class="vazio"><span class="simbolo"></span><b>Nada por aqui ainda</b>Entradas, baixas e correções aparecem nesta lista.</div>'}`;
+}
+
+function desenharInsumos() {
+  $('t-insumos').innerHTML = `
+    <div class="secao-topo"><h2 id="h-insumos">Insumos</h2><p class="legenda">o que você usa para fazer e embalar</p></div>
+    <p class="detalhe" style="margin:-6px 0 20px">Cada frasco envasado desconta um vidro, uma etiqueta e um saquinho.</p>
+    <button class="btn primario" data-act="insumo-novo" type="button">${IC_MAIS} Novo insumo</button>
+    ${est.insumos.length ? `<ul class="lista" style="margin-top:26px;border-top:1px solid var(--forte)">${est.insumos.map((i) => `
+      <li class="linha" data-id="${esc(i.id)}">
+        <div class="nome-linha"><span class="nome">${esc(i.nome)}</span>${i.acabando ? '<span class="selo">acabando</span>' : ''}</div>
+        <div class="qtd">${nf.format(i.qtd)}<em>${esc(i.unidade)}${i.aprox ? ', aproximado' : ''}</em></div>
+        ${i.rende ? `<p class="detalhe">Dá para fazer cerca de <b>${nf.format(Math.floor(i.qtd / i.rende.por))}</b> ${esc(i.rende.rotulo)}.</p>` : ''}
+        <div class="acoes">
+          <button class="btn pequeno" data-act="insumo-entrada" data-id="${esc(i.id)}" type="button">${IC_MAIS} Comprei</button>
+          <button class="btn pequeno" data-act="insumo-uso" data-id="${esc(i.id)}" type="button">Usei</button>
+          <button class="btn pequeno" data-act="insumo-corrigir" data-id="${esc(i.id)}" type="button">Corrigir</button>
+        </div>
+      </li>`).join('')}</ul>`
+    : '<div class="vazio"><span class="simbolo"></span><b>Nenhum insumo ainda</b>Cadastre vidros, etiquetas e o que mais você usa, para saber quando comprar.</div>'}`;
 }
 
 const CATS = [['todos', 'Todos'], ['perfumes', 'Perfumes'], ['skincare', 'Cremes'], ['body_splashes', 'Body splash'], ['merchandise', 'Acessórios'], ['fora', 'Fora do site']];
@@ -580,7 +607,7 @@ function folhaEntrada(id, modo = 'ml') {
 const AJUDA_ENTRADA = {
   ml: 'Perfume maturado, ainda sem envasar. Ex.: 180 ml.',
   un: 'Frascos que já chegaram prontos e etiquetados. Preencha um ou mais tamanhos.',
-  env: 'Transforma o granel em frascos. Os ml usados saem do granel.',
+  env: 'Transforma o granel em frascos. Os ml saem do granel e cada frasco usa um vidro, uma etiqueta e um saquinho.',
 };
 const tamanhoMl = (s) => parseInt(s, 10);
 function modoEntrada(modo) {
@@ -597,8 +624,50 @@ function atualizarUso() {
   if (!uso || $('e-tipo').querySelector('[aria-pressed=true]').dataset.v !== 'env') { if (uso) uso.textContent = ''; return; }
   const usado = est.tamanhos.reduce((s, t) => s + (Number($('e-u-' + t).value) || 0) * tamanhoMl(t), 0);
   const granel = est.produtos.find((p) => p.id === $('e-prod').value)?.granel_ml || 0;
-  uso.textContent = `Vai usar ${nf.format(usado)} ml dos ${nf.format(granel)} ml a granel.`;
-  uso.style.color = usado > granel ? 'var(--perigo)' : '';
+  // vidros, etiquetas e saquinhos que o envase vai gastar
+  const precisa = {};
+  est.tamanhos.forEach((t) => { const n = Number($('e-u-' + t).value) || 0; Object.entries(est.receita_envase[t] || {}).forEach(([iid, por]) => { if (n) precisa[iid] = (precisa[iid] || 0) + n * por; }); });
+  const faltam = [];
+  const lista = Object.entries(precisa).map(([iid, n]) => { const i = est.insumos.find((x) => x.id === iid); if (!i) return null; if (n > i.qtd) faltam.push(i.nome.toLowerCase()); return `${n} × ${i.nome.toLowerCase()}`; }).filter(Boolean);
+  uso.innerHTML = `Vai usar ${nf.format(usado)} ml dos ${nf.format(granel)} ml a granel${lista.length ? ` e ${esc(lista.join(', '))}` : ''}.${faltam.length ? ` <b>Faltam ${esc(faltam.join(', '))}.</b>` : ''}`;
+  uso.style.color = usado > granel || faltam.length ? 'var(--perigo)' : '';
+}
+
+function folhaInsumoMover(id, tipo) {
+  const i = est.insumos.find((x) => x.id === id);
+  const uso = tipo === 'uso';
+  abrirFolha(uso ? `Usei ${i.nome.toLowerCase()}` : `Comprei ${i.nome.toLowerCase()}`, `
+    <form data-form="insumo-mover" data-id="${esc(id)}" data-tipo="${tipo}">
+      <p class="legenda" style="margin-top:4px">${uso ? 'tem' : 'hoje há'} ${nf.format(i.qtd)} ${esc(i.unidade)}</p>
+      <label for="i-qtd">${uso ? 'Quanto você usou' : 'Quanto chegou'} (${esc(i.unidade)})</label>
+      <input id="i-qtd" name="qtd" type="number" min="1" inputmode="numeric" required />
+      ${i.rende && uso ? `<p class="ajuda">Cada ${esc(i.rende.rotulo.replace(/s /, ' ').replace(/s$/, ''))} usa ${i.rende.por} g.</p>` : ''}
+      <button class="btn primario cheio" type="submit" style="margin-top:28px">${uso ? 'Registrar uso' : 'Registrar compra'}</button>
+    </form>`);
+}
+function folhaInsumoCorrigir(id) {
+  const i = est.insumos.find((x) => x.id === id);
+  abrirFolha(`Corrigir ${i.nome.toLowerCase()}`, `
+    <form data-form="insumo-corrigir" data-id="${esc(id)}">
+      <p class="legenda" style="margin-top:4px">conte o que tem aí e digite; o histórico guarda a diferença</p>
+      <label for="i-qtd">Quantidade certa (${esc(i.unidade)})</label>
+      <input id="i-qtd" name="qtd" type="number" min="0" inputmode="numeric" value="${i.qtd}" required />
+      <button class="btn primario cheio" type="submit" style="margin-top:28px">Salvar contagem</button>
+      <button class="btn perigo cheio" type="button" data-act="insumo-excluir" data-id="${esc(id)}" style="margin-top:10px">Excluir insumo</button>
+    </form>`);
+}
+function folhaInsumoNovo() {
+  abrirFolha('Novo insumo', `
+    <form data-form="insumo-novo">
+      <label for="n-nome">Nome</label><input id="n-nome" name="nome" placeholder="Ex.: Potes de creme" required maxlength="60" />
+      <div class="grade2">
+        <div><label for="n-un">Medido em</label><select id="n-un" name="unidade"><option value="un">unidades</option><option value="g">gramas</option><option value="ml">mililitros</option></select></div>
+        <div><label for="n-qtd">Quanto tem</label><input id="n-qtd" name="qtd" type="number" min="0" inputmode="numeric" value="0" required /></div>
+      </div>
+      <label for="n-min">Avisar que está acabando quando chegar em</label>
+      <input id="n-min" name="minimo" type="number" min="0" inputmode="numeric" value="0" />
+      <button class="btn primario cheio" type="submit" style="margin-top:28px">Criar insumo</button>
+    </form>`);
 }
 
 function folhaCorrigir(id) {
@@ -677,6 +746,8 @@ document.addEventListener('click', async (ev) => {
     }
     return;
   }
+  const ir = t.closest('[data-go]');
+  if (ir) { irPara(ir.dataset.go); return; }
   const cat = t.closest('[data-cat]');
   if (cat) { filtro.cat = cat.dataset.cat; desenharCatalogo(); return; }
 
@@ -685,6 +756,14 @@ document.addEventListener('click', async (ev) => {
     const { act, id } = b.dataset;
     if (act === 'entrada') folhaEntrada(id);
     else if (act === 'envasar') folhaEntrada(id, 'env');
+    else if (act === 'insumo-entrada') folhaInsumoMover(id, 'entrada');
+    else if (act === 'insumo-uso') folhaInsumoMover(id, 'uso');
+    else if (act === 'insumo-corrigir') folhaInsumoCorrigir(id);
+    else if (act === 'insumo-novo') folhaInsumoNovo();
+    else if (act === 'insumo-excluir') {
+      const i = est.insumos.find((x) => x.id === id);
+      confirmar(`Excluir ${i.nome.toLowerCase()}?`, 'O insumo sai da lista e das contas do envase. Para só corrigir a contagem, use Corrigir.', 'Excluir insumo', async () => { await api('insumo_remover', { id }); aviso('Insumo excluído.'); });
+    }
     else if (act === 'corrigir') folhaCorrigir(id);
     else if (act === 'precos') folhaPrecos(id);
     else if (act === 'novo') folhaProduto();
@@ -739,6 +818,17 @@ document.addEventListener('submit', async (ev) => {
       const antes = idUltimo();
       await api('ajustar', { id: f.dataset.id, granel_ml: v.granel, unidades });
       aviso('Correção salva.', false, acaoDesfazer(antes));
+    } else if (f.dataset.form === 'insumo-mover') {
+      const antes = idUltimo();
+      await api(f.dataset.tipo === 'uso' ? 'insumo_uso' : 'insumo_entrada', { id: f.dataset.id, qtd: v.qtd });
+      aviso(f.dataset.tipo === 'uso' ? 'Uso registrado.' : 'Compra registrada.', false, acaoDesfazer(antes));
+    } else if (f.dataset.form === 'insumo-corrigir') {
+      const antes = idUltimo();
+      await api('insumo_ajustar', { id: f.dataset.id, qtd: v.qtd });
+      aviso('Contagem corrigida.', false, acaoDesfazer(antes));
+    } else if (f.dataset.form === 'insumo-novo') {
+      await api('insumo_criar', v);
+      aviso('Insumo criado.');
     } else if (f.dataset.form === 'precos') {
       await api('produto_precos', { id: f.dataset.id, precos: v });
       aviso('Preços atualizados.');

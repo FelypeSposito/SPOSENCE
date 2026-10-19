@@ -8,6 +8,11 @@
 //   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
 //   desfazer
+//   insumo_entrada  { id, qtd }                                comprou mais
+//   insumo_uso      { id, qtd }                                gastou
+//   insumo_ajustar  { id, qtd }                                corrige a contagem
+//   insumo_criar    { nome, unidade: "un" | "g" | "ml", qtd, minimo }
+//   insumo_remover  { id }
 //   produto_status  { id, status: "visivel" | "esgotado" | "oculto" }
 //   produto_precos  { id, precos: { "30ml": 90 } }
 //   produto_criar   { tipo: "perfume" | "creme", nome, ... }
@@ -18,6 +23,7 @@ import {
   carregar, salvar, estado, todos, itensDoPedido, hashDoPedido, simularBaixa,
   registrar, desfazerUltimo, movimentosDeEntrada, movimentosDeAjuste, movimentosDeUnidades,
   criarProduto, editarProduto, removerProduto, definirStatus, definirPrecos,
+  movimentoDeInsumo, movimentoDeAjusteInsumo, criarInsumo, removerInsumo,
 } from './_estoque.js';
 
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -103,6 +109,23 @@ export default async function handler(req, res) {
       const h = desfazerUltimo(e);
       await salvar(e);
       extra = { desfeito: h.descricao };
+    } else if (b.acao === 'insumo_entrada' || b.acao === 'insumo_uso') {
+      const tipo = b.acao === 'insumo_uso' ? 'uso' : 'entrada';
+      const r = movimentoDeInsumo(e, { id: b.id, qtd: b.qtd, tipo });
+      registrar(e, { tipo: 'insumo', descricao: tipo === 'uso' ? `Usou ${r.n} ${r.insumo.unidade} de ${r.insumo.nome}` : `Comprou ${r.n} ${r.insumo.unidade} de ${r.insumo.nome}`, movs: r.movs });
+      await salvar(e);
+    } else if (b.acao === 'insumo_ajustar') {
+      const r = movimentoDeAjusteInsumo(e, { id: b.id, qtd: b.qtd });
+      if (r.movs.length) {
+        registrar(e, { tipo: 'insumo', descricao: `Correção de ${r.insumo.nome}: ${r.insumo.qtd} para ${r.novo} ${r.insumo.unidade}`, movs: r.movs });
+        await salvar(e);
+      }
+    } else if (b.acao === 'insumo_criar') {
+      extra = { criado: criarInsumo(e, b).id };
+      await salvar(e);
+    } else if (b.acao === 'insumo_remover') {
+      removerInsumo(e, b.id);
+      await salvar(e);
     } else if (b.acao === 'produto_status') {
       definirStatus(e, b.id, b.status);
       await salvar(e);

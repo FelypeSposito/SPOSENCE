@@ -18,6 +18,21 @@ import { lerJSON, gravarJSON } from './_redis.js';
 const RAIZ = process.cwd();
 const CHAVE = 'sposence:estoque';
 const MAX_HISTORICO = 200;
+// Insumos: o que se usa para fazer e embalar (quantidades iniciais informadas em 19/10/2026).
+// rende: quanto de cada unidade vira um produto (ex.: 95 g de base por creme de 100 g).
+export const INSUMOS_PADRAO = [
+  { id: 'base-creme', nome: 'Base de creme', unidade: 'g', qtd: 1200, minimo: 200, rende: { por: 95, rotulo: 'cremes de 100 g' } },
+  { id: 'saquinho', nome: 'Saquinhos de algodão', unidade: 'un', qtd: 30, minimo: 10 },
+  { id: 'etiqueta', nome: 'Etiquetas', unidade: 'un', qtd: 80, minimo: 20, aprox: true },
+  { id: 'vidro-30ml', nome: 'Vidros de 30 ml', unidade: 'un', qtd: 11, minimo: 5 },
+  { id: 'vidro-50ml', nome: 'Vidros de 50 ml', unidade: 'un', qtd: 6, minimo: 3 },
+];
+// O que cada frasco envasado consome.
+export const RECEITA_ENVASE = {
+  '30ml': { 'vidro-30ml': 1, etiqueta: 1, saquinho: 1 },
+  '50ml': { 'vidro-50ml': 1, etiqueta: 1, saquinho: 1 },
+};
+
 export const PERFIS = ['frescos', 'doces', 'noturnos', 'elegantes'];
 export const GENEROS = ['feminino', 'masculino', 'compartilhavel'];
 
@@ -44,6 +59,7 @@ export async function carregar() {
   e.catalogo.status ??= {};
   e.catalogo.precos ??= {};
   e.catalogo.extras ??= [];
+  e.insumos ??= structuredClone(INSUMOS_PADRAO);
   return e;
 }
 export const salvar = (e) => gravarJSON(CHAVE, e);
@@ -105,6 +121,8 @@ export function estado(e) {
       variantes: precosDe(e, p),
       dados: extras.has(p.id) ? dadosEditaveis(p) : undefined,
     })),
+    insumos: e.insumos.map((i) => ({ ...i, acabando: i.qtd <= (i.minimo ?? 0) })),
+    receita_envase: RECEITA_ENVASE,
     historico: e.historico.slice(-30).reverse().map((h) => ({ id: h.id, data: h.data, tipo: h.tipo, descricao: h.descricao })),
   };
 }
@@ -299,6 +317,11 @@ export function simularBaixa(e, itens) {
 }
 
 function aplicarMov(e, m, sinal = 1) {
+  if (m.campo === 'insumo') {
+    const ins = e.insumos.find((i) => i.id === m.id);
+    if (ins) ins.qtd += sinal * m.delta;
+    return;
+  }
   const item = (e.produtos[m.id] ??= { granel_ml: 0, unidades: {} });
   item.unidades ??= {};
   if (m.campo === 'granel_ml') item.granel_ml = (item.granel_ml || 0) + sinal * m.delta;
@@ -346,8 +369,66 @@ export function movimentosDeUnidades(e, { id, unidades, envasar }) {
     const granel = e.produtos[id]?.granel_ml || 0;
     if (usado > granel) throw erro(`Para envasar ${partes.join(' e ')} precisa de ${usado} ml, e só há ${granel} ml a granel.`);
     movs.push({ id, campo: 'granel_ml', delta: -usado });
+    // cada frasco leva um vidro, uma etiqueta e um saquinho
+    const uso = {};
+    for (const s of e.tamanhos) {
+      const n = Number(unidades?.[s] || 0);
+      for (const [iid, por] of Object.entries(RECEITA_ENVASE[s] || {})) if (n) uso[iid] = (uso[iid] || 0) + n * por;
+    }
+    const faltas = [];
+    for (const [iid, preciso] of Object.entries(uso)) {
+      const ins = e.insumos.find((i) => i.id === iid);
+      if (!ins) continue;
+      if (ins.qtd < preciso) faltas.push(`${ins.nome} (precisa de ${preciso}, tem ${ins.qtd})`);
+      else movs.push({ id: iid, campo: 'insumo', delta: -preciso });
+    }
+    if (faltas.length) throw erro(`Faltam insumos para envasar: ${faltas.join('; ')}. Se a contagem estiver errada, corrija em Insumos.`);
   }
   return { movs, partes, usado };
+}
+
+// ---------- Insumos ----------
+const achaInsumo = (e, id) => {
+  const i = e.insumos.find((x) => x.id === id);
+  if (!i) throw erro('Insumo não encontrado.');
+  return i;
+};
+const quantidade = (v, max = 1000000) => {
+  const n = Number(v);
+  if (!Number.isInteger(n) || n < 0 || n > max) throw erro('Número inválido.');
+  return n;
+};
+
+// tipo "entrada" soma (comprou); "uso" subtrai (gastou)
+export function movimentoDeInsumo(e, { id, qtd, tipo }) {
+  const i = achaInsumo(e, id);
+  const n = quantidade(qtd);
+  if (!n) throw erro('Informe uma quantidade maior que zero.');
+  if (tipo === 'uso' && n > i.qtd) throw erro(`Só há ${i.qtd} ${i.unidade} de ${i.nome}.`);
+  return { movs: [{ id, campo: 'insumo', delta: tipo === 'uso' ? -n : n }], insumo: i, n };
+}
+
+export function movimentoDeAjusteInsumo(e, { id, qtd }) {
+  const i = achaInsumo(e, id);
+  const novo = quantidade(qtd);
+  return { movs: novo === i.qtd ? [] : [{ id, campo: 'insumo', delta: novo - i.qtd }], insumo: i, novo };
+}
+
+export function criarInsumo(e, d) {
+  const nome = limpar(d.nome, 60);
+  if (!nome) throw erro('Dê um nome ao insumo.');
+  if (!['un', 'g', 'ml'].includes(d.unidade)) throw erro('Escolha a unidade.');
+  const base = slug(nome) || 'insumo';
+  let id = base;
+  for (let k = 2; e.insumos.some((i) => i.id === id); k++) id = `${base}-${k}`;
+  const novo = { id, nome, unidade: d.unidade, qtd: quantidade(d.qtd), minimo: quantidade(d.minimo || 0) };
+  e.insumos.push(novo);
+  return novo;
+}
+
+export function removerInsumo(e, id) {
+  achaInsumo(e, id);
+  e.insumos = e.insumos.filter((i) => i.id !== id);
 }
 
 // Ajuste manual: define os valores certos e guarda só a diferença.
