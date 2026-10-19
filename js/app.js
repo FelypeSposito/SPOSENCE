@@ -648,7 +648,7 @@ const spPriceText = (p, value) => (spOnRequest(p) ? 'Sob encomenda' : spSoldOut(
 const spThumb = (src) => (src ? src.replace(/^img\//, 'img/thumbs/') : '');
 
 // "Resta 1 unidade" / "Restam 2 unidades" para tamanhos com estoque contado
-const spLeftLabel = (v) => (v && typeof v.stock === 'number' && v.stock > 0
+const spLeftLabel = (v) => (v && typeof v.stock === 'number' && v.stock > 0 && v.stock <= 3
   ? (v.stock === 1 ? 'Resta 1 unidade' : `Restam ${v.stock} unidades`) : '');
 
 // Variante escolhida em cada card (por padrão, a primeira disponível)

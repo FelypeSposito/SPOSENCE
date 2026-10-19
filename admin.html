@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#2b1200" />
+  <title>Estoque | Sposence</title>
+  <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" />
+  <style>
+    @font-face { font-family: 'Philosopher'; src: url('fonts/Philosopher-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'Philosopher'; src: url('fonts/Philosopher-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+    :root {
+      --bg: #fef9f2; --card: #f8f3ed; --line: #e6e2dc; --ink: #1d1b18; --muted: #83746b;
+      --brown: #2b1200; --gold: #DAA753; --ok: #3f6b3a; --bad: #9b2c1f; --warn: #8a5a00;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body { font: 16px/1.45 'Manrope', system-ui, sans-serif; color: var(--ink); background: var(--bg); min-height: 100dvh; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+    h1, h2 { font-family: 'Philosopher', serif; font-weight: 700; color: var(--brown); }
+    header { position: sticky; top: 0; z-index: 5; background: var(--brown); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { color: #fff; font-size: 22px; letter-spacing: .02em; }
+    header button { background: none; border: 0; color: #f3bb90; font: inherit; font-size: 14px; padding: 8px; }
+    main { max-width: 640px; margin: 0 auto; padding: 16px; }
+    section[hidden], #login[hidden], #app[hidden] { display: none; }
+    h2 { font-size: 20px; margin-bottom: 12px; }
+    .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+    .card h3 { font-size: 17px; font-weight: 700; color: var(--brown); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .chip { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; }
+    .chip b { color: var(--brown); }
+    .sell { font-size: 13px; color: var(--muted); margin-top: 8px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin: 12px 0 4px; }
+    input, select, textarea { width: 100%; font: inherit; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+    textarea { min-height: 150px; resize: vertical; }
+    button.main { width: 100%; margin-top: 14px; padding: 14px; border: 0; border-radius: 12px; background: var(--brown); color: #fff; font: inherit; font-weight: 700; }
+    button.ghost { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--brown); font: inherit; font-weight: 600; }
+    button.small { padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--brown); font: inherit; font-size: 13px; font-weight: 600; }
+    button:disabled { opacity: .5; }
+    .preview li { list-style: none; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .preview li:last-child { border: 0; }
+    .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); }
+    .msg { padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; }
+    .msg.ok { background: #e7f0e4; } .msg.bad { background: #f6e1de; }
+    .hist { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .hist small { color: var(--muted); display: block; }
+    nav { position: fixed; inset: auto 0 0 0; display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
+    nav button { background: none; border: 0; padding: 12px 4px; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); }
+    nav button[aria-current="true"] { color: var(--brown); box-shadow: inset 0 3px 0 var(--gold); }
+    #login { max-width: 360px; margin: 18vh auto 0; padding: 16px; text-align: center; }
+    #login h1 { font-size: 34px; margin-bottom: 4px; }
+    #login p { color: var(--muted); margin-bottom: 20px; }
+    .edit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .edit label { margin-top: 8px; }
+    .vazio { color: var(--muted); text-align: center; padding: 24px 0; }
+    @media (prefers-reduced-motion: no-preference) { section { animation: in .18s ease-out; } @keyframes in { from { opacity: 0; transform: translateY(4px); } } }
+  </style>
+</head>
+<body>
+
+  <div id="login">
+    <h1>Sposence</h1>
+    <p>Painel de estoque</p>
+    <form id="login-form">
+      <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required />
+      <button class="main" type="submit">Entrar</button>
+      <div id="login-erro" class="msg bad" hidden></div>
+    </form>
+  </div>
+
+  <div id="app" hidden>
+    <header><h1>Estoque</h1><button id="sair" type="button">Sair</button></header>
+    <main>
+      <section id="t-estoque"></section>
+
+      <section id="t-baixa" hidden>
+        <h2>Dar baixa num pedido</h2>
+        <div class="card">
+          <label for="pedido">Cole a mensagem do pedido do WhatsApp</label>
+          <textarea id="pedido" placeholder="Olá Sposence! Acabei de fazer um pedido…&#10;- 1x Light Blue (30ml) | R$ 85,00"></textarea>
+          <button class="ghost" id="colar" type="button">Colar do celular</button>
+          <button class="main" id="conferir" type="button">Conferir</button>
+        </div>
+        <div class="card">
+          <h3>Ou venda avulsa</h3>
+          <label for="v-prod">Perfume</label><select id="v-prod"></select>
+          <div class="edit" style="grid-template-columns:1fr 1fr">
+            <div><label for="v-tam">Tamanho</label><select id="v-tam"></select></div>
+            <div><label for="v-qtd">Quantidade</label><input id="v-qtd" type="number" min="1" value="1" inputmode="numeric" /></div>
+          </div>
+          <button class="ghost" id="conferir-avulsa" type="button">Conferir</button>
+        </div>
+        <div id="previa"></div>
+      </section>
+
+      <section id="t-entrada" hidden>
+        <h2>Entrada de estoque</h2>
+        <div class="card">
+          <label for="e-prod">Perfume</label><select id="e-prod"></select>
+          <label for="e-tipo">O que chegou</label>
+          <select id="e-tipo"><option value="ml">ml a granel (perfume pronto, sem envasar)</option><option value="un">frascos já envasados</option></select>
+          <div id="e-tam-box" hidden><label for="e-tam">Tamanho do frasco</label><select id="e-tam"></select></div>
+          <label for="e-qtd" id="e-qtd-label">Quantos ml</label>
+          <input id="e-qtd" type="number" min="1" inputmode="numeric" placeholder="180" />
+          <button class="main" id="adicionar" type="button">Adicionar ao estoque</button>
+        </div>
+        <div id="entrada-msg"></div>
+      </section>
+
+      <section id="t-historico" hidden></section>
+    </main>
+    <nav aria-label="Seções">
+      <button data-tab="estoque" aria-current="true" type="button">Estoque</button>
+      <button data-tab="baixa" type="button">Dar baixa</button>
+      <button data-tab="entrada" type="button">Entrada</button>
+      <button data-tab="historico" type="button">Histórico</button>
+    </nav>
+  </div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const guardar = {
+  ler: () => { try { return localStorage.getItem('sp-admin') || ''; } catch (_) { return ''; } },
+  gravar: (v) => { try { v ? localStorage.setItem('sp-admin', v) : localStorage.removeItem('sp-admin'); } catch (_) {} },
+};
+let senha = guardar.ler();
+let est = null;
+let pendente = null; // o que está esperando confirmação: { acao, texto | itens }
+
+async function api(acao, corpo = {}) {
+  const r = await fetch('/api/admin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-senha': senha },
+    body: JSON.stringify({ acao, ...corpo }),
+  });
+  const dados = await r.json().catch(() => ({ erro: 'Resposta inesperada do servidor.' }));
+  if (r.status === 401) { sair(); throw new Error(dados.erro); }
+  if (!r.ok) throw Object.assign(new Error(dados.erro || 'Erro.'), { dados });
+  return dados;
+}
+
+function sair() { senha = ''; guardar.gravar(''); $('app').hidden = true; $('login').hidden = false; }
+
+async function entrar(tentativa) {
+  senha = tentativa;
+  const d = await api('estado');
+  guardar.gravar(senha);
+  est = d.estado;
+  $('login').hidden = true; $('app').hidden = false;
+  desenhar();
+}
+
+$('login-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  $('login-erro').hidden = true;
+  try { await entrar($('senha').value); }
+  catch (e) { $('login-erro').textContent = e.message; $('login-erro').hidden = false; }
+});
+$('sair').addEventListener('click', sair);
+
+document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('nav button').forEach((x) => x.setAttribute('aria-current', x === b));
+  ['estoque', 'baixa', 'entrada', 'historico'].forEach((t) => { $('t-' + t).hidden = t !== b.dataset.tab; });
+  window.scrollTo(0, 0);
+}));
+
+function desenhar() {
+  // Estoque
+  $('t-estoque').innerHTML = '<h2>O que tem agora</h2>' + (est.produtos.length ? est.produtos.map((p) => `
+    <div class="card" data-id="${esc(p.id)}">
+      <div class="row" style="justify-content:space-between"><h3>${esc(p.nome)}</h3><button class="small" data-editar="${esc(p.id)}" type="button">Corrigir</button></div>
+      <div class="row" style="margin-top:8px">
+        <span class="chip"><b>${p.granel_ml}</b> ml a granel</span>
+        ${est.tamanhos.map((s) => `<span class="chip"><b>${p.unidades[s]}</b> × ${s}</span>`).join('')}
+      </div>
+      <div class="sell">No site dá pra vender: ${est.tamanhos.map((s) => `${p.vende[s]} de ${s}`).join(' · ')}</div>
+      <div class="edit-box" hidden></div>
+    </div>`).join('') : '<p class="vazio">Nenhum perfume no controle ainda. Use a aba Entrada.</p>');
+
+  // Selects
+  const opcoes = est.catalogo.map((p) => `<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join('');
+  const tams = est.tamanhos.map((s) => `<option>${s}</option>`).join('');
+  const manter = (el, html) => { const v = el.value; el.innerHTML = html; if (v) el.value = v; };
+  manter($('v-prod'), opcoes); manter($('e-prod'), opcoes);
+  manter($('v-tam'), tams); manter($('e-tam'), tams);
+
+  // Histórico
+  $('t-historico').innerHTML = '<h2>Últimos movimentos</h2>' + (est.historico.length ? est.historico.map((h, i) => `
+    <div class="hist"><div>${esc(h.descricao)}<small>${esc(h.data)} · ${esc(h.tipo)}</small></div>
+    ${i === 0 ? '<button class="small" id="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('') : '<p class="vazio">Nada por aqui ainda.</p>');
+}
+
+// Corrigir o estoque de um produto
+document.addEventListener('click', async (ev) => {
+  const ed = ev.target.closest('[data-editar]');
+  if (ed) {
+    const p = est.produtos.find((x) => x.id === ed.dataset.editar);
+    const box = ed.closest('.card').querySelector('.edit-box');
+    box.hidden = !box.hidden;
+    if (box.hidden) return;
+    box.innerHTML = `<div class="edit">
+      <div><label>ml granel</label><input type="number" min="0" inputmode="numeric" data-f="granel" value="${p.granel_ml}"></div>
+      ${est.tamanhos.map((s) => `<div><label>${s}</label><input type="number" min="0" inputmode="numeric" data-f="${s}" value="${p.unidades[s]}"></div>`).join('')}
+    </div><button class="main" data-salvar="${esc(p.id)}" type="button">Salvar correção</button>`;
+    return;
+  }
+  const sv = ev.target.closest('[data-salvar]');
+  if (sv) {
+    const box = sv.closest('.edit-box');
+    const unidades = {};
+    est.tamanhos.forEach((s) => { unidades[s] = box.querySelector(`[data-f="${s}"]`).value; });
+    sv.disabled = true;
+    try { est = (await api('ajustar', { id: sv.dataset.salvar, granel_ml: box.querySelector('[data-f="granel"]').value, unidades })).estado; desenhar(); }
+    catch (e) { alert(e.message); sv.disabled = false; }
+    return;
+  }
+  if (ev.target.id === 'desfazer') {
+    if (!confirm('Desfazer o último movimento?')) return;
+    try { est = (await api('desfazer')).estado; desenhar(); } catch (e) { alert(e.message); }
+  }
+});
+
+// Baixa: conferir e confirmar
+function mostrarPrevia(d, erro) {
+  const linhas = (d.linhas || []).map((l) => `<li class="${l.ok === true ? 'ok' : 'warn'}">${esc(l.texto)}</li>`).join('');
+  const probs = (d.problemas || []).map((t) => `<li class="bad">${esc(t)}</li>`).join('');
+  $('previa').innerHTML = `<div class="card preview">
+    <h3>${erro ? 'Não deu pra dar baixa' : 'Confira antes de confirmar'}</h3>
+    <ul style="margin-top:6px">${linhas}${probs}</ul>
+    ${erro ? '' : '<button class="main" id="confirmar" type="button">Confirmar baixa</button>'}
+  </div>`;
+}
+async function conferir(corpo) {
+  $('previa').innerHTML = '';
+  try {
+    const d = await api(corpo.acao, { ...corpo, confirmar: false });
+    pendente = corpo; mostrarPrevia(d, false);
+  } catch (e) {
+    pendente = null;
+    if (e.dados && e.dados.linhas) mostrarPrevia(e.dados, true);
+    else $('previa').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`;
+  }
+}
+$('conferir').addEventListener('click', () => conferir({ acao: 'pedido', texto: $('pedido').value }));
+$('conferir-avulsa').addEventListener('click', () => conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }] }));
+$('colar').addEventListener('click', async () => {
+  try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { alert('Não consegui acessar a área de transferência. Cole manualmente no campo.'); }
+});
+document.addEventListener('click', async (ev) => {
+  if (ev.target.id !== 'confirmar' || !pendente) return;
+  ev.target.disabled = true;
+  try {
+    const d = await api(pendente.acao, { ...pendente, confirmar: true });
+    est = d.estado; desenhar(); pendente = null; $('pedido').value = '';
+    $('previa').innerHTML = `<div class="msg ok">${d.nada_a_descontar ? 'Nenhum item desse pedido tem estoque controlado, nada foi descontado.' : 'Baixa feita. O site já está atualizado.'}</div>`;
+  } catch (e) { $('previa').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`; }
+});
+
+// Entrada
+$('e-tipo').addEventListener('change', () => {
+  const un = $('e-tipo').value === 'un';
+  $('e-tam-box').hidden = !un;
+  $('e-qtd-label').textContent = un ? 'Quantos frascos' : 'Quantos ml';
+  $('e-qtd').placeholder = un ? '4' : '180';
+});
+$('adicionar').addEventListener('click', async () => {
+  const un = $('e-tipo').value === 'un';
+  const corpo = un ? { id: $('e-prod').value, tamanho: $('e-tam').value, qtd: $('e-qtd').value } : { id: $('e-prod').value, ml: $('e-qtd').value };
+  try {
+    est = (await api('entrada', corpo)).estado; desenhar(); $('e-qtd').value = '';
+    $('entrada-msg').innerHTML = '<div class="msg ok">Entrada registrada. O site já está atualizado.</div>';
+  } catch (e) { $('entrada-msg').innerHTML = `<div class="msg bad">${esc(e.message)}</div>`; }
+});
+
+if (senha) entrar(senha).catch(() => {});
+</script>
+</body>
+</html>

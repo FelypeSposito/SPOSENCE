@@ -1,0 +1,45 @@
+{
+  "_comentario": "Estoque controlado. granel_ml = perfume pronto ainda nao envasado. Atualize com: node tools/estoque.js entrada <id> 180ml",
+  "tamanhos": [
+    "30ml",
+    "50ml"
+  ],
+  "produtos": {
+    "mandarino": {
+      "granel_ml": 0,
+      "unidades": {
+        "30ml": 1,
+        "50ml": 0
+      }
+    },
+    "la-vie-est-belle": {
+      "granel_ml": 0,
+      "unidades": {
+        "30ml": 1,
+        "50ml": 2
+      }
+    },
+    "212-sexy": {
+      "granel_ml": 0,
+      "unidades": {
+        "30ml": 0,
+        "50ml": 2
+      }
+    },
+    "libre-intense": {
+      "granel_ml": 0,
+      "unidades": {
+        "30ml": 0,
+        "50ml": 3
+      }
+    },
+    "libre-flowers-flames": {
+      "granel_ml": 0,
+      "unidades": {
+        "30ml": 1,
+        "50ml": 2
+      }
+    }
+  },
+  "historico": []
+}
