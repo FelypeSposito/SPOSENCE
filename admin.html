@@ -561,6 +561,84 @@
       @keyframes item { from { transform: translateY(14px); opacity: 0; } }
       @keyframes enche { from { transform: scaleY(0); } }
     }
+
+    /* ======================================================================================
+       Camada "site": o painel inteiro na mesma linguagem do sposence.com.br
+       (cabeçalho editorial, abas em pílula, botão com preenchimento, blocos que abrem, entrada em cascata)
+       ====================================================================================== */
+    @keyframes abaEntra { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+    @keyframes feSobe { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @media (min-width: 1000px) { main { max-width: 1040px; } #t-baixa, #t-historico { max-width: 760px; } }
+
+    /* entrada de cada aba: os blocos sobem em sequência (mesma curva do site) */
+    .aba-in > * { animation: abaEntra .85s var(--ease) both; }
+    .aba-in > :nth-child(2) { animation-delay: .06s; } .aba-in > :nth-child(3) { animation-delay: .12s; } .aba-in > :nth-child(4) { animation-delay: .18s; }
+    .aba-in > :nth-child(5) { animation-delay: .24s; } .aba-in > :nth-child(n+6) { animation-delay: .3s; }
+
+    /* abas e escolhas: o .h-tabs do site */
+    .troca, .escolha, .filtros { display: inline-flex; flex-wrap: wrap; gap: .35rem; padding: .35rem; background: var(--papel); border: 1px solid var(--linha); border-radius: 999px; margin-top: 14px; max-width: 100%; }
+    .sec .troca { gap: .35rem; margin-top: 14px; }
+    .troca-vista { margin: 0 0 22px; gap: .35rem; }
+    .ped-acoes .troca-vista { margin: 0; }
+    .troca button, .escolha button, .filtros button { background: none; border: 0; border-radius: 999px; padding: .6rem 1.15rem; min-height: 44px; margin: 0; font-size: .875rem; font-weight: 600; color: var(--suave); transition: background-color .4s var(--ease), color .3s ease; }
+    .troca button:hover, .escolha button:hover, .filtros button:hover { color: var(--tinta); }
+    .troca button[aria-pressed="true"], .escolha button[aria-pressed="true"], .filtros button[aria-pressed="true"] { background: var(--btn); color: var(--no-btn); border-bottom-color: transparent; }
+    .troca button[data-st="esgotado"][aria-pressed="true"] { background: var(--ouro); color: #2b1a0a; }
+    .troca button[data-st="oculto"][aria-pressed="true"] { background: var(--perigo); color: #fbf9f4; }
+    .filtros { display: flex; flex-wrap: nowrap; width: fit-content; overflow-x: auto; margin: 16px 0 6px; border-bottom: 1px solid var(--linha); scrollbar-width: none; }
+    .filtros button { padding: .6rem 1.15rem; margin-bottom: 0; }
+
+    /* botão do site: preenchimento que sobe no hover */
+    .btn { position: relative; overflow: hidden; isolation: isolate; transition: color .45s var(--ease), border-color .45s var(--ease), transform .2s var(--ease); }
+    .btn::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--btn); transform: translateY(101%); transition: transform .5s var(--ease); }
+    .btn.primario::before { background: var(--acento); }
+    .btn.perigo::before { background: var(--perigo); }
+    @media (hover: hover) {
+      .btn:not(:disabled):hover::before { transform: translateY(0); }
+      .btn:not(.primario):not(.perigo):not(:disabled):hover { background: transparent; color: var(--no-btn); border-color: var(--btn); }
+      .btn.primario:not(:disabled):hover { opacity: 1; border-color: var(--acento); }
+      .btn.perigo:not(:disabled):hover { color: #fbf9f4; }
+    }
+
+    /* listas viram cartões do site: 16px, sombra suave, sobem no hover */
+    .linha, .hist { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 16px 18px; margin-top: 12px; box-shadow: 0 16px 34px -26px rgba(70, 37, 6, .4); transition: transform .5s var(--ease), box-shadow .5s var(--ease), border-color .4s; }
+    @media (hover: hover) { .linha:hover, .hist:hover { transform: translateY(-3px); border-color: var(--forte); box-shadow: 0 26px 44px -26px rgba(70, 37, 6, .45); } }
+    .hist-lista { margin-top: 18px; }
+    .links { flex-wrap: wrap; }
+    
+
+    /* estoque: famílias em blocos que abrem */
+    .fe { display: grid; gap: 12px; margin-top: 26px; }
+    .fe-acc { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; transition: border-color .4s ease, box-shadow .55s var(--ease); }
+    @media (hover: hover) { .fe-acc:hover { border-color: var(--forte); box-shadow: 0 22px 40px -28px rgba(70, 37, 6, .45); } }
+    .fe-acc.aberto { border-color: var(--forte); box-shadow: 0 26px 44px -28px rgba(70, 37, 6, .45); }
+    .fe-topo { width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 14px; padding: 18px; text-align: left; background: none; border: 0; border-radius: 16px; color: var(--tinta); }
+    .fe-ponto { width: 14px; height: 14px; border-radius: 50%; background: var(--cor); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cor) 24%, transparent); }
+    .fe-tx { min-width: 0; }
+    .fe-nome { display: block; font-family: 'Philosopher', serif; font-size: 25px; line-height: 1.1; }
+    .fe-sub { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--suave); font-size: 13.5px; margin-top: 3px; }
+    .fe-alerta { color: var(--perigo); font-weight: 700; }
+    .fe-ml { font-family: 'Philosopher', serif; font-size: 28px; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .fe-ml em { font-size: 15px; color: var(--suave); margin-left: 3px; }
+    .fe-seta { width: 40px; height: 40px; border-radius: 99px; display: grid; place-items: center; border: 1px solid var(--forte); transition: background-color .4s var(--ease), color .4s var(--ease), transform .5s var(--ease); }
+    .fe-seta svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+    @media (hover: hover) { .fe-topo:hover .fe-seta { background: var(--btn); color: var(--no-btn); } }
+    .fe-acc.aberto .fe-seta { background: var(--btn); color: var(--no-btn); transform: rotate(135deg); }
+    .fe-corpo { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .7s var(--ease); }
+    .fe-acc.aberto .fe-corpo { grid-template-rows: 1fr; }
+    .fe-in { overflow: hidden; min-height: 0; }
+    .fe-acc:not(.aberto) .fe-corpo { visibility: hidden; transition: grid-template-rows .7s var(--ease), visibility 0s .7s; }
+    .fe-grade { display: grid; gap: 12px; padding: 2px 14px 16px; }
+    .fe-grade .linha { margin: 0; }
+    .fe-grade.lista { padding-left: 14px; padding-right: 14px; list-style: none; }
+    .fe-grade .item { margin: 0; padding: 16px; border: 1px solid var(--linha); border-radius: 14px; background: color-mix(in srgb, var(--tinta) 3%, var(--papel)); }
+    .fe-acc.abrindo .item { animation: feSobe .75s var(--ease) both; animation-delay: calc(var(--i) * 70ms + 120ms); }
+    @media (min-width: 900px) { .fe-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px) { .fe-ml { font-size: 22px; } .fe-topo { gap: 10px; padding: 16px 14px; } .fe-nome { font-size: 22px; } }
+    @media (prefers-reduced-motion: reduce) {
+      .aba-in > *, .fe-acc.abrindo .item { animation: none; }
+      .fe-corpo, .fe-seta, .btn::before { transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -819,6 +897,7 @@ function irPara(aba) {
   document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
   window.scrollTo(0, 0);
+  { const el = $('t-' + aba); el.classList.remove('aba-in'); void el.offsetWidth; el.classList.add('aba-in'); }
   if (aba === 'clientes') { desenharClientes(); carregarClientes(); }
 }
 document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => irPara(b.dataset.tab)));
@@ -869,6 +948,50 @@ function selos(p) {
   return l.map((t) => `<span class="selo">${t}</span>`).join('');
 }
 
+function cabecaSecao(eyebrow, titulo, lead, id) {
+  return `<header class="ped-cabeca"><div><span class="eyebrow">${eyebrow}</span><h2 id="${id}">${titulo}</h2><p class="ped-lead">${lead}</p></div></header>`;
+}
+
+// estoque: as famílias da loja são blocos que abrem
+const FAMILIAS_EST = [['doces', 'Doces', '#daa753'], ['frescos', 'Frescos', '#b9ba86'], ['noturnos', 'Noturnos', '#8a5a2b'], ['elegantes', 'Elegantes', '#6b6943'], ['outros', 'Outros', '#a8a496']];
+const abertosEst = new Set();
+const SETA_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+function itemEstoque(p, i, maior) {
+  return `<li class="item" style="--i:${i}" data-id="${esc(p.id)}">
+    ${vidro(esc(p.id), p.ml_total ? Math.max(.05, p.ml_total / maior).toFixed(3) : 0)}
+    <div>
+      <h3>${esc(p.nome)}${selos(p)}</h3>
+      <div class="ml">${nf.format(p.ml_total)}<em>ml no total</em></div>
+      <p class="detalhe"><b>${nf.format(p.granel_ml)}</b> ml a granel${est.tamanhos.map((s) => ` · <b>${p.unidades[s]}</b> × ${s}`).join('')}</p>
+      <p class="detalhe" style="margin-top:2px">No site: ${est.tamanhos.map((s) => `<b>${p.vende[s]}</b> de ${s}`).join(' ou ')}</p>
+      <div class="acoes">
+        <button class="btn pequeno" data-act="entrada" data-id="${esc(p.id)}" type="button">${IC_MAIS} Entrada</button>
+        ${p.granel_ml > 0 ? `<button class="btn pequeno" data-act="envasar" data-id="${esc(p.id)}" type="button">Envasar</button>` : ''}
+        <button class="btn pequeno" data-act="corrigir" data-id="${esc(p.id)}" type="button">Corrigir</button>
+      </div>
+    </div>
+  </li>`;
+}
+function blocosEstoque(maior) {
+  const perfilDe = (p) => { const c = est.catalogo.find((x) => x.id === p.id); return c && FAMILIAS_EST.some((f) => f[0] === c.perfil) ? c.perfil : 'outros'; };
+  return `<div class="fe">${FAMILIAS_EST.map(([k, nome, cor]) => {
+    const itens = est.produtos.filter((p) => perfilDe(p) === k);
+    if (!itens.length) return '';
+    const ml = itens.reduce((t, p) => t + p.ml_total, 0);
+    const sem = itens.filter((p) => p.ml_total === 0).length;
+    const acabando = itens.filter((p) => p.ml_total > 0 && p.ml_total < 60).length;
+    const aberto = abertosEst.has(k);
+    return `<section class="fe-acc${aberto ? ' aberto' : ''}" data-fe="${k}" style="--cor:${cor}">
+      <button type="button" class="fe-topo" data-act="fe-toggle" data-id="${k}" aria-expanded="${aberto}" aria-controls="fe-${k}">
+        <span class="fe-ponto" aria-hidden="true"></span>
+        <span class="fe-tx"><span class="fe-nome">${nome}</span><span class="fe-sub"><span>${itens.length} ${itens.length === 1 ? 'perfume' : 'perfumes'}</span>${sem ? `<span class="fe-alerta">${sem} sem estoque</span>` : ''}${acabando ? `<span class="fe-alerta">${acabando} acabando</span>` : ''}</span></span>
+        <span class="fe-ml">${nf.format(ml)}<em>ml</em></span>
+        <span class="fe-seta" aria-hidden="true">${SETA_MAIS}</span>
+      </button>
+      <div class="fe-corpo" id="fe-${k}"><div class="fe-in"><ol class="fe-grade" style="list-style:none;padding-left:14px;padding-right:14px">${itens.map((p, i) => itemEstoque(p, i, maior)).join('')}</ol></div></div></section>`;
+  }).join('')}</div>`;
+}
+
 function desenharEstoque() {
   if (vistaEstoque === 'maturacao') { desenharMaturacao(); return; }
   if (vistaEstoque === 'insumos') { desenharInsumosNoEstoque(); return; }
@@ -877,7 +1000,7 @@ function desenharEstoque() {
   const pratos = est.produtos.length;
   $('t-estoque').classList.toggle('anim', primeiraVez);
   $('t-estoque').innerHTML = `
-    <div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>
+    ${cabecaSecao('Bancada', 'Seu <em>estoque</em>', 'Essência em ml, do granel ao frasco.', 'h-estoque')}
     ${trocaEstoque()}
     <div class="total">
       <div class="num">${nf.format(r.ml_total)}<em>ml</em></div>
@@ -885,21 +1008,7 @@ function desenharEstoque() {
     </div>
     ${est.insumos.some((i) => i.acabando) ? `<p class="detalhe" style="margin:-6px 0 20px">Insumos acabando: <b>${esc(est.insumos.filter((i) => i.acabando).map((i) => i.nome.toLowerCase()).join(', '))}</b>. <button class="link" data-go="insumos" type="button">Ver insumos</button></p>` : ''}
     <button class="btn primario" data-act="entrada" type="button">${IC_MAIS} Registrar entrada</button>
-    ${pratos ? `<ol class="prateleira">${est.produtos.map((p, i) => `
-      <li class="item" style="--i:${i}" data-id="${esc(p.id)}">
-        ${vidro(esc(p.id), p.ml_total ? Math.max(.05, p.ml_total / maior).toFixed(3) : 0)}
-        <div>
-          <h3>${esc(p.nome)}${selos(p)}</h3>
-          <div class="ml">${nf.format(p.ml_total)}<em>ml no total</em></div>
-          <p class="detalhe"><b>${nf.format(p.granel_ml)}</b> ml a granel${est.tamanhos.map((s) => ` · <b>${p.unidades[s]}</b> × ${s}`).join('')}</p>
-          <p class="detalhe" style="margin-top:2px">No site: ${est.tamanhos.map((s) => `<b>${p.vende[s]}</b> de ${s}`).join(' ou ')}</p>
-          <div class="acoes">
-            <button class="btn pequeno" data-act="entrada" data-id="${esc(p.id)}" type="button">${IC_MAIS} Entrada</button>
-            ${p.granel_ml > 0 ? `<button class="btn pequeno" data-act="envasar" data-id="${esc(p.id)}" type="button">Envasar</button>` : ''}
-            <button class="btn pequeno" data-act="corrigir" data-id="${esc(p.id)}" type="button">Corrigir</button>
-          </div>
-        </div>
-      </li>`).join('')}</ol>`
+    ${pratos ? blocosEstoque(maior)
     : `<div class="vazio"><span class="simbolo"></span><b>A prateleira está vazia</b>Quando o primeiro lote maturar, registre a entrada e o vidro aparece aqui.</div>`}`;
   primeiraVez = false;
 }
@@ -961,7 +1070,7 @@ function desenharBaixa() {
   normalizarAv();
   const maisAberto = rv('mais-aberto') === '1' || Boolean(rv('pedido')) || Boolean(pendente && pendente.corpo.acao === 'pedido');
   $('t-baixa').innerHTML = `
-    <div class="secao-topo"><h2 id="h-baixa">Dar baixa</h2><p class="legenda">alguém comprou? desconte do estoque e crie o pedido</p></div>
+    ${cabecaSecao('Venda avulsa', 'Dar <em>baixa</em>', 'Alguém comprou? Desconte do estoque e crie o pedido.', 'h-baixa')}
     <div class="quadro">
       <h3>Venda avulsa</h3>
       <p class="ajuda">Escolha o que foi vendido. Vale para perfume, creme, body splash e acessório.</p>
@@ -1397,7 +1506,7 @@ function desenharMaturacao() {
   const el = $('t-estoque');
   el.classList.toggle('anim', animMat);
   el.innerHTML = `
-    <div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>
+    ${cabecaSecao('Bancada', 'Seu <em>estoque</em>', 'Essência em ml, do granel ao frasco.', 'h-estoque')}
     ${trocaEstoque()}
     ${ativos.length ? `<div class="total">
         <div class="num">${nf.format(mlTotal)}<em>ml</em></div>
@@ -2136,8 +2245,8 @@ function secaoConta(c) {
 const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
 function desenharHistorico() {
   $('t-historico').innerHTML = `
-    <div class="secao-topo"><h2 id="h-historico">Histórico</h2><p class="legenda">os últimos movimentos; o mais recente dá pra desfazer</p></div>
-    ${est.historico.length ? `<div style="border-top:1px solid var(--forte)">${est.historico.map((h, i) => `
+    ${cabecaSecao('Registro', 'Seu <em>histórico</em>', 'Os últimos movimentos. O mais recente dá para desfazer.', 'h-historico')}
+    ${est.historico.length ? `<div class="hist-lista">${est.historico.map((h, i) => `
       <div class="hist"><div><div>${esc(h.descricao)}</div><div class="t">${esc(h.data)}, ${esc(TIPOS[h.tipo] || h.tipo)}</div></div>
       ${i === 0 ? '<button class="btn pequeno" data-act="desfazer" type="button">Desfazer</button>' : ''}</div>`).join('')}</div>`
     : '<div class="vazio"><span class="simbolo"></span><b>Nada por aqui ainda</b>Entradas, baixas e correções aparecem nesta lista.</div>'}`;
@@ -2164,7 +2273,7 @@ function htmlInsumos() {
 function desenharInsumosNoEstoque() {
   const el = $('t-estoque');
   el.classList.remove('anim');
-  el.innerHTML = `<div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>${trocaEstoque()}${htmlInsumos()}`;
+  el.innerHTML = `${cabecaSecao('Bancada', 'Seu <em>estoque</em>', 'Essência em ml, do granel ao frasco.', 'h-estoque')}${trocaEstoque()}${htmlInsumos()}`;
 }
 
 
@@ -2175,6 +2284,40 @@ function precoTexto(p) {
   const a = Math.min(...v), b = Math.max(...v);
   return a === b ? brl(a) : `${brl(a)} a ${brl(b)}`;
 }
+const abertosCat = new Set();
+const GRUPOS_CAT = [['doces', 'Perfumes doces', '#daa753'], ['frescos', 'Perfumes frescos', '#b9ba86'], ['noturnos', 'Perfumes noturnos', '#8a5a2b'], ['elegantes', 'Perfumes elegantes', '#6b6943'], ['perfumes', 'Outros perfumes', '#a8a496'], ['skincare', 'Cremes', '#e3c9a3'], ['body_splashes', 'Body splashes', '#9db4a0'], ['merchandise', 'Acessórios', '#b8a58f']];
+function linhaCatalogo(p) {
+  return `<li class="linha${p.status === 'oculto' ? ' fora' : ''}" data-id="${esc(p.id)}">
+    <div class="nome">${esc(p.nome)}</div>
+    <div class="meta">${esc(p.rotulo)}, ${precoTexto(p)}${p.criado_no_painel ? ', criado no painel' : ''}${p.controlado ? ', com estoque' : ''}</div>
+    <div class="troca" role="group" aria-label="Situação de ${esc(p.nome)} no site">
+      ${[['visivel', 'Visível'], ['esgotado', 'Esgotado'], ['oculto', 'Oculto']].map(([k, n]) => `<button type="button" data-act="status" data-st="${k}" data-id="${esc(p.id)}" aria-pressed="${p.status === k}">${n}</button>`).join('')}
+    </div>
+    <div class="links">
+      ${p.categoria === 'perfumes' ? `<button type="button" data-act="frag" data-id="${esc(p.id)}">Ficha</button>` : ''}
+      <button type="button" data-act="precos" data-id="${esc(p.id)}">Preços</button>
+      ${p.criado_no_painel ? `<button type="button" data-act="editar" data-id="${esc(p.id)}">Editar</button><button type="button" class="rm" data-act="remover" data-id="${esc(p.id)}">Excluir</button>` : ''}
+    </div>
+  </li>`;
+}
+function blocosCatalogo(lista, abrirTodos) {
+  const grupoDe = (p) => (p.categoria === 'perfumes' ? (GRUPOS_CAT.some((g) => g[0] === p.perfil) ? p.perfil : 'perfumes') : (GRUPOS_CAT.some((g) => g[0] === p.categoria) ? p.categoria : 'merchandise'));
+  return `<div class="fe">${GRUPOS_CAT.map(([k, nome, cor]) => {
+    const itens = lista.filter((p) => grupoDe(p) === k);
+    if (!itens.length) return '';
+    const fora = itens.filter((p) => p.status !== 'visivel').length;
+    const aberto = abrirTodos || abertosCat.has(k);
+    return `<section class="fe-acc${aberto ? ' aberto' : ''}" data-fe="${k}" style="--cor:${cor}">
+      <button type="button" class="fe-topo" data-act="cat-toggle" data-id="${k}" aria-expanded="${aberto}" aria-controls="cat-${k}">
+        <span class="fe-ponto" aria-hidden="true"></span>
+        <span class="fe-tx"><span class="fe-nome">${nome}</span><span class="fe-sub"><span>${itens.length} ${itens.length === 1 ? 'produto' : 'produtos'}</span>${fora ? `<span class="fe-alerta">${fora} fora do ar</span>` : ''}</span></span>
+        <span></span>
+        <span class="fe-seta" aria-hidden="true">${SETA_MAIS}</span>
+      </button>
+      <div class="fe-corpo" id="cat-${k}"><div class="fe-in"><ul class="fe-grade lista">${itens.map(linhaCatalogo).join('')}</ul></div></div></section>`;
+  }).join('')}</div>`;
+}
+
 function desenharCatalogo() {
   const busca = filtro.busca.trim().toLowerCase();
   const lista = est.catalogo.filter((p) =>
@@ -2182,25 +2325,13 @@ function desenharCatalogo() {
     (!busca || p.nome.toLowerCase().includes(busca)));
   const foco = document.activeElement?.id === 'busca';
   $('t-catalogo').innerHTML = `
-    <div class="secao-topo"><h2 id="h-catalogo">Catálogo</h2><p class="legenda">o que os clientes veem no site</p></div>
+    ${cabecaSecao('Site', 'Seu <em>catálogo</em>', 'O que os clientes veem no site.', 'h-catalogo')}
     <div class="busca">
       <input id="busca" type="search" placeholder="Buscar produto" value="${esc(filtro.busca)}" aria-label="Buscar produto" />
       <button class="btn primario pequeno" data-act="novo" type="button" style="flex:none">${IC_MAIS} Novo</button>
     </div>
     <div class="filtros" role="group" aria-label="Filtrar por tipo">${CATS.map(([k, n]) => `<button type="button" data-cat="${k}" aria-pressed="${filtro.cat === k}">${n}</button>`).join('')}</div>
-    ${lista.length ? `<ul class="lista">${lista.map((p) => `
-      <li class="linha${p.status === 'oculto' ? ' fora' : ''}" data-id="${esc(p.id)}">
-        <div class="nome">${esc(p.nome)}</div>
-        <div class="meta">${esc(p.rotulo)}, ${precoTexto(p)}${p.criado_no_painel ? ', criado no painel' : ''}${p.controlado ? ', com estoque' : ''}</div>
-        <div class="troca" role="group" aria-label="Situação de ${esc(p.nome)} no site">
-          ${[['visivel', 'Visível'], ['esgotado', 'Esgotado'], ['oculto', 'Oculto']].map(([k, n]) => `<button type="button" data-act="status" data-st="${k}" data-id="${esc(p.id)}" aria-pressed="${p.status === k}">${n}</button>`).join('')}
-        </div>
-        <div class="links">
-          ${p.categoria === 'perfumes' ? `<button type="button" data-act="frag" data-id="${esc(p.id)}">Ficha</button>` : ''}
-          <button type="button" data-act="precos" data-id="${esc(p.id)}">Preços</button>
-          ${p.criado_no_painel ? `<button type="button" data-act="editar" data-id="${esc(p.id)}">Editar</button><button type="button" class="rm" data-act="remover" data-id="${esc(p.id)}">Excluir</button>` : ''}
-        </div>
-      </li>`).join('')}</ul>`
+    ${lista.length ? blocosCatalogo(lista, Boolean(busca) || filtro.cat !== 'todos')
     : '<div class="vazio"><span class="simbolo"></span><b>Nada encontrado</b>Tente outra busca ou outro filtro, ou crie um produto novo.</div>'}`;
   if (foco) { const b = $('busca'); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }
 }
@@ -2435,6 +2566,17 @@ document.addEventListener('click', async (ev) => {
     else if (act === 'av-add') { avItens.push({ id: '', tam: '', qtd: 1 }); desenharLinhasAv(); }
     else if (act === 'av-remover') { avItens.splice(Number(b.dataset.i), 1); if (!avItens.length) avItens = [{ id: '', tam: '', qtd: 1 }]; desenharLinhasAv(); }
     else if (act === 'ped-vista') { vistaPed = b.dataset.v; try { localStorage.setItem('sp-ped-vista', vistaPed); } catch (_) {} animPed = true; desenharPedidos(); }
+    else if (act === 'cat-toggle') {
+      const bloco = b.closest('.fe-acc'); const abre = !bloco.classList.contains('aberto');
+      abre ? abertosCat.add(id) : abertosCat.delete(id);
+      bloco.classList.toggle('aberto', abre); b.setAttribute('aria-expanded', abre);
+    }
+    else if (act === 'fe-toggle') {
+      const bloco = b.closest('.fe-acc'); const abre = !bloco.classList.contains('aberto');
+      abre ? abertosEst.add(id) : abertosEst.delete(id);
+      bloco.classList.toggle('aberto', abre); b.setAttribute('aria-expanded', abre);
+      if (abre) { bloco.classList.add('abrindo'); setTimeout(() => bloco.classList.remove('abrindo'), 1300); }
+    }
     else if (act === 'vista-estoque') { vistaEstoque = b.dataset.v; animMat = true; desenharEstoque(); }
     else if (act === 'mat-novo') folhaLote();
     else if (act === 'mat-editar') folhaLote(id);
