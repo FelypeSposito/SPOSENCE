@@ -906,6 +906,10 @@
     .ped--g .ped-num { display: block; line-height: 1.35; }
     .ped--g .ped-nome { overflow-wrap: anywhere; }
     @media (min-width: 1000px) { #t-baixa { max-width: none !important; } .bx-grade { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 0 32px; align-items: start; } }
+    /* valores ocultos, como nos apps de banco */
+    .vl { font-variant-numeric: tabular-nums; }
+    html[data-ocultar="1"] .vl { letter-spacing: .08em; user-select: none; }
+    #valores[aria-pressed="true"] { color: var(--acento); }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 </head>
@@ -963,6 +967,7 @@
         </div>
         <div class="sp-nav__acoes">
           <button class="icone-topo" id="busca-btn" type="button" aria-label="Buscar no painel (Ctrl+K)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+          <button id="valores" type="button" aria-pressed="true" aria-label="Mostrar valores" title="Mostrar ou ocultar valores"></button>
           <button id="tema" type="button" aria-label="Alternar tema"></button>
           <button id="sair" type="button">Sair</button>
           <button class="sp-burger" id="sp-burger" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="sp-menu"><span></span><span></span><span></span></button>
@@ -979,7 +984,7 @@
         <button type="button" data-tab="baixa">Baixa<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <button type="button" data-tab="historico">Histórico<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
-      <div class="sp-menu__pe"><button class="btn" type="button" id="menu-busca">Buscar no painel</button><button class="btn" type="button" id="menu-sair">Sair</button></div>
+      <div class="sp-menu__pe"><button class="btn" type="button" id="menu-valores">Mostrar valores</button><button class="btn" type="button" id="menu-busca">Buscar no painel</button><button class="btn" type="button" id="menu-sair">Sair</button></div>
     </div>
 
     <main>
@@ -1099,6 +1104,54 @@ function alternarTema() {
 $('tema').addEventListener('click', alternarTema);
 $('tema-login').addEventListener('click', alternarTema);
 iconeTema();
+
+/* ---------- ocultar valores (como nos apps de banco) ----------
+   Todo "R$ ..." que aparece na tela vira "R$ ••••" enquanto estiver oculto. Começa oculto toda vez que a página abre
+   e não é guardado: é uma proteção para quando alguém olha a tela. O catálogo mostra os preços públicos do site e não é mascarado. */
+let valoresOcultos = true;
+const MASCARA_VALOR = 'R$ ••••';
+const REGEX_VALOR = /R\$\s?\d[\d.]*(?:,\d{1,2})?/g;
+function mascararValores(no) {
+  if (!no) return;
+  const textos = [];
+  const aceita = (n) => { const p = n.parentElement; return p && /R\$\s?\d/.test(n.nodeValue) && !p.closest('textarea,input,script,style,option,select,.vl,#login,#t-catalogo,[data-sem-ocultar]'); };
+  if (no.nodeType === 3) { if (aceita(no)) textos.push(no); }
+  else if (no.nodeType === 1) {
+    const w = document.createTreeWalker(no, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (aceita(n) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT) });
+    while (w.nextNode()) textos.push(w.currentNode);
+  }
+  textos.forEach((n) => {
+    const t = n.nodeValue, frag = document.createDocumentFragment();
+    let i = 0;
+    t.replace(REGEX_VALOR, (m, pos) => {
+      if (pos > i) frag.append(t.slice(i, pos));
+      const s = document.createElement('span');
+      s.className = 'vl'; s.dataset.v = m; s.textContent = valoresOcultos ? MASCARA_VALOR : m;
+      frag.append(s); i = pos + m.length; return m;
+    });
+    if (i < t.length) frag.append(t.slice(i));
+    n.replaceWith(frag);
+  });
+}
+function iconeValores() {
+  const rotulo = valoresOcultos ? 'Mostrar valores' : 'Ocultar valores';
+  const b = $('valores');
+  b.innerHTML = valoresOcultos ? IC_OLHO_RISCADO : IC_OLHO;
+  b.setAttribute('aria-pressed', String(valoresOcultos));
+  b.setAttribute('aria-label', rotulo); b.title = rotulo;
+  $('menu-valores').textContent = rotulo;
+}
+function definirValores(ocultos) {
+  valoresOcultos = ocultos;
+  document.documentElement.dataset.ocultar = ocultos ? '1' : '';
+  document.querySelectorAll('.vl').forEach((s) => { s.textContent = ocultos ? MASCARA_VALOR : s.dataset.v; });
+  iconeValores();
+}
+new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach(mascararValores))).observe(document.body, { childList: true, subtree: true });
+$('valores').addEventListener('click', () => definirValores(!valoresOcultos));
+$('menu-valores').addEventListener('click', () => { definirValores(!valoresOcultos); });
+definirValores(true);
+mascararValores($('app'));
 
 /* ---------- entrada ---------- */
 function mensagemLogin(texto, tipo) {
