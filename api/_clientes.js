@@ -57,7 +57,7 @@ function cosseno(a, b) {
 }
 
 // ---------- clientes a partir dos pedidos ----------
-export function clientesInternos(e) {
+export function clientesInternos(e, contas = []) {
   const hoje = hojeSP();
   const lista = todos(e);
   const porId = new Map(lista.map((p) => [p.id, p]));
@@ -71,7 +71,7 @@ export function clientesInternos(e) {
     const chave = digitos.length >= 10 ? `t:${digitos}` : (normal(c.nome) ? `n:${normal(c.nome)}` : null);
     if (!chave) continue;
     const id = 'c' + crypto.createHash('sha1').update(chave).digest('hex').slice(0, 8);
-    const x = mapa.get(id) || { id, nome: '', telefone: '', pedidos: [], gasto: 0, perfilQtd: {}, notaQtd: {}, compras: new Map(), vetor: {}, comprou: new Set() };
+    const x = mapa.get(id) || { id, nome: '', telefone: '', tel: digitos.length >= 10 ? digitos : '', pedidos: [], gasto: 0, perfilQtd: {}, notaQtd: {}, compras: new Map(), vetor: {}, comprou: new Set() };
     if (c.nome) x.nome = c.nome;
     if (c.telefone) x.telefone = c.telefone;
     const data = String(ped.criado).slice(0, 10);
@@ -97,7 +97,9 @@ export function clientesInternos(e) {
   }
 
   const extras = e.clientes_extra || {};
-  return [...mapa.values()].map((x) => {
+  const porSub = new Map(contas.map((c) => [c.sub, c]));
+  const porTel = new Map(contas.map((c) => [digitosTel(c.consentimento && c.consentimento.whatsapp), c]).filter(([t]) => t));
+  const clientes = [...mapa.values()].map((x) => {
     x.pedidos.sort((a, b) => a.data.localeCompare(b.data) || a.numero - b.numero);
     const datas = x.pedidos.map((p) => p.data);
     const intervalos = datas.slice(1).map((d, i) => Math.max(1, difDias(datas[i], d)));
@@ -107,9 +109,43 @@ export function clientesInternos(e) {
     x.intervalo = intervalos.length ? Math.round(intervalos.reduce((t, n) => t + n, 0) / intervalos.length) : null;
     x.dominante = Object.entries(x.perfilQtd).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
     x.extra = extras[x.id] || {};
+    // conta do site: a que o painel vinculou, ou a que informou o mesmo WhatsApp
+    const vinculada = x.extra.conta_sub && porSub.get(x.extra.conta_sub);
+    x.conta = vinculada || (x.tel && porTel.get(x.tel)) || null;
+    x.contaVinculada = Boolean(vinculada);
+    if (x.conta) enriquecer(x, x.conta, porId);
     return x;
   });
+  // quem tem conta, aceitou contato e ainda não comprou entra como "contato" (sem pedido)
+  const jaTem = new Set(clientes.map((c) => c.conta && c.conta.sub).filter(Boolean));
+  for (const conta of contas) {
+    const tel = digitosTel(conta.consentimento && conta.consentimento.whatsapp);
+    if (jaTem.has(conta.sub) || !tel || !(conta.consentimento && conta.consentimento.marketing)) continue;
+    const id = 'c' + crypto.createHash('sha1').update(`t:${tel}`).digest('hex').slice(0, 8);
+    const x = { id, nome: conta.nome, telefone: conta.consentimento.whatsapp, tel, pedidos: [], gasto: 0, perfilQtd: {}, notaQtd: {}, compras: new Map(), vetor: {}, comprou: new Set(),
+      primeira: null, ultima: null, dias: Math.max(0, difDias(String(conta.criado).slice(0, 10), hoje)), intervalo: null, dominante: null,
+      extra: extras[id] || {}, conta, contaVinculada: Boolean(extras[id] && extras[id].conta_sub), lead: true };
+    enriquecer(x, conta, porId);
+    clientes.push(x);
+  }
+  return clientes;
 }
+
+const digitosTel = (t) => String(t || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
+
+// o que a pessoa declarou na conta entra no gosto (com peso menor que uma compra real)
+function enriquecer(x, conta, porId) {
+  const g = conta.gosto || {};
+  for (const p of g.perfis || []) x.vetor[`perfil:${p}`] = (x.vetor[`perfil:${p}`] || 0) + 1.5;
+  for (const p of g.publicos || []) x.vetor[`publico:${p}`] = (x.vetor[`publico:${p}`] || 0) + 1;
+  for (const n of g.notas || []) x.vetor[`nota:${n}`] = (x.vetor[`nota:${n}`] || 0) + 1;
+  for (const id of conta.usou || []) { const p = porId.get(id); if (p) { soma(x.vetor, featuresProduto(p), 1); x.comprou.add(id); } }
+  for (const id of conta.desejos || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 0.8); }
+  if (!x.dominante && (g.perfis || []).length) x.dominante = g.perfis[0];
+}
+
+// consentimento para receber promoções: com conta, vale o que a pessoa marcou; sem conta, não há registro
+const consentDe = (c) => (!c.conta ? 'nao_registrado' : c.conta.consentimento && c.conta.consentimento.marketing ? 'aceitou' : 'sem_aceite');
 
 function vendavel(e, p) {
   const st = e.catalogo.status[p.id];
@@ -146,6 +182,8 @@ function recomendar(e, c, todosClientes, n = 3) {
   }).filter((r) => r.afinidade > 0).sort((a, b) => (b.disponivel - a.disponivel) || (b.afinidade - a.afinidade)).slice(0, n);
 }
 
+const nomesDe = (e, ids) => (ids || []).map((id) => todos(e).find((p) => p.id === id)?.name).filter(Boolean);
+
 function resumo(e, c, todosClientes) {
   return {
     id: c.id, nome: c.nome, telefone: c.telefone,
@@ -156,6 +194,12 @@ function resumo(e, c, todosClientes) {
     compras: [...c.compras.values()].sort((a, b) => b.qtd - a.qtd || b.ultima.localeCompare(a.ultima)).slice(0, 8),
     pedidos: c.pedidos.slice().reverse().slice(0, 12),
     recomendacoes: recomendar(e, c, todosClientes),
+    consent: consentDe(c), lead: Boolean(c.lead),
+    conta: c.conta ? {
+      nome: c.conta.nome, email: c.conta.email, vinculada: c.contaVinculada, whatsapp: (c.conta.consentimento && c.conta.consentimento.whatsapp) || '',
+      aceite_em: (c.conta.consentimento && c.conta.consentimento.data) || null,
+      gosto: c.conta.gosto || {}, usou: nomesDe(e, c.conta.usou), desejos: nomesDe(e, c.conta.desejos), sub: c.conta.sub,
+    } : null,
     contato: { ultimo: c.extra.ultimo_contato || null, notas: c.extra.notas || '', nao_chamar: Boolean(c.extra.nao_chamar), historico: (c.extra.contatos || []).slice(-6).reverse() },
   };
 }
@@ -168,23 +212,23 @@ function paraChamar(e, internos, resumos) {
     const ritmo = c.intervalo || INTERVALO_PADRAO;
     const atraso = c.dias / Math.max(30, ritmo);
     const chamadoHa = c.extra.ultimo_contato ? difDias(c.extra.ultimo_contato, hoje) : null;
-    if (c.extra.nao_chamar || atraso < 1 || (chamadoHa !== null && chamadoHa < CARENCIA_CONTATO)) return null;
+    if (c.lead || consentDe(c) === 'sem_aceite' || c.extra.nao_chamar || atraso < 1 || (chamadoHa !== null && chamadoHa < CARENCIA_CONTATO)) return null;
     const melhor = r.recomendacoes.find((x) => x.disponivel) || null;
     return { id: c.id, nome: c.nome, telefone: c.telefone, dias: c.dias, ritmo, atraso: Math.round(atraso * 10) / 10, n_pedidos: c.pedidos.length, sugestao: melhor, prioridade: atraso * (0.5 + (melhor ? melhor.afinidade : 0) / 100) };
   }).filter(Boolean).sort((a, b) => b.prioridade - a.prioridade).slice(0, 20);
 }
 
-export function painelClientes(e) {
-  const internos = clientesInternos(e);
+export function painelClientes(e, contas = []) {
+  const internos = clientesInternos(e, contas);
   const resumos = internos.map((c) => resumo(e, c, internos));
   return {
-    lista: resumos.sort((a, b) => b.ultima.localeCompare(a.ultima)),
+    lista: resumos.sort((a, b) => (b.ultima || '0').localeCompare(a.ultima || '0')),
     chamar: paraChamar(e, internos, internos.map((c) => resumos.find((r) => r.id === c.id))),
   };
 }
 
 // Simulador de lançamento: quem tem mais chance de comprar, e por tipo de cliente
-export function lancamento(e, alvoPedido) {
+export function lancamento(e, alvoPedido, contas = []) {
   let alvo = {};
   let prodId = null;
   let nome = '';
@@ -199,12 +243,12 @@ export function lancamento(e, alvoPedido) {
     nome = limpar(alvoPedido.nome, 80);
   }
   if (!Object.keys(alvo).length) throw erro('Escolha um perfume ou descreva o perfil (perfil, público ou notas).');
-  const internos = clientesInternos(e);
+  const internos = clientesInternos(e, contas);
   const hoje = hojeSP();
   const ranking = internos.map((c) => {
     const pts = pontuar(c, internos, alvo, prodId);
     return { id: c.id, nome: c.nome, telefone: c.telefone, afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), ja_comprou: prodId ? c.comprou.has(prodId) : false,
-      dias: c.dias, n_pedidos: c.pedidos.length, dominante: c.dominante, ultimo_contato: c.extra.ultimo_contato || null, nao_chamar: Boolean(c.extra.nao_chamar),
+      dias: c.dias, n_pedidos: c.pedidos.length, dominante: c.dominante, ultimo_contato: c.extra.ultimo_contato || null, nao_chamar: Boolean(c.extra.nao_chamar), consent: consentDe(c), lead: Boolean(c.lead),
       chamado_ha: c.extra.ultimo_contato ? difDias(c.extra.ultimo_contato, hoje) : null };
   }).sort((a, b) => b.afinidade - a.afinidade || b.dias - a.dias);
   const grupos = new Map();
@@ -218,13 +262,13 @@ export function lancamento(e, alvoPedido) {
   return { nome, produto_id: prodId, ranking, segmentos, total: ranking.length };
 }
 
-function achaCliente(e, id) {
-  if (!clientesInternos(e).some((c) => c.id === id)) throw erro('Cliente não encontrado.', 404);
+function achaCliente(e, id, contas = []) {
+  if (!clientesInternos(e, contas).some((c) => c.id === id)) throw erro('Cliente não encontrado.', 404);
 }
 
 // "Chamei": guarda a data para não sugerir a mesma pessoa de novo logo em seguida
-export function registrarContato(e, id, nota) {
-  achaCliente(e, id);
+export function registrarContato(e, id, nota, contas = []) {
+  achaCliente(e, id, contas);
   e.clientes_extra ??= {};
   const x = (e.clientes_extra[id] ??= {});
   const data = hojeSP();
@@ -232,10 +276,22 @@ export function registrarContato(e, id, nota) {
   x.contatos = [...(x.contatos || []), { data, nota: limpar(nota, 200) }].slice(-50);
 }
 
-export function dadosCliente(e, id, d) {
-  achaCliente(e, id);
+export function dadosCliente(e, id, d, contas = []) {
+  achaCliente(e, id, contas);
   e.clientes_extra ??= {};
   const x = (e.clientes_extra[id] ??= {});
   if ('notas' in d) x.notas = limpar(d.notas, 600);
   if ('nao_chamar' in d) x.nao_chamar = Boolean(d.nao_chamar);
+}
+
+// O cliente só vê os próprios pedidos na conta depois que o painel confirma que a conta é dele
+export function vincularConta(e, id, sub, contas = []) {
+  achaCliente(e, id, contas);
+  if (!contas.some((c) => c.sub === sub)) throw erro('Conta não encontrada.', 404);
+  e.clientes_extra ??= {};
+  (e.clientes_extra[id] ??= {}).conta_sub = sub;
+}
+export function desvincularConta(e, id, contas = []) {
+  achaCliente(e, id, contas);
+  if (e.clientes_extra && e.clientes_extra[id]) delete e.clientes_extra[id].conta_sub;
 }

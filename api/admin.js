@@ -8,6 +8,7 @@
 //   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
 //   desfazer
+//   cliente_vincular {id, sub} · cliente_desvincular {id}   (liga o cliente à conta do site; só então ele vê os pedidos)
 //   clientes · cliente_contato {id, nota} · cliente_dados {id, notas, nao_chamar} · lancamento {produto_id | perfil, publico, notas, nome}
 //   maturacao_criar {produto_id | nome, ml, inicio: "AAAA-MM-DD", dias, obs} · maturacao_editar {id, ...} · maturacao_remover {id}
 //   maturacao_concluir {id, produto_id, ml}   os ml entram como granel; dá para desfazer
@@ -27,7 +28,8 @@
 //   produto_remover { id }                                     só produtos criados pelo painel
 import crypto from 'node:crypto';
 import { contagem, contar } from './_redis.js';
-import { painelClientes, lancamento, registrarContato, dadosCliente } from './_clientes.js';
+import { painelClientes, lancamento, registrarContato, dadosCliente, vincularConta, desvincularConta } from './_clientes.js';
+import { listarContas } from './_contas.js';
 import {
   carregar, salvar, estado, todos, itensDoPedido, hashDoPedido, simularBaixa,
   registrar, desfazerUltimo, movimentosDeEntrada, movimentosDeAjuste, movimentosDeUnidades,
@@ -139,13 +141,21 @@ export default async function handler(req, res) {
       await salvar(e);
       extra = { desfeito: h.descricao };
     } else if (b.acao === 'clientes') {
-      extra = { clientes: painelClientes(e) };
+      extra = { clientes: painelClientes(e, await listarContas()) };
     } else if (b.acao === 'cliente_contato') {
-      registrarContato(e, b.id, b.nota); await salvar(e); extra = { clientes: painelClientes(e) };
+      const contas = await listarContas();
+      registrarContato(e, b.id, b.nota, contas); await salvar(e); extra = { clientes: painelClientes(e, contas) };
     } else if (b.acao === 'cliente_dados') {
-      dadosCliente(e, b.id, b); await salvar(e); extra = { clientes: painelClientes(e) };
+      const contas = await listarContas();
+      dadosCliente(e, b.id, b, contas); await salvar(e); extra = { clientes: painelClientes(e, contas) };
+    } else if (b.acao === 'cliente_vincular') {
+      const contas = await listarContas();
+      vincularConta(e, b.id, b.sub, contas); await salvar(e); extra = { clientes: painelClientes(e, contas) };
+    } else if (b.acao === 'cliente_desvincular') {
+      const contas = await listarContas();
+      desvincularConta(e, b.id, contas); await salvar(e); extra = { clientes: painelClientes(e, contas) };
     } else if (b.acao === 'lancamento') {
-      extra = { lancamento: lancamento(e, b) };
+      extra = { lancamento: lancamento(e, b, await listarContas()) };
     } else if (b.acao === 'maturacao_criar') {
       extra = { criado: criarLote(e, b).id }; await salvar(e);
     } else if (b.acao === 'maturacao_editar') {

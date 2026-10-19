@@ -1,0 +1,52 @@
+/* Minha conta e política de privacidade: mesma linguagem do site (body.sp) */
+.conta-hero { padding-top: clamp(7rem, 12vw, 9rem); padding-bottom: clamp(2rem, 4vw, 3rem); }
+.conta-hero .h-lead { margin-top: 1rem; }
+.conta-section { padding-bottom: clamp(4rem, 8vw, 6rem); }
+.conta-wrap { display: grid; gap: 1rem; max-width: 760px; }
+.conta-card { background: var(--h-card); border: 1px solid var(--h-line); border-radius: var(--h-r); padding: 1.5rem; }
+.conta-card h2 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.6rem; line-height: 1.15; color: var(--h-ink); }
+.conta-sub { color: var(--h-ink-soft); font-size: .95rem; line-height: 1.6; margin-top: .35rem; }
+.conta-nota { color: var(--h-ink-soft); font-size: .85rem; line-height: 1.6; margin-top: 1rem; }
+.conta-nota a, .legal a { color: var(--h-accent); text-decoration: underline; text-underline-offset: 3px; }
+.conta-rotulo { font-size: .8rem; font-weight: 600; color: var(--h-ink-soft); margin: 1.25rem 0 .5rem; }
+.conta-aviso, .conta-erro { color: #8a3b24; font-size: .9rem; font-weight: 600; min-height: 1.3em; margin-top: .75rem; }
+.conta-entrar { max-width: 520px; }
+.conta-g { margin: 1.25rem 0 .25rem; min-height: 44px; }
+.conta-vantagens { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; gap: .6rem; }
+.conta-vantagens li { position: relative; padding-left: 1.4rem; color: var(--h-ink); font-size: .95rem; line-height: 1.5; }
+.conta-vantagens li::before { content: ''; position: absolute; left: 0; top: .55em; width: .55rem; height: .55rem; border-radius: 50%; background: var(--h-accent); }
+.conta-topo { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; }
+.conta-foto { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--h-tint); }
+.conta-pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+.conta-pill { border: 1px solid var(--h-line-strong); background: transparent; color: var(--h-ink); border-radius: 999px; padding: .55rem 1rem; min-height: 40px; font: 600 .85rem/1 var(--font-body); cursor: pointer; transition: background-color .35s var(--h-ease), color .35s var(--h-ease), border-color .35s var(--h-ease), transform .2s; }
+.conta-pill:active { transform: scale(.97); }
+.conta-pill[aria-pressed="true"] { background: var(--h-ink); color: var(--h-bg); border-color: var(--h-ink); }
+.conta-campo { width: 100%; min-height: 48px; border: 0; border-bottom: 1px solid var(--h-line-strong); background: transparent; color: var(--h-ink); font: 400 1rem var(--font-body); padding: .5rem 0; margin-top: 1rem; border-radius: 0; }
+.conta-campo:focus { outline: none; border-bottom-color: var(--h-accent); box-shadow: 0 1px 0 var(--h-accent); }
+.cp-lista { margin-top: .5rem; max-height: 420px; overflow-y: auto; overscroll-behavior: contain; }
+.cp-linha { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--h-line); }
+.cp-linha:last-child { border: 0; }
+.cp-linha b { display: block; font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.15rem; line-height: 1.2; }
+.cp-linha small { display: block; color: var(--h-ink-soft); font-size: .8rem; }
+.cp-botoes { display: flex; gap: .4rem; flex: none; }
+.conta-consent { display: flex; gap: .85rem; align-items: flex-start; margin-top: 1rem; cursor: pointer; line-height: 1.55; }
+.conta-consent input { width: 22px; height: 22px; margin-top: .15rem; accent-color: var(--h-accent); flex: none; }
+.conta-pedidos { list-style: none; padding: 0; margin-top: .75rem; }
+.conta-pedidos li { display: flex; justify-content: space-between; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--h-line); }
+.conta-pedidos li:last-child { border: 0; }
+.conta-pedidos small { display: block; color: var(--h-ink-soft); font-size: .85rem; }
+.conta-acoes { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+.conta-perigo { color: #8a3b24; border-color: #8a3b24; }
+.conta-barra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: flex; align-items: center; justify-content: center; gap: 1rem; padding: .85rem 1rem calc(.85rem + env(safe-area-inset-bottom)); background: var(--h-card); border-top: 1px solid var(--h-line-strong); box-shadow: 0 -14px 34px -22px rgba(70, 37, 6, .45); font-size: .9rem; }
+.conta-barra[hidden] { display: none; }
+.conta-dialogo { border: 1px solid var(--h-line-strong); border-radius: var(--h-r); padding: 1.75rem; max-width: min(92vw, 440px); background: var(--h-card); color: var(--h-ink); }
+.conta-dialogo::backdrop { background: rgba(40, 22, 4, .55); }
+.conta-dialogo h2 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.6rem; }
+.conta-dialogo p { color: var(--h-ink-soft); line-height: 1.6; margin-top: .6rem; }
+@media (max-width: 560px) { .conta-topo { grid-template-columns: auto 1fr; } .conta-sair { grid-column: 1 / -1; justify-content: center; } .cp-linha { flex-direction: column; align-items: flex-start; } }
+/* política de privacidade */
+.legal { max-width: 70ch; }
+.legal h2 { font-family: 'Philosopher', Georgia, serif; font-weight: 400; font-size: 1.6rem; margin: 2.2rem 0 .6rem; }
+.legal p, .legal li { color: var(--h-ink-soft); line-height: 1.75; }
+.legal ul { padding-left: 1.2rem; display: grid; gap: .4rem; margin-top: .6rem; }
+.legal .legal-quadro { margin-top: 1.2rem; padding: 1rem 1.2rem; border: 1px solid var(--h-line-strong); border-radius: var(--h-r); background: var(--h-card); font-size: .9rem; }

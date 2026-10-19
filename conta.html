@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Minha conta | Sposence</title>
+  <link rel="shortcut icon" href="ID. VISUAL SPOSENCE/Imagens/LOGOS/Logo Secundária/Logo Secundária- SPOSENCE-15.png" type="image/x-icon" />
+  <meta name="description" content="Entre com o Google para guardar o seu gosto, os perfumes que já usou e receber indicações da Sposence." />
+  <link rel="preload" as="font" href="fonts/Philosopher-Regular.woff2" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="img/simbolo-loader.png" />
+  <link rel="preload" as="image" href="img/logo-navbar.png" />
+  <!-- Abertura da primeira visita (símbolo + nome da marca); define window.spLoaded -->
+  <script src="js/intro.js?v=20261014c"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="css/style.css?v=20261014c" />
+  <link rel="stylesheet" href="css/animations.css?v=20261014c" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="css/brand.css?v=20261014c" />
+  <link rel="stylesheet" href="css/pages.css?v=20261014c" />
+  <link rel="stylesheet" href="css/conta.css?v=20261020" />
+</head>
+<body class="sp">
+
+  <div id="scroll-progress"></div>
+  <div id="navbar-mount"></div>
+  <div id="cart-mount"></div>
+  <div id="toast-mount"></div>
+
+  <main>
+    <section class="conta-hero">
+      <div class="h-wrap">
+        <span class="h-eyebrow">Minha conta</span>
+        <h1 class="h-title">Seu perfil <em>olfativo.</em></h1>
+        <p class="h-lead">Conte do que você gosta e guarde os perfumes que já usou. A Sposence usa isso só para indicar fragrâncias que combinam com você.</p>
+      </div>
+    </section>
+    <section class="conta-section">
+      <div class="h-wrap" id="conta-app" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/data.js?v=20261014c"></script>
+  <script src="/api/catalogo.js"></script>
+  <script src="js/estoque-online.js?v=20261020"></script>
+  <script src="js/app.js?v=20261020"></script>
+  <script>
+    document.getElementById('navbar-mount').innerHTML = buildNavbar('conta.html');
+    document.getElementById('cart-mount').innerHTML   = buildCart();
+    document.getElementById('toast-mount').innerHTML  = buildToastContainer();
+    document.getElementById('footer-mount').innerHTML = buildFooter();
+  </script>
+  <script src="js/conta.js?v=20261020"></script>
+</body>
+</html>

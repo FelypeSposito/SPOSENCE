@@ -764,6 +764,9 @@ function buildNavbar(activePage) {
         </form>
         <div class="search-dropdown" id="search-dropdown-desk"></div>
       </div>
+      <a href="conta.html" class="navbar__cart navbar__conta" aria-label="Minha conta"${activePage === 'conta.html' ? ' aria-current="page"' : ''}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+      </a>
       <button class="navbar__cart" data-open-cart aria-label="Carrinho">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="navbar__cart-count" style="display:none">0</span>
@@ -789,6 +792,7 @@ function buildNavbar(activePage) {
       </form>
       <nav class="mobile-menu__links" aria-label="Páginas">
         ${pages.map((p, i) => `<a href="${p.href}" style="--i:${i}"${activePage === p.href ? ' aria-current="page"' : ''}>${p.label}</a>`).join('')}
+        <a href="conta.html" style="--i:${pages.length}"${activePage === 'conta.html' ? ' aria-current="page"' : ''}>Minha conta</a>
       </nav>
       <div class="mobile-menu__footer">
         <span class="mobile-menu__label">Contato</span>
@@ -931,6 +935,8 @@ function buildFooter() {
           <div class="footer__heading">Informações</div>
           <ul class="footer__links">
             <li><a href="sobre.html">Nossa Qualidade</a></li>
+            <li><a href="conta.html">Minha conta</a></li>
+            <li><a href="privacidade.html">Política de privacidade</a></li>
             <li><a href="mailto:sposence@gmail.com">sposence@gmail.com</a></li>
             <li><a href="https://wa.me/5511933175390" target="_blank" rel="noopener">WhatsApp (11) 93317-5390</a></li>
           </ul>

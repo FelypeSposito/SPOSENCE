@@ -66,3 +66,14 @@ export async function contar(chave, janelaSegundos) {
   if (n === 1) await comando('EXPIRE', chave, janelaSegundos);
   return n;
 }
+
+export async function apagar(chave) {
+  if (process.env.ESTOQUE_LOCAL) {
+    if (!fs.existsSync(ARQUIVO_LOCAL)) return;
+    const tudo = JSON.parse(fs.readFileSync(ARQUIVO_LOCAL, 'utf8'));
+    delete tudo[chave];
+    fs.writeFileSync(ARQUIVO_LOCAL, JSON.stringify(tudo));
+    return;
+  }
+  await comando('DEL', chave);
+}
