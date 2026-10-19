@@ -326,6 +326,30 @@ export function movimentosDeEntrada(e, { id, ml: granel, tamanho, qtd }) {
   return [{ id, campo: tamanho, delta: qtd }];
 }
 
+// Vários tamanhos de uma vez ({ "30ml": 5, "50ml": 3 }).
+// envasar: transforma granel em frascos, então os ml usados saem do granel.
+export function movimentosDeUnidades(e, { id, unidades, envasar }) {
+  if (!todos(e).some((p) => p.id === id && p.category === 'perfumes')) throw erro(`Perfume "${id}" não existe no catálogo.`);
+  const movs = [];
+  const partes = [];
+  let usado = 0;
+  for (const s of e.tamanhos) {
+    const n = Number(unidades?.[s] || 0);
+    if (!Number.isInteger(n) || n < 0 || n > 100000) throw erro('Número inválido.');
+    if (!n) continue;
+    movs.push({ id, campo: s, delta: n });
+    partes.push(`${n} × ${s}`);
+    usado += n * ml(s);
+  }
+  if (!movs.length) throw erro('Informe pelo menos um frasco.');
+  if (envasar) {
+    const granel = e.produtos[id]?.granel_ml || 0;
+    if (usado > granel) throw erro(`Para envasar ${partes.join(' e ')} precisa de ${usado} ml, e só há ${granel} ml a granel.`);
+    movs.push({ id, campo: 'granel_ml', delta: -usado });
+  }
+  return { movs, partes, usado };
+}
+
 // Ajuste manual: define os valores certos e guarda só a diferença.
 export function movimentosDeAjuste(e, { id, granel_ml, unidades }) {
   const atual = e.produtos[id] || { granel_ml: 0, unidades: {} };

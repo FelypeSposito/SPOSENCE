@@ -4,7 +4,8 @@
 //   estado
 //   pedido          { texto, confirmar }                       baixa a partir da mensagem do pedido
 //   venda           { itens: [{id, tamanho, qtd}], confirmar } venda avulsa
-//   entrada         { id, ml }  ou  { id, tamanho, qtd }
+//   entrada         { id, ml }  ou  { id, tamanho, qtd }  ou  { id, unidades: { "30ml": 5, "50ml": 3 } }
+//   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
 //   desfazer
 //   produto_status  { id, status: "visivel" | "esgotado" | "oculto" }
@@ -15,7 +16,7 @@
 import crypto from 'node:crypto';
 import {
   carregar, salvar, estado, todos, itensDoPedido, hashDoPedido, simularBaixa,
-  registrar, desfazerUltimo, movimentosDeEntrada, movimentosDeAjuste,
+  registrar, desfazerUltimo, movimentosDeEntrada, movimentosDeAjuste, movimentosDeUnidades,
   criarProduto, editarProduto, removerProduto, definirStatus, definirPrecos,
 } from './_estoque.js';
 
@@ -75,6 +76,14 @@ export default async function handler(req, res) {
         await salvar(e);
       }
       extra = { feito: true, linhas: sim.linhas, nada_a_descontar: !sim.movs.length };
+    } else if (b.acao === 'entrada' && b.unidades) {
+      const r = movimentosDeUnidades(e, { id: b.id, unidades: b.unidades });
+      registrar(e, { tipo: 'entrada', descricao: `+${r.partes.join(' e ')} de ${todos(e).find((p) => p.id === b.id).name}`, movs: r.movs });
+      await salvar(e);
+    } else if (b.acao === 'envasar') {
+      const r = movimentosDeUnidades(e, { id: b.id, unidades: b.unidades, envasar: true });
+      registrar(e, { tipo: 'envase', descricao: `Envase de ${r.partes.join(' e ')} de ${todos(e).find((p) => p.id === b.id).name} (−${r.usado} ml do granel)`, movs: r.movs });
+      await salvar(e);
     } else if (b.acao === 'entrada') {
       const movs = movimentosDeEntrada(e, { id: b.id, ml: b.ml ? inteiro(b.ml) : 0, tamanho: b.tamanho, qtd: b.qtd ? inteiro(b.qtd) : 0 });
       if (!movs[0].delta) return res.status(400).json({ erro: 'Informe uma quantidade maior que zero.' });
