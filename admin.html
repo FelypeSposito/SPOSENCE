@@ -275,6 +275,17 @@
     .gostos li { display: grid; grid-template-columns: minmax(110px, 38%) 1fr 34px; align-items: center; gap: 12px; padding: 5px 0; font-size: 14.5px; }
     .gostos .pg-barra { margin: 0; }
     .gostos b { text-align: right; font-variant-numeric: tabular-nums; color: var(--suave); font-weight: 600; }
+    .faixa { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 0; margin-bottom: 18px; }
+    .faixa div { padding: 4px 14px; border-left: 1px solid var(--forte); }
+    .faixa div:nth-child(odd) { border-left: 0; padding-left: 0; }
+    .faixa b { display: block; font-family: 'Philosopher', serif; font-weight: 400; font-size: 28px; line-height: 1.1; }
+    .faixa span { color: var(--suave); font-size: 13px; }
+    .sug li { align-items: flex-start; }
+    .sug-foto { flex: none; width: 56px; height: 56px; border-radius: 12px; background: var(--linha) center / cover; }
+    .sug li > div { flex: 1; min-width: 0; }
+    .chip--ouro { background: color-mix(in srgb, var(--ouro, #daa753) 28%, transparent); color: var(--tinta); }
+    .chip--nao { background: transparent; border: 1px solid var(--forte); color: var(--suave); text-decoration: line-through; }
+    @media (min-width: 700px) { .faixa { grid-template-columns: repeat(4, auto); justify-content: start; } .faixa div { padding: 4px 28px; } .faixa div:nth-child(odd) { border-left: 1px solid var(--forte); padding-left: 28px; } .faixa div:first-child { border-left: 0; padding-left: 0; } }
     @media (min-width: 1000px) {
       .tela-in { padding-top: 26px; }
       .tela-grade { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -1528,8 +1539,8 @@ function msgCliente(c, tipo, rec) {
   const ultimoItem = c.pedidos[0] && c.pedidos[0].itens[0] ? c.pedidos[0].itens[0].replace(/^\d+×\s*/, '') : '';
   const fecho = `${preco ? ` Está ${preco}.` : ''}`;
   if (tipo === 'conhecer') {
-    const quer = c.conta && c.conta.desejos && c.conta.desejos[0];
-    return `${abre} Vi que você criou a sua conta no nosso site${gosto ? ` e que curte ${gosto}` : ''}${quer ? `, e que quer experimentar o ${quer}` : ''}. Separei uma sugestão para você: o ${sugestao}${notas ? `, com ${notas}` : ''}.${fecho} Quer conhecer?`;
+    if (rec.quer) return `${abre} Vi que você marcou o ${sugestao} para experimentar no nosso site${gosto ? `, e que curte ${gosto}` : ''}. Ele tem ${notas ? notas.replace(/^notas de /, 'notas de ') : 'uma assinatura marcante'}.${fecho} Quer provar?`;
+    return `${abre} Vi que você criou a sua conta no nosso site${gosto ? ` e que curte ${gosto}` : ''}. Separei uma sugestão para você: o ${sugestao}${notas ? `, com ${notas}` : ''}.${fecho} Quer conhecer?`;
   }
   if (tipo === 'novidade') {
     return `${abre} Chegou novidade: o ${sugestao}${notas ? `, com ${notas}` : ''}. Pensei em você${gosto ? ` porque você curte ${gosto}` : ''}${ultimoItem ? `, e gostou do ${ultimoItem.replace(/\s+\d+\s?(ml|g)$/i, '')}` : ''}.${fecho} Quer experimentar?`;
@@ -1610,13 +1621,17 @@ function corpoClientes() {
 /* ----- tela cheia do cliente: o que comprou, o que gosta, o que sugerir, a mensagem ----- */
 let msgEstado = { id: null, tipo: 'recompra', rec: null };
 
+const chipsNomes = (rot, nomes, cls) => (nomes.length ? `<p class="conta-rotulo" style="margin-top:16px">${rot}</p><p class="chips-notas" style="margin-top:6px">${nomes.map((n) => `<span class="chip ${cls || ''}">${esc(n)}</span>`).join('')}</p>` : '');
 const secComprou = (c) => {
-  const usou = c.conta ? c.conta.usou.filter((n) => !c.compras.some((x) => normalNome(x.nome) === normalNome(n))) : [];
+  const k = c.conta;
+  const usou = k ? k.usou.filter((n) => !c.compras.some((x) => normalNome(x.nome) === normalNome(n))) : [];
   return `<section class="tela-card" style="order:1">
-    <div class="det-linha"><h3>Perfumes que já comprou</h3><span class="detalhe">${c.n_pedidos} ${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}${c.n_pedidos ? `, ${din(c.gasto)}` : ''}</span></div>
+    <h3>Perfumes que já comprou</h3>
     ${c.compras.length ? `<ul class="comprou">${c.compras.map((x) => `<li><div><b>${esc(x.nome)}</b><small>última vez em ${dataCurta(x.ultima)}/${x.ultima.slice(0, 4)}, ${quandoDias(difDiasCli(x.ultima, est.hoje))}</small></div><span class="qtd-pill">${x.qtd}×</span></li>`).join('')}</ul>`
-      : '<p class="detalhe">Ainda não comprou pelos pedidos registrados.</p>'}
-    ${usou.length ? `<p class="conta-rotulo" style="margin-top:16px">Já usou, segundo a conta do site</p><p class="chips-notas" style="margin-top:6px">${usou.map((n) => `<span class="chip">${esc(n)}</span>`).join('')}</p>` : ''}
+      : '<p class="detalhe" style="margin-top:6px">Ainda não comprou pelos pedidos registrados.</p>'}
+    ${chipsNomes('Já usou, segundo a conta do site', usou)}
+    ${chipsNomes('Quer experimentar', k ? k.desejos : [], 'chip--ouro')}
+    ${chipsNomes('Não curte', k ? k.naocurte || [] : [], 'chip--nao')}
   </section>`;
 };
 
@@ -1633,7 +1648,8 @@ const secGostos = (c) => {
 const secSugestoes = (c, sel) => `<section class="tela-card" style="order:3"><h3>Perfumes sugeridos</h3>
   ${c.recomendacoes.length ? `<ul class="sug">${c.recomendacoes.map((r) => {
     const p = est.catalogo.find((x) => x.id === r.id);
-    return `<li class="${r.id === sel ? 'sel' : ''}"><div><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}
+    return `<li class="${r.id === sel ? 'sel' : ''}"><span class="sug-foto" style="background-image:url('${p && p.imagem ? esc(encodeURI(p.imagem)) : ''}')"></span>
+      <div><b>${esc(r.nome)}</b> ${pilulaAfin(r.rotulo, r.afinidade)}${r.quer ? ' <span class="chip chip--ouro">Pediu para experimentar</span>' : ''}
       ${p && p.inspirado ? `<small>inspirado em ${esc(p.inspirado)}</small>` : ''}${p && p.variantes.length ? `<small>${esc(precoTexto2(p))}</small>` : ''}
       <small>${r.motivos.length ? 'combina com ' + esc(r.motivos.join(' e ')) : 'sem motivo claro ainda'}${r.ja_comprou ? ', ela já tem' : ''}${r.disponivel ? '' : ', sem estoque agora'}</small></div>
       <button class="btn pequeno${r.id === sel ? ' primario' : ''}" type="button" data-act="cli-usar" data-id="${esc(c.id)}" data-prod="${esc(r.id)}">${r.id === sel ? 'Na mensagem' : 'Usar'}</button></li>`;
@@ -1673,7 +1689,14 @@ function abrirCliente(id, foco) {
         <p class="legenda">${c.telefone ? esc(c.telefone) + ', ' : ''}${c.lead ? 'contato do site' : `cliente desde ${dataCurta(c.primeira)}/${c.primeira.slice(0, 4)}`}</p></div>
       ${c.consent === 'aceitou' ? '<span class="chip-st" data-st="pronto">Aceitou contato</span>' : c.consent === 'sem_aceite' ? '<span class="chip-st" data-st="cancelado">Sem aceite</span>' : ''}
     </header>
-    <div class="tela-in"><div class="tela-grade">
+    <div class="tela-in">
+      <div class="faixa">
+        <div><b>${c.n_pedidos}</b><span>${c.n_pedidos === 1 ? 'pedido' : 'pedidos'}</span></div>
+        <div><b>${dinInt(c.gasto)}</b><span>gasto no total</span></div>
+        <div><b>${c.ultima ? (c.dias === 0 ? 'hoje' : c.dias + ' d') : 'sem compra'}</b><span>${c.ultima ? 'desde a última compra' : 'cliente do site'}</span></div>
+        <div><b>${c.intervalo ? c.intervalo + ' d' : 'sem ritmo'}</b><span>${c.intervalo ? 'entre compras, em média' : 'precisa de 2 compras'}</span></div>
+      </div>
+      <div class="tela-grade">
       <div class="tela-col">
         ${secComprou(c)}
         ${secGostos(c)}

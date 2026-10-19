@@ -121,6 +121,7 @@ export function estado(e) {
       rotulo: ROTULO[p.category] || p.category,
       perfil: p.profile,
       inspirado: p.inspired_by,
+      imagem: p.image,
       descricao: p.description,
       tags: p.tags,
       notas: p.notes ? { topo: p.notes.top, coracao: p.notes.heart, fundo: p.notes.base } : undefined,

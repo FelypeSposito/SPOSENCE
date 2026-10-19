@@ -32,6 +32,7 @@ const ROTULOS = {
   'nota:citrico': 'notas cítricas', 'nota:baunilha': 'baunilha', 'nota:amadeirado': 'notas amadeiradas', 'nota:gourmand': 'gourmand',
   'nota:floral': 'florais', 'nota:aquatico': 'notas aquáticas', 'nota:calor': 'perfumes para o calor', 'nota:dia': 'perfumes de dia',
   'nota:amendoa': 'amêndoa', 'nota:oud': 'oud', 'nota:especiado': 'notas especiadas',
+  'nota:premium': 'perfumes premium', 'nota:oriental': 'notas orientais', 'nota:sedutor': 'perfumes sedutores', 'nota:ambar': 'âmbar', 'nota:lavanda': 'lavanda', 'nota:couro': 'couro', 'nota:menta': 'menta',
 };
 const rotuloDe = (f) => ROTULOS[f] || `notas ${f.split(':')[1]}`;
 
@@ -44,6 +45,8 @@ export function featuresProduto(p) {
     if (PUBLICOS.includes(t)) f[`publico:${t}`] = 1.5;
     else f[`nota:${t}`] = 1;
   }
+  // edição especial ou destaque da loja é o que o cliente chama de "premium"
+  if ((p.is_special_edition || p.featured) && !f['nota:premium']) f['nota:premium'] = 1;
   return f;
 }
 const soma = (a, b, k = 1) => { for (const [f, v] of Object.entries(b)) a[f] = (a[f] || 0) + v * k; };
@@ -136,11 +139,14 @@ const digitosTel = (t) => String(t || '').replace(/\D/g, '').replace(/^55(?=\d{1
 // o que a pessoa declarou na conta entra no gosto (com peso menor que uma compra real)
 function enriquecer(x, conta, porId) {
   const g = conta.gosto || {};
-  for (const p of g.perfis || []) x.vetor[`perfil:${p}`] = (x.vetor[`perfil:${p}`] || 0) + 1.5;
-  for (const p of g.publicos || []) x.vetor[`publico:${p}`] = (x.vetor[`publico:${p}`] || 0) + 1;
-  for (const n of g.notas || []) x.vetor[`nota:${n}`] = (x.vetor[`nota:${n}`] || 0) + 1;
+  for (const p of g.perfis || []) x.vetor[`perfil:${p}`] = (x.vetor[`perfil:${p}`] || 0) + 3;
+  for (const p of g.publicos || []) x.vetor[`publico:${p}`] = (x.vetor[`publico:${p}`] || 0) + 2;
+  for (const n of g.notas || []) x.vetor[`nota:${n}`] = (x.vetor[`nota:${n}`] || 0) + 2;
   for (const id of conta.usou || []) { const p = porId.get(id); if (p) { soma(x.vetor, featuresProduto(p), 1); x.comprou.add(id); } }
-  for (const id of conta.desejos || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 0.8); }
+  for (const id of conta.desejos || []) { const p = porId.get(id); if (p) soma(x.vetor, featuresProduto(p), 1.5); }
+  // não curte: some do que sugerir e puxa o gosto para longe daquelas características
+  x.naoCurte = new Set(conta.naocurte || []);
+  for (const id of x.naoCurte) { const p = porId.get(id); if (!p) continue; for (const [f, v] of Object.entries(featuresProduto(p))) if (x.vetor[f]) x.vetor[f] = Math.max(0, x.vetor[f] - v * 0.8); }
   if (!x.dominante && (g.perfis || []).length === 1) x.dominante = g.perfis[0];
 }
 
@@ -159,13 +165,13 @@ function vendavel(e, p) {
 // quem curte várias famílias não pode ser punido por isso, senão ninguém passa de 30.
 const DIMENSOES = [['perfil:', 0.5], ['publico:', 0.2], ['nota:', 0.3]];
 function conteudoDe(c, alvo) {
-  const maior = Math.max(0, ...Object.values(c.vetor));
-  if (!maior) return 0;
-  const ref = maior * 0.5; // gostar pelo menos da metade do que ela mais gosta já conta como gostar
+  if (!Object.values(c.vetor).some((v) => v > 0)) return 0;
   let soma = 0, peso = 0;
   for (const [pref, w] of DIMENSOES) {
+    const maior = Math.max(0, ...Object.entries(c.vetor).filter(([f]) => f.startsWith(pref)).map(([, v]) => v));
+    const ref = maior * 0.6; // gostar de pelo menos 60% do que mais gosta naquele quesito já conta como gostar
     const doProduto = Object.entries(alvo).filter(([f]) => f.startsWith(pref));
-    const temDado = Object.keys(c.vetor).some((f) => f.startsWith(pref) && c.vetor[f] > 0);
+    const temDado = maior > 0;
     if (!doProduto.length || !temDado) continue; // sem informação nesse quesito: não conta contra
     let tot = 0, ok = 0;
     for (const [f, v] of doProduto) {
@@ -197,11 +203,11 @@ function motivosDe(c, alvo) {
 }
 
 function recomendar(e, c, todosClientes, n = 3) {
-  return todos(e).filter((p) => p.category === 'perfumes').map((p) => {
+  return todos(e).filter((p) => p.category === 'perfumes' && !(c.naoCurte && c.naoCurte.has(p.id))).map((p) => {
     const alvo = featuresProduto(p);
     const pts = pontuar(c, todosClientes, alvo, p.id);
-    return { id: p.id, nome: p.name, inspirado: p.inspired_by || '', perfil: p.profile || '', afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), disponivel: vendavel(e, p), ja_comprou: c.comprou.has(p.id) };
-  }).filter((r) => r.afinidade > 0).sort((a, b) => (b.disponivel - a.disponivel) || (a.ja_comprou - b.ja_comprou) || (b.afinidade - a.afinidade)).slice(0, n);
+    return { id: p.id, nome: p.name, inspirado: p.inspired_by || '', perfil: p.profile || '', afinidade: pts, rotulo: rotuloPts(c, pts), motivos: motivosDe(c, alvo), disponivel: vendavel(e, p), ja_comprou: c.comprou.has(p.id), quer: Boolean(c.conta && (c.conta.desejos || []).includes(p.id)) };
+  }).filter((r) => r.afinidade > 0).sort((a, b) => (b.quer - a.quer) || (a.ja_comprou - b.ja_comprou) || ((b.afinidade - (b.disponivel ? 0 : 8)) - (a.afinidade - (a.disponivel ? 0 : 8)))).slice(0, n);
 }
 
 // os gostos mais fortes, de 0 a 100 (o mais forte vale 100)
@@ -229,7 +235,7 @@ function resumo(e, c, todosClientes) {
     conta: c.conta ? {
       nome: c.conta.nome, email: c.conta.email, vinculada: c.contaVinculada, whatsapp: (c.conta.consentimento && c.conta.consentimento.whatsapp) || '',
       aceite_em: (c.conta.consentimento && c.conta.consentimento.data) || null,
-      gosto: c.conta.gosto || {}, usou: nomesDe(e, c.conta.usou), desejos: nomesDe(e, c.conta.desejos), sub: c.conta.sub,
+      gosto: c.conta.gosto || {}, usou: nomesDe(e, c.conta.usou), desejos: nomesDe(e, c.conta.desejos), naocurte: nomesDe(e, c.conta.naocurte), sub: c.conta.sub,
     } : null,
     contato: { ultimo: c.extra.ultimo_contato || null, notas: c.extra.notas || '', nao_chamar: Boolean(c.extra.nao_chamar), historico: (c.extra.contatos || []).slice(-6).reverse() },
   };
