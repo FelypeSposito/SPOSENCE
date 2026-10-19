@@ -8,6 +8,10 @@
 //   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
 //   desfazer
+//   pedido_status {id, status} · pedido_obs {id, texto} · pedido_cliente {id, nome, telefone, recebimento}
+//   pedido_forma {id, forma} · pedido_parcela {id, n, pago} · pedido_quitar {id}
+//   pedido_parcelamento {id, modo, parcelas} · pedido_item {id, produto_id, tamanho, qtd, preco | nome} · pedido_cancelar {id, devolver}
+//   (pedido e venda também aceitam { pagamento: {modo, parcelas, forma}, cliente } e criam o pedido ao confirmar)
 //   insumo_entrada  { id, qtd }                                comprou mais
 //   insumo_uso      { id, qtd }                                gastou
 //   insumo_ajustar  { id, qtd }                                corrige a contagem
@@ -19,12 +23,18 @@
 //   produto_editar  { id, nome, ... }                          só produtos criados pelo painel
 //   produto_remover { id }                                     só produtos criados pelo painel
 import crypto from 'node:crypto';
+import { contagem, contar } from './_redis.js';
 import {
   carregar, salvar, estado, todos, itensDoPedido, hashDoPedido, simularBaixa,
   registrar, desfazerUltimo, movimentosDeEntrada, movimentosDeAjuste, movimentosDeUnidades,
   criarProduto, editarProduto, removerProduto, definirStatus, definirPrecos,
   movimentoDeInsumo, movimentoDeAjusteInsumo, criarInsumo, removerInsumo,
+  clienteDe, clienteDoTexto, itensParaPedido, criarPedido, statusPedido, observacaoPedido, clientePedido,
+  formaPedido, parcelaPedido, quitarPedido, parcelamentoPedido, adicionarItemPedido, cancelarPedido,
 } from './_estoque.js';
+
+const LIMITE_TENTATIVAS = 8;   // senhas erradas por aparelho...
+const JANELA_SEGUNDOS = 600;  // ...a cada 10 minutos
 
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 const digest = (s) => crypto.createHash('sha256').update(String(s)).digest();
@@ -45,9 +55,18 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   try {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Use POST.' });
+    // Quem errou a senha muitas vezes espera, mesmo que a próxima esteja certa.
+    const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'desconhecido';
+    const chave = `rl:admin:${ip}`;
+    if ((await contagem(chave)) >= LIMITE_TENTATIVAS) {
+      return res.status(429).json({ erro: 'Muitas tentativas. Aguarde 10 minutos e tente de novo.' });
+    }
     if (!senhaCorreta(req)) {
+      const restantes = LIMITE_TENTATIVAS - (await contar(chave, JANELA_SEGUNDOS));
       await dormir(600);
-      return res.status(401).json({ erro: 'Senha incorreta.' });
+      return res.status(401).json({
+        erro: restantes > 0 && restantes <= 3 ? `Senha incorreta. Restam ${restantes} ${restantes === 1 ? 'tentativa' : 'tentativas'}.` : 'Senha incorreta.',
+      });
     }
     const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
     const e = await carregar();
@@ -61,8 +80,8 @@ export default async function handler(req, res) {
         itens = itensDoPedido(b.texto || '');
         if (!itens.length) return res.status(400).json({ erro: 'Não achei itens nessa mensagem. Copie a mensagem inteira do pedido.' });
         hash = hashDoPedido(b.texto);
-        const repetido = e.historico.find((h) => h.hash === hash);
-        if (repetido) return res.status(409).json({ erro: `Esse pedido já teve baixa em ${repetido.data}.` });
+        const repetido = e.historico.find((h) => h.hash === hash) || e.pedidos.find((p) => p.hash === hash);
+        if (repetido) return res.status(409).json({ erro: `Esse pedido já foi lançado em ${repetido.data || repetido.criado}.` });
         tipo = 'pedido';
       } else {
         const nomes = new Map(todos(e).map((p) => [p.id, p.name]));
@@ -77,11 +96,16 @@ export default async function handler(req, res) {
       const sim = simularBaixa(e, itens);
       if (sim.problemas.length) return res.status(409).json({ erro: 'Falta estoque, nada foi descontado.', linhas: sim.linhas, problemas: sim.problemas });
       if (!b.confirmar) return res.status(200).json({ previa: true, linhas: sim.linhas, descricao });
-      if (sim.movs.length) {
-        registrar(e, { tipo, descricao, movs: sim.movs, hash });
-        await salvar(e);
-      }
-      extra = { feito: true, linhas: sim.linhas, nada_a_descontar: !sim.movs.length };
+      const pagamento = { modo: ['pago', 'pendente', 'parcelado'].includes(b.pagamento?.modo) ? b.pagamento.modo : (b.acao === 'pedido' ? 'pendente' : 'pago'), parcelas: b.pagamento?.parcelas, forma: b.pagamento?.forma };
+      const pedido = criarPedido(e, {
+        origem: b.acao === 'pedido' ? 'site' : 'avulsa',
+        itens: itensParaPedido(e, itens),
+        cliente: b.acao === 'pedido' ? clienteDoTexto(b.texto) : clienteDe(b.cliente),
+        pagamento, movs: sim.movs, hash, texto: b.acao === 'pedido' ? b.texto : undefined,
+      });
+      if (sim.movs.length) registrar(e, { tipo, descricao, movs: sim.movs, hash, meta: { pedido: pedido.id } });
+      await salvar(e);
+      extra = { feito: true, linhas: sim.linhas, nada_a_descontar: !sim.movs.length, pedido: { id: pedido.id, numero: pedido.numero } };
     } else if (b.acao === 'entrada' && b.unidades) {
       const r = movimentosDeUnidades(e, { id: b.id, unidades: b.unidades });
       registrar(e, { tipo: 'entrada', descricao: `+${r.partes.join(' e ')} de ${todos(e).find((p) => p.id === b.id).name}`, movs: r.movs });
@@ -109,6 +133,24 @@ export default async function handler(req, res) {
       const h = desfazerUltimo(e);
       await salvar(e);
       extra = { desfeito: h.descricao };
+    } else if (b.acao === 'pedido_status') {
+      statusPedido(e, b.id, b.status); await salvar(e);
+    } else if (b.acao === 'pedido_obs') {
+      observacaoPedido(e, b.id, b.texto); await salvar(e);
+    } else if (b.acao === 'pedido_cliente') {
+      clientePedido(e, b.id, b); await salvar(e);
+    } else if (b.acao === 'pedido_forma') {
+      formaPedido(e, b.id, b.forma); await salvar(e);
+    } else if (b.acao === 'pedido_parcela') {
+      parcelaPedido(e, b.id, b.n, b.pago); await salvar(e);
+    } else if (b.acao === 'pedido_quitar') {
+      quitarPedido(e, b.id); await salvar(e);
+    } else if (b.acao === 'pedido_parcelamento') {
+      parcelamentoPedido(e, b.id, b.modo, b.parcelas); await salvar(e);
+    } else if (b.acao === 'pedido_item') {
+      adicionarItemPedido(e, b.id, b); await salvar(e);
+    } else if (b.acao === 'pedido_cancelar') {
+      cancelarPedido(e, b.id, Boolean(b.devolver)); await salvar(e);
     } else if (b.acao === 'insumo_entrada' || b.acao === 'insumo_uso') {
       const tipo = b.acao === 'insumo_uso' ? 'uso' : 'entrada';
       const r = movimentoDeInsumo(e, { id: b.id, qtd: b.qtd, tipo });

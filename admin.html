@@ -104,6 +104,81 @@
     .nome-linha { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
     .link { background: none; border: 0; padding: 0; min-height: 0; color: var(--acento); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
+    /* Pedidos: cartões na linguagem do site (cantos de 16px, sombra suave, pílulas, trilha animada) */
+    .ped-resumo { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin: 4px 0 24px; }
+    .ped-resumo small { display: block; margin-top: 8px; font-size: 13.5px; }
+    .ped-receber { position: relative; overflow: hidden; background: var(--btn); color: var(--no-btn); border-radius: 16px; padding: 18px 20px; }
+    .ped-receber .num { font-size: clamp(28px, 8vw, 38px); line-height: 1; font-variant-numeric: tabular-nums; }
+    .ped-receber small { opacity: .8; }
+    .ped-receber::after { content: ''; position: absolute; right: -16px; bottom: -22px; width: 104px; height: 104px; background: currentColor; opacity: .13; -webkit-mask: url('img/simbolo-loader.png') center / contain no-repeat; mask: url('img/simbolo-loader.png') center / contain no-repeat; }
+    .ped-abertos { border: 1px solid var(--forte); border-radius: 16px; padding: 18px 20px; }
+    .ped-abertos .num { font-size: clamp(28px, 8vw, 38px); line-height: 1; }
+    .ped-abertos small { color: var(--suave); }
+    .filtros small { font-size: 12px; opacity: .7; margin-left: 2px; font-variant-numeric: tabular-nums; }
+    .ped-lista { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 18px; }
+    .ped { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 18px 18px 16px; cursor: pointer; box-shadow: 0 16px 34px -24px rgba(70, 37, 6, .4); transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .3s; }
+    @media (hover: hover) { .ped:hover { transform: translateY(-3px); box-shadow: 0 26px 44px -24px rgba(70, 37, 6, .45); border-color: var(--forte); } }
+    .ped:active { transform: scale(.99); }
+    .ped.cancelado { opacity: .62; }
+    .ped-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .ped-num { font-family: 'Philosopher', serif; font-style: italic; color: var(--suave); font-size: 16px; }
+    .ped-nome { font-size: 25px; line-height: 1.12; margin-top: 2px; }
+    .ped-nome.sem-nome { font-style: italic; color: var(--suave); }
+    .ped-itens { color: var(--suave); font-size: 14.5px; margin-top: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .chip-st { --cor: var(--ouro); display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px 5px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; background: color-mix(in srgb, var(--cor) 20%, transparent); color: var(--tinta); white-space: nowrap; flex: none; }
+    .chip-st::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cor); }
+    .chip-st[data-st="separando"] { --cor: var(--oliva); }
+    .chip-st[data-st="pronto"] { --cor: var(--acento); }
+    .chip-st[data-st="entregue"] { --cor: var(--tinta); }
+    .chip-st[data-st="cancelado"] { --cor: var(--perigo); }
+    /* trilha das etapas */
+    .trilha { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); margin: 18px 0 4px; }
+    .trilha__linha { position: absolute; top: 7px; left: 12.5%; right: 12.5%; height: 2px; background: var(--linha); }
+    .trilha__linha b { position: absolute; inset: 0; background: var(--acento); transform-origin: 0 50%; transform: scaleX(var(--p)); transition: transform .8s var(--ease); }
+    .trilha__passo { position: relative; display: grid; justify-items: center; gap: 6px; }
+    .trilha__passo em { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--papel); border: 2px solid var(--forte); position: relative; z-index: 1; transition: background .4s, border-color .4s; }
+    .trilha__passo.feito em { background: var(--acento); border-color: var(--acento); }
+    .trilha__passo.atual em { background: var(--acento); border-color: var(--acento); box-shadow: 0 0 0 5px color-mix(in srgb, var(--acento) 22%, transparent); }
+    .trilha__passo small { font-size: 12px; color: var(--suave); font-weight: 600; }
+    .trilha__passo.atual small { color: var(--tinta); }
+    /* pagamento */
+    .pg { margin-top: 14px; }
+    .pg-linha { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--suave); }
+    .pg-linha b { color: var(--tinta); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pago-selo { color: var(--acento); font-weight: 700; }
+    .pg-barra { height: 6px; border-radius: 99px; background: var(--linha); overflow: hidden; margin-top: 8px; }
+    .pg-barra i { display: block; height: 100%; background: linear-gradient(90deg, var(--ambar), var(--ouro)); border-radius: 99px; transform-origin: 0 50%; transform: scaleX(var(--p)); }
+    .ped-pe { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha); }
+    .ped-total { font-family: 'Philosopher', serif; font-size: 24px; font-variant-numeric: tabular-nums; }
+    .ped-origem { font-family: 'Philosopher', serif; font-style: italic; color: var(--suave); }
+    /* detalhe do pedido (janela) */
+    .sec { padding: 20px 0; border-top: 1px solid var(--linha); }
+    .sec.primeira { border-top: 0; padding-top: 12px; }
+    .sec h3 { font-size: 21px; margin-bottom: 10px; }
+    .sec .troca { margin-top: 14px; gap: 18px; flex-wrap: wrap; }
+    .det-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .det-itens { list-style: none; padding: 0; }
+    .det-itens li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--linha); }
+    .det-itens li:last-child { border: 0; }
+    .det-itens i { font-family: 'Philosopher', serif; color: var(--suave); margin-left: 4px; }
+    .det-itens b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .total-linha { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--forte); font-family: 'Philosopher', serif; font-size: 23px; margin-top: 4px; }
+    .parcelas { list-style: none; padding: 0; margin-top: 12px; }
+    .parcela { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--linha); }
+    .parcela:last-child { border: 0; }
+    .parcela b { display: block; font-weight: 600; }
+    .parcela small { display: block; color: var(--suave); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+    .check { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--forte); background: transparent; display: grid; place-items: center; color: transparent; transition: background .3s, border-color .3s, color .3s, transform .2s; flex: none; }
+    .check svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .check[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: var(--papel); }
+    .check:active { transform: scale(.9); }
+    .obs { list-style: none; padding: 0; }
+    .obs li { padding: 11px 0; border-bottom: 1px solid var(--linha); }
+    .obs small { display: block; font-family: 'Philosopher', serif; font-style: italic; color: var(--suave); font-size: 15px; }
+    .voltar { background: none; border: 0; padding: 4px 0; min-height: 44px; color: var(--acento); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; margin-bottom: 4px; }
+    .contato { color: var(--acento); font-weight: 600; text-underline-offset: 4px; }
+    @media (max-width: 460px) { nav button { font-size: 11.5px; } nav button svg { width: 22px; height: 22px; } }
+
     /* Botões: pílula, como no site */
     .btn { min-height: 48px; padding: 0 22px; border-radius: 99px; border: 1px solid var(--forte); background: transparent; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: transform .18s var(--ease), background-color .18s; }
     .btn:active { transform: scale(.98) translateY(1px); }
@@ -169,7 +244,7 @@
 
     /* Navegação */
     nav { position: fixed; inset: auto 0 0 0; z-index: 20; background: var(--bg); border-top: 1px solid var(--linha); padding-bottom: env(safe-area-inset-bottom); }
-    nav .in { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
+    nav .in { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); }
     nav button { position: relative; background: none; border: 0; min-height: 62px; display: grid; justify-items: center; align-content: center; gap: 3px; font-size: 12.5px; font-weight: 600; color: var(--suave); transition: color .2s; }
     nav button svg { width: 24px; height: 24px; }
     nav button::before { content: ''; position: absolute; top: -1px; left: 22%; right: 22%; height: 2px; background: var(--acento); transform: scaleX(0); transition: transform .35s var(--ease); }
@@ -193,14 +268,40 @@
     .toast { background: var(--btn); color: var(--no-btn); padding: 8px 18px; border-radius: 12px; font-size: 14.5px; font-weight: 600; margin-top: 8px; box-shadow: 0 14px 30px -14px rgba(70, 37, 6, .55); }
     .toast.bad { background: var(--perigo); color: #fff; }
 
-    /* Entrada: a etiqueta da marca (moldura fina com o símbolo) */
-    #login { min-height: 100dvh; display: grid; align-content: center; justify-items: center; padding: 28px 24px; }
-    .etiqueta { width: min(100%, 340px); aspect-ratio: 1; border: 1.5px solid var(--oliva); display: grid; justify-items: center; align-content: center; gap: 18px; color: var(--acento); padding: 24px; }
-    .etiqueta .simbolo { width: 92px; height: 92px; }
-    .etiqueta .palavra { width: 170px; height: 27.6px; mask-position: center; -webkit-mask-position: center; }
-    #login form { width: min(100%, 340px); margin-top: 26px; }
-    #login label { margin-top: 0; }
-    #login .erro { margin-top: 14px; color: var(--perigo); font-weight: 600; font-size: 14.5px; }
+    /* Entrada: a mesma linguagem do site. Título em Philosopher com uma palavra em itálico,
+       foto emoldurada de cantos arredondados, texto curto e botão em pílula. */
+    #login { min-height: 100dvh; }
+    .entrada { min-height: 100dvh; display: grid; grid-template-areas: "topo" "foto" "form"; grid-template-rows: auto auto 1fr; }
+    .entrada__topo { grid-area: topo; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px 8px 24px; color: var(--tinta); }
+    .btn-icone { background: none; border: 0; min-height: 44px; min-width: 44px; display: grid; place-items: center; color: var(--suave); }
+    .btn-icone svg { width: 22px; height: 22px; }
+    .entrada__foto { grid-area: foto; margin: 4px 12px 0; height: 32dvh; min-height: 190px; border-radius: 16px; overflow: hidden; background: #ead9b8; position: relative; }
+    .entrada__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; }
+    .entrada__form { grid-area: form; width: 100%; max-width: 520px; margin: 0 auto; padding: 24px 24px 28px; display: flex; flex-direction: column; }
+    .entrada__corpo { margin-block: auto; padding: 8px 0 20px; }
+    .entrada h1 { font-size: clamp(2.2rem, 9vw, 3.1rem); line-height: 1.06; letter-spacing: -.01em; text-wrap: balance; }
+    .entrada h1 em { color: var(--acento); }
+    .entrada .apoio { color: var(--suave); max-width: 34ch; margin: 14px 0 26px; font-size: 1.0625rem; line-height: 1.6; }
+    .entrada form label:first-of-type { margin-top: 0; }
+    .campo-senha { position: relative; }
+    .campo-senha input { padding-right: 52px; }
+    .ver { position: absolute; right: 0; bottom: 0; width: 48px; height: 48px; border: 0; background: none; color: var(--suave); display: grid; place-items: center; border-radius: 10px; }
+    .ver svg { width: 22px; height: 22px; }
+    .login-msg { min-height: 24px; margin-top: 10px; font-size: 14.5px; font-weight: 600; }
+    .login-msg[data-tipo="erro"] { color: var(--perigo); }
+    .login-msg[data-tipo="dica"] { color: var(--suave); font-weight: 500; }
+    .lembrar { display: flex; align-items: center; gap: 12px; margin: 10px 0 22px; padding: 6px 0; font-size: 15px; font-weight: 500; color: var(--suave); cursor: pointer; }
+    .lembrar input { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--acento); flex: none; }
+    .entrada__rodape { color: var(--suave); font-size: 13.5px; padding-top: 8px; }
+    .so-leitor { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .btn[aria-busy="true"] { pointer-events: none; background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.2) 50%, transparent 70%); background-size: 220% 100%; }
+    @media (min-width: 900px) {
+      .entrada { grid-template-columns: minmax(440px, 5fr) 6fr; grid-template-areas: "topo foto" "form foto"; grid-template-rows: auto 1fr; }
+      .entrada__topo { padding: 26px 56px 0; }
+      .entrada__foto { margin: 14px 14px 14px 0; height: auto; min-height: 0; }
+      .entrada__form { max-width: none; margin: 0; padding: 0 56px 32px; }
+      .entrada__corpo { max-width: 440px; }
+    }
 
     /* Carregando: esqueleto com o mesmo desenho da prateleira */
     .esq { display: grid; grid-template-columns: 58px 1fr; gap: 18px; padding: 22px 0; border-bottom: 1px solid var(--linha); }
@@ -229,6 +330,19 @@
       .toast { animation: entra .4s var(--ease); }
       @keyframes entra { from { transform: translateY(10px) scale(.98); opacity: 0; } }
       /* só na primeira vez: os itens aparecem em sequência e os vidros se enchem */
+      .entrada__foto img { animation: foto 1.4s var(--ease) both; }
+      .entra { animation: item .8s var(--ease) both; animation-delay: calc(var(--i) * 110ms + 120ms); }
+      .tremer { animation: tremer .42s cubic-bezier(.36, .07, .19, .97); }
+      .btn[aria-busy="true"] { animation: brilho 1.4s linear infinite; }
+      @keyframes foto { from { transform: scale(1.06); opacity: .4; } }
+      @keyframes tremer { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+      .anim .ped { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 80ms); }
+      .anim .pg-barra i, .anim .trilha__linha b { animation: enche-x 1.1s var(--ease) both; animation-delay: calc(var(--i) * 80ms + 250ms); }
+      .trilha__passo.atual em { animation: pulsa 2.6s ease-in-out infinite; }
+      .parcela .check[aria-pressed="true"] svg path { stroke-dasharray: 24; animation: desenha .55s var(--ease) both; }
+      @keyframes enche-x { from { transform: scaleX(0); } }
+      @keyframes pulsa { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--acento) 8%, transparent); } }
+      @keyframes desenha { from { stroke-dashoffset: 24; } }
       .anim .item { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 90ms); }
       .anim .vial .liquido { animation: enche 1.3s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 200ms); }
       @keyframes item { from { transform: translateY(14px); opacity: 0; } }
@@ -239,13 +353,39 @@
 <body>
 
   <div id="login" hidden>
-    <div class="etiqueta"><span class="simbolo" role="img" aria-label="Símbolo Sposence"></span><span class="palavra" role="img" aria-label="Sposence"></span></div>
-    <form id="login-form">
-      <label for="senha">Senha da bancada</label>
-      <input id="senha" type="password" autocomplete="current-password" required />
-      <button class="btn primario cheio" type="submit" style="margin-top:22px">Entrar</button>
-      <p id="login-erro" class="erro" role="alert" hidden></p>
-    </form>
+    <div class="entrada">
+      <div class="entrada__topo">
+        <div class="marca"><span class="simbolo" aria-hidden="true"></span><span class="palavra" role="img" aria-label="Sposence"></span></div>
+        <button class="btn-icone" id="tema-login" type="button" aria-label="Alternar tema"></button>
+      </div>
+
+      <div class="entrada__foto" aria-hidden="true">
+        <picture>
+          <source type="image/avif" sizes="(min-width: 900px) 55vw, 100vw" srcset="img/hero/sacola-640.avif 640w, img/hero/sacola-960.avif 960w, img/hero/sacola-1280.avif 1280w">
+          <source type="image/webp" sizes="(min-width: 900px) 55vw, 100vw" srcset="img/hero/sacola-640.webp 640w, img/hero/sacola-960.webp 960w, img/hero/sacola-1280.webp 1280w">
+          <img src="img/hero/sacola-1280.jpg" alt="" width="1600" height="1460" loading="lazy" decoding="async">
+        </picture>
+      </div>
+
+      <div class="entrada__form">
+        <div class="entrada__corpo">
+          <h1 class="entra" style="--i:0">Entre na <em>bancada.</em></h1>
+          <p class="apoio entra" style="--i:1">Estoque, insumos e catálogo da Sposence, onde você estiver.</p>
+          <form id="login-form" class="entra" style="--i:2" novalidate>
+            <input class="so-leitor" type="text" name="usuario" value="bancada" autocomplete="username" tabindex="-1" aria-hidden="true" />
+            <label for="senha">Senha</label>
+            <div class="campo-senha" id="grupo-senha">
+              <input id="senha" type="password" autocomplete="current-password" aria-describedby="login-msg" autocapitalize="off" spellcheck="false" />
+              <button class="ver" id="ver-senha" type="button" aria-label="Mostrar senha" aria-pressed="false"></button>
+            </div>
+            <p id="login-msg" class="login-msg" role="alert" aria-live="assertive"></p>
+            <label class="lembrar"><input type="checkbox" id="lembrar" checked /> Manter conectado neste aparelho</label>
+            <button class="btn primario cheio" id="entrar" type="submit"><span>Entrar na bancada</span></button>
+          </form>
+        </div>
+        <p class="entrada__rodape entra" style="--i:3">Acesso só para quem cuida da Sposence.</p>
+      </div>
+    </div>
   </div>
 
   <div id="app" hidden>
@@ -259,6 +399,7 @@
 
     <main>
       <section id="t-estoque" aria-labelledby="h-estoque"></section>
+      <section id="t-pedidos" aria-labelledby="h-pedidos" hidden></section>
       <section id="t-baixa" aria-labelledby="h-baixa" hidden></section>
       <section id="t-insumos" aria-labelledby="h-insumos" hidden></section>
       <section id="t-catalogo" aria-labelledby="h-catalogo" hidden></section>
@@ -267,7 +408,8 @@
 
     <nav aria-label="Seções do painel"><div class="in">
       <button data-tab="estoque" aria-current="true" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v3.2c0 1-3.5 2-3.5 5.3V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-3.3-3.5-4.3-3.5-5.3V3"/><path d="M7 14h10"/></svg>Estoque</button>
-      <button data-tab="baixa" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>Dar baixa</button>
+      <button data-tab="pedidos" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10a1.5 1.5 0 0 1 1.5 1.5v15l-3-1.8-2.5 1.8-2.5-1.8-2.5 1.8-3-1.8V5A1.5 1.5 0 0 1 7 3.5Z"/><path d="M9 9h6M9 13h4"/></svg>Pedidos</button>
+      <button data-tab="baixa" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>Baixa</button>
       <button data-tab="insumos" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg>Insumos</button>
       <button data-tab="catalogo" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14"/><path d="M3.5 5h.01M3.5 12h.01M3.5 19h.01"/></svg>Catálogo</button>
       <button data-tab="historico" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5V8h3.5"/><path d="M12 8v4.2l2.8 1.8"/></svg>Histórico</button>
@@ -287,12 +429,21 @@ const guardar = {
   ler: (k) => { try { return localStorage.getItem(k) || ''; } catch (_) { return ''; } },
   gravar: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (_) {} },
 };
+// "Manter conectado": na memória do aparelho; senão, só até fechar a aba
+const sessao = {
+  ler: () => { try { return localStorage.getItem('sp-admin') || sessionStorage.getItem('sp-admin') || ''; } catch (_) { return ''; } },
+  persistente: () => { try { return !!localStorage.getItem('sp-admin'); } catch (_) { return false; } },
+  gravar: (v, lembrar) => { try { localStorage.removeItem('sp-admin'); sessionStorage.removeItem('sp-admin'); (lembrar ? localStorage : sessionStorage).setItem('sp-admin', v); } catch (_) {} },
+  limpar: () => { try { localStorage.removeItem('sp-admin'); sessionStorage.removeItem('sp-admin'); } catch (_) {} },
+};
+const IC_OLHO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const IC_OLHO_RISCADO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>';
 const IC_MAIS = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 const IC_X = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 const IC_SOL = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>';
 const IC_LUA = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.5A8 8 0 1 1 10.5 4a6.2 6.2 0 0 0 9.5 9.5Z"/></svg>';
 
-let senha = guardar.ler('sp-admin');
+let senha = sessao.ler();
 let est = null;
 let pendente = null;            // pedido esperando confirmação
 let primeiraVez = true;         // a prateleira só anima na primeira vez
@@ -306,7 +457,7 @@ async function api(acao, corpo = {}) {
     body: JSON.stringify({ acao, ...corpo }),
   });
   const dados = await r.json().catch(() => ({ erro: 'O servidor respondeu algo inesperado. Tente de novo.' }));
-  if (r.status === 401) { sair(); throw new Error(dados.erro); }
+  if (r.status === 401) { sair(est ? 'Sua sessão expirou. Entre de novo.' : ''); throw new Error(dados.erro); }
   if (!r.ok) throw Object.assign(new Error(dados.erro || 'Algo deu errado.'), { dados });
   if (dados.estado) { est = dados.estado; desenharTudo(); }
   return dados;
@@ -315,14 +466,15 @@ function aviso(msg, ruim, acao) {
   const el = document.createElement('div');
   el.className = 'toast' + (ruim ? ' bad' : '');
   const t = document.createElement('span'); t.textContent = msg; t.style.padding = '6px 0'; el.appendChild(t);
-  if (acao) {
+  const acoes = [].concat(acao || []).filter(Boolean);
+  for (const a of acoes) {
     const b = document.createElement('button');
-    b.type = 'button'; b.textContent = acao.rotulo;
-    b.addEventListener('click', async () => { el.remove(); try { await acao.fn(); } catch (e) { falhou(e); } });
+    b.type = 'button'; b.textContent = a.rotulo;
+    b.addEventListener('click', async () => { el.remove(); try { await a.fn(); } catch (e) { falhou(e); } });
     el.appendChild(b);
   }
   $('aviso').appendChild(el);
-  setTimeout(() => el.remove(), acao ? 7000 : ruim ? 6000 : 3200);
+  setTimeout(() => el.remove(), acoes.length ? 8000 : ruim ? 6000 : 3200);
 }
 // "Desfazer" no aviso: só vale enquanto o movimento ainda for o mais recente
 const idUltimo = () => est.historico[0]?.id;
@@ -340,22 +492,44 @@ const falhou = (e) => aviso(e.message, true);
 const temaAtual = () => document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 function iconeTema() {
   const escuro = temaAtual() === 'dark';
-  $('tema').innerHTML = escuro ? IC_SOL : IC_LUA;
-  $('tema').setAttribute('aria-label', escuro ? 'Mudar para o tema claro' : 'Mudar para o tema escuro');
+  for (const id of ['tema', 'tema-login']) {
+    $(id).innerHTML = escuro ? IC_SOL : IC_LUA;
+    $(id).setAttribute('aria-label', escuro ? 'Mudar para o tema claro' : 'Mudar para o tema escuro');
+  }
 }
-$('tema').addEventListener('click', () => {
+function alternarTema() {
   const novo = temaAtual() === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.tema = novo;
   guardar.gravar('sp-admin-tema', novo);
   iconeTema();
-});
+}
+$('tema').addEventListener('click', alternarTema);
+$('tema-login').addEventListener('click', alternarTema);
 iconeTema();
 
 /* ---------- entrada ---------- */
-function sair() { senha = ''; guardar.gravar('sp-admin', ''); $('app').hidden = true; $('login').hidden = false; }
+function mensagemLogin(texto, tipo) {
+  const m = $('login-msg');
+  m.textContent = texto || '';
+  m.dataset.tipo = texto ? tipo : '';
+}
+function mostrarLogin(msg = '') {
+  $('login').hidden = false;
+  document.querySelector('.entrada__foto img').loading = 'eager';   // a foto só baixa quando a tela de entrada aparece
+  $('senha').value = '';
+  mensagemLogin(msg, 'dica');
+  if (matchMedia('(hover: hover)').matches) $('senha').focus();   // no celular o teclado não abre sozinho
+}
+function sair(motivo = '') {
+  senha = ''; est = null; pendente = null;
+  sessao.limpar();
+  if ($('folha').open) $('folha').close();
+  $('app').hidden = true;
+  mostrarLogin(motivo);
+}
 const esqueleto = () => '<h2 id="h-estoque">Estoque</h2><p class="legenda">abrindo a bancada…</p><div style="margin-top:28px;border-top:1px solid var(--forte)">' + [1, 2, 3].map(() => '<div class="esq"><i class="a"></i><div><i class="b"></i><i class="c"></i><i class="d"></i></div></div>').join('') + '</div>';
 
-async function entrar(tentativa, comEsqueleto) {
+async function entrar(tentativa, comEsqueleto, lembrar = sessao.persistente()) {
   senha = tentativa;
   if (comEsqueleto) { $('login').hidden = true; $('app').hidden = false; $('t-estoque').innerHTML = esqueleto(); }
   try {
@@ -366,19 +540,53 @@ async function entrar(tentativa, comEsqueleto) {
     }
     throw e;
   }
-  guardar.gravar('sp-admin', senha);
+  sessao.gravar(senha, lembrar);
+  $('senha').value = ''; $('senha').type = 'password'; mensagemLogin('', '');
   $('login').hidden = true; $('app').hidden = false;
 }
+
+const campoSenha = $('senha');
+const iconeOlho = () => {
+  const visivel = campoSenha.type === 'text';
+  $('ver-senha').innerHTML = visivel ? IC_OLHO_RISCADO : IC_OLHO;
+  $('ver-senha').setAttribute('aria-pressed', String(visivel));
+  $('ver-senha').setAttribute('aria-label', visivel ? 'Esconder senha' : 'Mostrar senha');
+};
+iconeOlho();
+$('ver-senha').addEventListener('click', () => { campoSenha.type = campoSenha.type === 'password' ? 'text' : 'password'; iconeOlho(); campoSenha.focus(); });
+
+function falhaLogin(texto) {
+  mensagemLogin(texto, 'erro');
+  campoSenha.setAttribute('aria-invalid', 'true');
+  const g = $('grupo-senha');
+  g.classList.remove('tremer'); void g.offsetWidth; g.classList.add('tremer');
+  campoSenha.focus(); campoSenha.select();
+}
+campoSenha.addEventListener('input', () => {
+  campoSenha.removeAttribute('aria-invalid');
+  if ($('login-msg').dataset.tipo === 'erro') mensagemLogin('', '');
+});
+// avisa do Caps Lock antes de a pessoa errar
+campoSenha.addEventListener('keyup', (ev) => {
+  const ligado = ev.getModifierState && ev.getModifierState('CapsLock');
+  if (ligado && !$('login-msg').dataset.tipo) mensagemLogin('Caps Lock está ligado.', 'dica');
+  else if (!ligado && $('login-msg').textContent === 'Caps Lock está ligado.') mensagemLogin('', '');
+});
+
 $('login-form').addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  $('login-erro').hidden = true;
-  try { await entrar($('senha').value, false); }
-  catch (e) { $('login-erro').textContent = e.message; $('login-erro').hidden = false; }
+  if (!campoSenha.value) { falhaLogin('Digite a senha.'); return; }
+  const botao = $('entrar');
+  const rotulo = botao.querySelector('span');
+  botao.disabled = true; botao.setAttribute('aria-busy', 'true'); rotulo.textContent = 'Entrando…';
+  try { await entrar(campoSenha.value, false, $('lembrar').checked); }
+  catch (e) { falhaLogin(e.message); }
+  finally { botao.disabled = false; botao.removeAttribute('aria-busy'); rotulo.textContent = 'Entrar na bancada'; }
 });
-$('sair').addEventListener('click', sair);
+$('sair').addEventListener('click', () => sair());
 
 /* ---------- abas ---------- */
-const ABAS = ['estoque', 'baixa', 'insumos', 'catalogo', 'historico'];
+const ABAS = ['estoque', 'pedidos', 'baixa', 'insumos', 'catalogo', 'historico'];
 function irPara(aba) {
   document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === aba));
   ABAS.forEach((t) => { $('t-' + t).hidden = t !== aba; });
@@ -402,7 +610,7 @@ function confirmar(titulo, texto, rotulo, aoConfirmar) {
 }
 
 /* ---------- desenho ---------- */
-function desenharTudo() { desenharEstoque(); desenharBaixa(); desenharInsumos(); desenharCatalogo(); desenharHistorico(); }
+function desenharTudo() { desenharEstoque(); desenharPedidos(); desenharBaixa(); desenharInsumos(); desenharCatalogo(); desenharHistorico(); }
 
 // O vidro: casco com estrias; o líquido sobe conforme os ml (transform, sem recalcular layout)
 function vidro(id, nivel) {
@@ -460,15 +668,33 @@ function desenharEstoque() {
   primeiraVez = false;
 }
 
+// O que a pessoa já digitou na aba "Dar baixa", para não se perder quando o painel redesenha
+const rasc = {};
+const rv = (id, padrao = '') => (id in rasc ? rasc[id] : padrao);
+const opcoesSel = (id, atual, lista) => `<select id="${id}" data-rasc>${lista.map(([k, n]) => `<option value="${esc(k)}"${String(k) === String(atual) ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+
+// Pagamento do pedido que vai ser criado: já pago, a pagar ou parcelado
+function camposPagamento(p, modoPadrao) {
+  const modo = rv(p + '-modo', modoPadrao);
+  return `
+    <div class="grade2">
+      <div><label for="${p}-modo">Pagamento</label>${opcoesSel(p + '-modo', modo, [['pago', 'Já pago'], ['pendente', 'A pagar'], ['parcelado', 'Parcelado']])}</div>
+      <div><label for="${p}-forma">Forma</label>${opcoesSel(p + '-forma', rv(p + '-forma', 'pix'), FORMAS_PAG)}</div>
+    </div>
+    <div id="${p}-parc"${modo === 'parcelado' ? '' : ' hidden'}><label for="${p}-n">Número de parcelas</label><input id="${p}-n" data-rasc type="number" min="2" max="12" inputmode="numeric" value="${esc(rv(p + '-n', 3))}" /></div>`;
+}
+const lerPagamento = (p) => ({ modo: $(p + '-modo').value, forma: $(p + '-forma').value, parcelas: $(p + '-n').value });
+
 function desenharBaixa() {
-  if ($('pedido') && document.activeElement === $('pedido')) return;   // não apaga o que está sendo digitado
-  const guardado = $('pedido')?.value || '';
+  const foco = document.activeElement;
+  if (foco && foco.closest && foco.closest('#t-baixa') && /^(TEXTAREA|INPUT|SELECT)$/.test(foco.tagName)) return;   // não redesenha enquanto a pessoa digita
   $('t-baixa').innerHTML = `
-    <div class="secao-topo"><h2 id="h-baixa">Dar baixa</h2><p class="legenda">alguém comprou? desconte do estoque</p></div>
+    <div class="secao-topo"><h2 id="h-baixa">Dar baixa</h2><p class="legenda">alguém comprou? desconte do estoque e crie o pedido</p></div>
     <div class="quadro">
       <label for="pedido" style="margin-top:0">Mensagem do pedido (WhatsApp ou e-mail)</label>
-      <textarea id="pedido" placeholder="Cole a mensagem inteira, com a lista de itens">${esc(guardado)}</textarea>
-      <div class="grade2" style="margin-top:16px;gap:10px">
+      <textarea id="pedido" data-rasc placeholder="Cole a mensagem inteira, com a lista de itens">${esc(rv('pedido'))}</textarea>
+      ${camposPagamento('pd', 'pendente')}
+      <div class="grade2" style="margin-top:18px;gap:10px">
         <button class="btn" id="colar" type="button">Colar</button>
         <button class="btn primario" id="conferir" type="button">Conferir</button>
       </div>
@@ -477,18 +703,252 @@ function desenharBaixa() {
       <h3>Venda avulsa</h3>
       <p class="ajuda">Para a venda combinada direto na conversa, sem passar pelo site.</p>
       <label for="v-prod">Perfume</label>
-      <select id="v-prod">${est.perfumes.map((p) => `<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join('')}</select>
+      ${opcoesSel('v-prod', rv('v-prod'), est.perfumes.map((p) => [p.id, p.nome]))}
       <div class="grade2">
-        <div><label for="v-tam">Tamanho</label><select id="v-tam">${est.tamanhos.map((s) => `<option>${s}</option>`).join('')}</select></div>
-        <div><label for="v-qtd">Quantidade</label><input id="v-qtd" type="number" min="1" value="1" inputmode="numeric" /></div>
+        <div><label for="v-tam">Tamanho</label>${opcoesSel('v-tam', rv('v-tam'), est.tamanhos.map((s) => [s, s]))}</div>
+        <div><label for="v-qtd">Quantidade</label><input id="v-qtd" data-rasc type="number" min="1" value="${esc(rv('v-qtd', 1))}" inputmode="numeric" /></div>
       </div>
+      <div class="grade2">
+        <div><label for="av-nome">Cliente (opcional)</label><input id="av-nome" data-rasc value="${esc(rv('av-nome'))}" maxlength="80" /></div>
+        <div><label for="av-tel">WhatsApp (opcional)</label><input id="av-tel" data-rasc value="${esc(rv('av-tel'))}" inputmode="tel" maxlength="30" /></div>
+      </div>
+      ${camposPagamento('av', 'pago')}
       <button class="btn cheio" id="conferir-avulsa" type="button" style="margin-top:22px">Conferir</button>
     </div>
     <div id="previa"></div>`;
   if (pendente) mostrarPrevia(pendente.previa, false);
 }
+const limparRascunhoBaixa = () => { ['pedido', 'av-nome', 'av-tel', 'v-qtd'].forEach((k) => delete rasc[k]); };
 
-const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', ajuste: 'correção' };
+document.addEventListener('input', (ev) => { const t = ev.target; if (t.dataset && 'rasc' in t.dataset) rasc[t.id] = t.value; });
+document.addEventListener('change', (ev) => {
+  const t = ev.target;
+  if (!(t.dataset && 'rasc' in t.dataset)) return;
+  rasc[t.id] = t.value;
+  const m = t.id.match(/^(pd|av)-modo$/);
+  if (m) $(m[1] + '-parc').hidden = t.value !== 'parcelado';
+});
+
+
+/* ---------- pedidos ---------- */
+const ETAPAS = [['novo', 'Novo'], ['separando', 'Separando'], ['pronto', 'Pronto'], ['entregue', 'Entregue']];
+const ROTULO_ETAPA = { ...Object.fromEntries(ETAPAS), cancelado: 'Cancelado' };
+const FORMAS_PAG = [['pix', 'Pix'], ['dinheiro', 'Dinheiro'], ['cartao', 'Cartão'], ['outro', 'Outro']];
+const FILTROS_PED = [['abertos', 'Em aberto'], ['receber', 'A receber'], ['entregues', 'Entregues'], ['cancelados', 'Cancelados'], ['todos', 'Todos']];
+const filtroPed = { cat: 'abertos' };
+let animPed = true;          // os cartões entram em sequência na primeira vez e a cada troca de filtro
+let pedidoAberto = null;
+const din = (n) => 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const dataCurta = (s) => (s ? `${s.slice(8, 10)}/${s.slice(5, 7)}` : '');
+const dataHora = (s) => (s ? `${s.slice(8, 10)}/${s.slice(5, 7)} às ${s.slice(11, 16)}` : '');
+const IC_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+
+function passaFiltroPed(p, f) {
+  if (f === 'todos') return true;
+  if (f === 'abertos') return p.status !== 'entregue' && p.status !== 'cancelado';
+  if (f === 'receber') return p.status !== 'cancelado' && p.falta > 0;
+  if (f === 'entregues') return p.status === 'entregue';
+  return p.status === 'cancelado';
+}
+
+function resumoItens(p) {
+  const nomes = p.itens.map((i) => `${i.qtd}× ${i.nome}${i.variante ? ' ' + i.variante : ''}`);
+  return nomes.length > 2 ? `${nomes.slice(0, 2).join(' · ')} · +${nomes.length - 2}` : nomes.join(' · ');
+}
+
+const chipEtapa = (status) => `<span class="chip-st" data-st="${status}">${ROTULO_ETAPA[status]}</span>`;
+
+function trilha(status) {
+  const i = Math.max(0, ETAPAS.findIndex(([k]) => k === status));
+  return `<div class="trilha" style="--p:${(i / 3).toFixed(3)}" role="img" aria-label="Etapa: ${ROTULO_ETAPA[status]}"><i class="trilha__linha"><b></b></i>${ETAPAS.map(([, n], idx) => `<span class="trilha__passo${idx < i ? ' feito' : ''}${idx === i ? ' atual' : ''}"><em></em><small>${n}</small></span>`).join('')}</div>`;
+}
+
+function blocoPagamento(p) {
+  const pagas = p.parcelas.filter((x) => x.pago).length;
+  const frac = p.total ? Math.min(1, p.pago / p.total) : 1;
+  const direita = p.parcelas.length > 1 ? `${pagas} de ${p.parcelas.length} parcelas` : (p.falta === 0 ? '' : 'à vista, a pagar');
+  return `<div class="pg"><div class="pg-linha">${p.falta === 0 ? '<span class="pago-selo">Pago</span>' : `<span><b>${din(p.pago)}</b> de ${din(p.total)}</span>`}<span>${direita}</span></div><div class="pg-barra" aria-hidden="true"><i style="--p:${frac.toFixed(3)}"></i></div></div>`;
+}
+
+function cartaoPedido(p, i) {
+  const nome = p.cliente?.nome;
+  const cancelado = p.status === 'cancelado';
+  return `<li><article class="ped${cancelado ? ' cancelado' : ''}" style="--i:${i}" data-act="ped-abrir" data-id="${esc(p.id)}" tabindex="0" role="button" aria-label="Abrir o pedido ${p.numero}${nome ? ' de ' + esc(nome) : ''}">
+    <div class="ped-topo"><div><span class="ped-num">nº ${p.numero}, ${dataCurta(p.criado)}</span><h3 class="ped-nome${nome ? '' : ' sem-nome'}">${nome ? esc(nome) : 'Sem nome'}</h3></div>${chipEtapa(p.status)}</div>
+    <p class="ped-itens">${esc(resumoItens(p))}</p>
+    ${cancelado ? '' : trilha(p.status) + blocoPagamento(p)}
+    <div class="ped-pe"><span class="ped-total">${din(p.total)}</span><span class="ped-origem">${p.origem === 'site' ? 'pelo site' : 'venda avulsa'}</span></div>
+  </article></li>`;
+}
+
+function desenharPedidos() {
+  const todosPed = est.pedidos;
+  const receber = todosPed.filter((p) => p.status !== 'cancelado').reduce((t, p) => t + p.falta, 0);
+  const abertos = todosPed.filter((p) => passaFiltroPed(p, 'abertos')).length;
+  const lista = todosPed.filter((p) => passaFiltroPed(p, filtroPed.cat));
+  const el = $('t-pedidos');
+  el.classList.toggle('anim', animPed);
+  el.innerHTML = `
+    <div class="secao-topo"><h2 id="h-pedidos">Pedidos</h2><p class="legenda">quem comprou, o que falta receber e entregar</p></div>
+    <div class="ped-resumo">
+      <div class="ped-receber"><div class="num">${din(receber)}</div><small>a receber</small></div>
+      <div class="ped-abertos"><div class="num">${abertos}</div><small>${abertos === 1 ? 'pedido em aberto' : 'pedidos em aberto'}</small></div>
+    </div>
+    <div class="filtros" role="group" aria-label="Filtrar pedidos">${FILTROS_PED.map(([k, n]) => `<button type="button" data-ped-filtro="${k}" aria-pressed="${filtroPed.cat === k}">${n} <small>${todosPed.filter((p) => passaFiltroPed(p, k)).length}</small></button>`).join('')}</div>
+    ${lista.length ? `<ul class="ped-lista">${lista.map((p, i) => cartaoPedido(p, i)).join('')}</ul>`
+      : todosPed.length ? '<div class="vazio"><span class="simbolo"></span><b>Nenhum pedido nesta lista</b>Troque o filtro para ver os outros.</div>'
+      : '<div class="vazio"><span class="simbolo"></span><b>Ainda não há pedidos</b>Cada baixa que você confirmar vira um pedido aqui, com cliente, etapas e pagamento.<br><button class="btn primario" data-act="ped-novo" type="button">Dar baixa em uma venda</button></div>'}`;
+  animPed = false;
+}
+
+/* ----- detalhe do pedido (janela) ----- */
+const voltarPedido = (id) => `<button class="voltar" type="button" data-act="ped-abrir" data-id="${esc(id)}">← Voltar ao pedido</button>`;
+
+function abrirPedido(id) {
+  const p = est.pedidos.find((x) => x.id === id);
+  if (!p) { fecharFolha(); return; }
+  const rolagem = $('folha').open && pedidoAberto === id ? $('folha').scrollTop : 0;
+  pedidoAberto = id;
+  const cancelado = p.status === 'cancelado';
+  const digitos = (p.cliente?.telefone || '').replace(/\D/g, '');
+  const zap = digitos.length >= 10 ? `https://wa.me/${digitos.startsWith('55') ? digitos : '55' + digitos}` : '';
+  const c = p.cliente || {};
+  abrirFolha(`Pedido nº ${p.numero}`, `
+    <p class="legenda" style="margin-top:4px">${p.origem === 'site' ? 'pelo site' : 'venda avulsa'}, ${dataHora(p.criado)}</p>
+
+    <section class="sec primeira">
+      <div class="det-linha">${chipEtapa(p.status)}${p.entregue_em ? `<span class="detalhe">entregue em ${dataHora(p.entregue_em)}</span>` : ''}</div>
+      ${cancelado
+        ? `<p class="detalhe" style="margin-top:12px">Cancelado em ${dataHora(p.cancelado_em)}.${p.devolvido ? ' Os itens voltaram ao estoque.' : ''}</p>`
+        : `${trilha(p.status)}<div class="troca" role="group" aria-label="Mudar a etapa">${ETAPAS.map(([k, n]) => `<button type="button" data-act="ped-status" data-id="${esc(p.id)}" data-st="${k}" aria-pressed="${p.status === k}">${n}</button>`).join('')}</div>`}
+    </section>
+
+    <section class="sec">
+      <div class="det-linha"><h3>Cliente</h3><button class="link" type="button" data-act="ped-cliente" data-id="${esc(p.id)}">Editar</button></div>
+      <p><b>${c.nome ? esc(c.nome) : '<i class="detalhe">sem nome</i>'}</b></p>
+      ${c.telefone ? `<p class="detalhe">${zap ? `<a class="contato" href="${zap}" target="_blank" rel="noopener">${esc(c.telefone)}, chamar no WhatsApp</a>` : esc(c.telefone)}</p>` : ''}
+      ${c.recebimento ? `<p class="detalhe">${esc(c.recebimento)}</p>` : ''}
+    </section>
+
+    <section class="sec">
+      <div class="det-linha"><h3>Itens</h3>${cancelado ? '' : `<button class="link" type="button" data-act="ped-item" data-id="${esc(p.id)}">Adicionar item</button>`}</div>
+      <ul class="det-itens">${p.itens.map((i) => `<li><span>${i.qtd}× ${esc(i.nome)}${i.variante ? `<i>${esc(i.variante)}</i>` : ''}</span><b>${din(i.total)}</b></li>`).join('')}</ul>
+      <div class="total-linha"><span>Total</span><span>${din(p.total)}</span></div>
+    </section>
+
+    <section class="sec">
+      <h3>Pagamento</h3>
+      ${blocoPagamento(p)}
+      <label for="ped-forma">Forma</label>
+      <select id="ped-forma" data-id="${esc(p.id)}"${cancelado ? ' disabled' : ''}>${FORMAS_PAG.map(([k, n]) => `<option value="${k}"${p.forma === k ? ' selected' : ''}>${n}</option>`).join('')}</select>
+      <ul class="parcelas">${p.parcelas.map((x) => `<li class="parcela${x.pago ? ' paga' : ''}">
+        <button class="check" type="button" data-act="ped-parcela" data-id="${esc(p.id)}" data-n="${x.n}" aria-pressed="${x.pago}" aria-label="${p.parcelas.length > 1 ? `Parcela ${x.n}` : 'Pagamento'} ${x.pago ? 'paga' : 'a pagar'}"${cancelado ? ' disabled' : ''}>${IC_CHECK}</button>
+        <div><b>${p.parcelas.length > 1 ? `Parcela ${x.n} de ${p.parcelas.length}` : 'Pagamento à vista'}</b><small>${din(x.valor)}, ${x.pago ? `pago em ${dataCurta(x.data)}` : 'a pagar'}</small></div></li>`).join('')}</ul>
+      ${cancelado ? '' : `<div class="acoes">
+        ${p.falta > 0 ? `<button class="btn pequeno" type="button" data-act="ped-quitar" data-id="${esc(p.id)}">Marcar tudo como pago</button>` : ''}
+        <button class="btn pequeno" type="button" data-act="ped-parcelamento" data-id="${esc(p.id)}">Mudar parcelamento</button></div>`}
+    </section>
+
+    <section class="sec">
+      <h3>Observações</h3>
+      ${p.observacoes.length ? `<ul class="obs">${p.observacoes.map((o) => `<li><small>${dataHora(o.data)}</small>${esc(o.texto)}</li>`).join('')}</ul>` : '<p class="detalhe">Nenhuma ainda.</p>'}
+      <form data-form="ped-obs" data-id="${esc(p.id)}">
+        <label for="obs-texto">Nova observação</label>
+        <textarea id="obs-texto" name="texto" style="min-height:84px" maxlength="500" placeholder="Ex.: pediu para entregar depois das 18h" required></textarea>
+        <button class="btn cheio" type="submit" style="margin-top:12px">Adicionar observação</button>
+      </form>
+    </section>
+
+    ${cancelado ? '' : `<section class="sec"><button class="btn perigo cheio" type="button" data-act="ped-cancelar" data-id="${esc(p.id)}">Cancelar pedido</button></section>`}
+  `);
+  $('folha').scrollTop = rolagem;
+}
+
+function folhaPedCliente(id) {
+  const c = est.pedidos.find((x) => x.id === id).cliente || {};
+  abrirFolha('Dados do cliente', `${voltarPedido(id)}
+    <form data-form="ped-cliente" data-id="${esc(id)}">
+      <label for="pc-nome">Nome</label><input id="pc-nome" name="nome" value="${esc(c.nome || '')}" maxlength="80" />
+      <label for="pc-tel">WhatsApp</label><input id="pc-tel" name="telefone" value="${esc(c.telefone || '')}" inputmode="tel" maxlength="30" />
+      <label for="pc-rec">Entrega ou retirada</label><input id="pc-rec" name="recebimento" value="${esc(c.recebimento || '')}" maxlength="200" placeholder="Ex.: Retirada com a Ana, sábado" />
+      <button class="btn primario cheio" type="submit" style="margin-top:28px">Salvar</button>
+    </form>`);
+}
+
+function folhaPedParcelamento(id) {
+  const p = est.pedidos.find((x) => x.id === id);
+  const atual = p.parcelas.length > 1 ? 'parcelado' : (p.parcelas[0]?.pago ? 'pago' : 'pendente');
+  const travado = p.parcelas.some((x) => x.pago);
+  abrirFolha('Mudar parcelamento', `${voltarPedido(id)}
+    <form data-form="ped-parc" data-id="${esc(id)}">
+      <p class="legenda" style="margin-top:4px">${travado ? 'já há parcela paga; desmarque as pagas antes de mudar' : `total de ${din(p.total)}`}</p>
+      <label for="pp-modo">Como será pago</label>
+      <select id="pp-modo" name="modo"${travado ? ' disabled' : ''}>${[['pago', 'À vista, já pago'], ['pendente', 'À vista, a pagar'], ['parcelado', 'Parcelado']].map(([k, n]) => `<option value="${k}"${k === atual ? ' selected' : ''}>${n}</option>`).join('')}</select>
+      <div id="pp-n-box"${atual === 'parcelado' ? '' : ' hidden'}><label for="pp-n">Número de parcelas</label><input id="pp-n" name="parcelas" type="number" min="2" max="12" inputmode="numeric" value="${Math.max(p.parcelas.length, 3)}"${travado ? ' disabled' : ''} /></div>
+      <button class="btn primario cheio" type="submit" style="margin-top:28px"${travado ? ' disabled' : ''}>Salvar</button>
+    </form>`);
+}
+
+function folhaPedCancelar(id) {
+  const p = est.pedidos.find((x) => x.id === id);
+  abrirFolha(`Cancelar o pedido nº ${p.numero}?`, `${voltarPedido(id)}
+    <form data-form="ped-cancelar" data-id="${esc(id)}">
+      <p class="legenda" style="margin:4px 0 0">o pedido continua na lista, como cancelado</p>
+      ${p.estoque_movido ? `<label class="lembrar" style="margin-top:18px"><input type="checkbox" name="devolver" checked /> Devolver os itens ao estoque (com vidros, etiquetas e saquinhos)</label>` : ''}
+      <button class="btn perigo cheio" type="submit" style="margin-top:22px">Cancelar pedido</button>
+    </form>`);
+}
+
+function folhaPedItem(id) {
+  const grupos = {};
+  est.catalogo.forEach((p) => { (grupos[p.rotulo] ||= []).push(p); });
+  const opcoes = Object.entries(grupos).map(([rotulo, itens]) => `<optgroup label="${esc(rotulo)}">${itens.map((p) => `<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join('')}</optgroup>`).join('');
+  abrirFolha('Adicionar item', `${voltarPedido(id)}
+    <form data-form="ped-item" data-id="${esc(id)}">
+      <label for="pi-prod">Produto</label>
+      <select id="pi-prod" name="produto">${opcoes}<option value="__livre">Outro item (digitar)</option></select>
+      <div id="pi-livre" hidden><label for="pi-nome">Nome do item</label><input id="pi-nome" name="nome" maxlength="80" placeholder="Ex.: Caixa de presente" /></div>
+      <div class="grade2">
+        <div id="pi-tam-box"><label for="pi-tam">Tamanho</label><select id="pi-tam" name="tamanho"></select></div>
+        <div><label for="pi-qtd">Quantidade</label><input id="pi-qtd" name="qtd" type="number" min="1" value="1" inputmode="numeric" required /></div>
+      </div>
+      <label for="pi-preco">Preço de cada um (R$)</label><input id="pi-preco" name="preco" inputmode="decimal" required />
+      <p class="ajuda" id="pi-dica"></p>
+      <button class="btn primario cheio" type="submit" style="margin-top:24px">Adicionar ao pedido</button>
+    </form>`);
+  atualizarItemPedido();
+}
+function atualizarItemPedido(origem) {
+  const sel = $('pi-prod');
+  if (!sel) return;
+  const livre = sel.value === '__livre';
+  $('pi-livre').hidden = !livre;
+  $('pi-nome').required = livre;
+  const p = est.catalogo.find((x) => x.id === sel.value);
+  const tams = p ? p.variantes.filter((v) => v.tamanho !== 'unico') : [];
+  $('pi-tam-box').hidden = livre || !tams.length;
+  if (origem !== 'tamanho') $('pi-tam').innerHTML = tams.map((v) => `<option value="${esc(v.tamanho)}">${esc(v.tamanho)}</option>`).join('');
+  const atual = p ? (p.variantes.find((v) => v.tamanho === ($('pi-tam-box').hidden ? 'unico' : $('pi-tam').value)) || p.variantes[0]) : null;
+  if (atual && origem !== 'preco') $('pi-preco').value = String(atual.preco).replace('.', ',');
+  if (livre && origem !== 'preco') $('pi-preco').value = '';
+  $('pi-dica').textContent = p && p.categoria === 'perfumes' && p.controlado
+    ? 'Perfumes de 30 ml e 50 ml descontam do estoque e dos insumos.' : (livre ? 'Item sem controle de estoque.' : '');
+}
+
+/* ----- eventos dos pedidos ----- */
+document.addEventListener('keydown', (ev) => {
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches && ev.target.matches('article.ped')) { ev.preventDefault(); ev.target.click(); }
+});
+document.addEventListener('change', async (ev) => {
+  const t = ev.target;
+  if (t.id === 'ped-forma') {
+    try { await api('pedido_forma', { id: t.dataset.id, forma: t.value }); aviso('Forma de pagamento salva.'); } catch (e) { falhou(e); }
+  } else if (t.id === 'pi-prod') atualizarItemPedido();
+  else if (t.id === 'pi-tam') atualizarItemPedido('tamanho');
+  else if (t.id === 'pp-modo') $('pp-n-box').hidden = t.value !== 'parcelado';
+});
+
+const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
 function desenharHistorico() {
   $('t-historico').innerHTML = `
     <div class="secao-topo"><h2 id="h-historico">Histórico</h2><p class="legenda">os últimos movimentos; o mais recente dá pra desfazer</p></div>
@@ -501,7 +961,7 @@ function desenharHistorico() {
 function desenharInsumos() {
   $('t-insumos').innerHTML = `
     <div class="secao-topo"><h2 id="h-insumos">Insumos</h2><p class="legenda">o que você usa para fazer e embalar</p></div>
-    <p class="detalhe" style="margin:-6px 0 20px">Cada frasco envasado desconta um vidro, uma etiqueta e um saquinho.</p>
+    <p class="detalhe" style="margin:-6px 0 20px">Cada perfume que sai desconta um vidro do tamanho, uma etiqueta e um saquinho.</p>
     <button class="btn primario" data-act="insumo-novo" type="button">${IC_MAIS} Novo insumo</button>
     ${est.insumos.length ? `<ul class="lista" style="margin-top:26px;border-top:1px solid var(--forte)">${est.insumos.map((i) => `
       <li class="linha" data-id="${esc(i.id)}">
@@ -607,7 +1067,7 @@ function folhaEntrada(id, modo = 'ml') {
 const AJUDA_ENTRADA = {
   ml: 'Perfume maturado, ainda sem envasar. Ex.: 180 ml.',
   un: 'Frascos que já chegaram prontos e etiquetados. Preencha um ou mais tamanhos.',
-  env: 'Transforma o granel em frascos. Os ml saem do granel e cada frasco usa um vidro, uma etiqueta e um saquinho.',
+  env: 'Transforma o granel em frascos. Os ml usados saem do granel.',
 };
 const tamanhoMl = (s) => parseInt(s, 10);
 function modoEntrada(modo) {
@@ -624,13 +1084,8 @@ function atualizarUso() {
   if (!uso || $('e-tipo').querySelector('[aria-pressed=true]').dataset.v !== 'env') { if (uso) uso.textContent = ''; return; }
   const usado = est.tamanhos.reduce((s, t) => s + (Number($('e-u-' + t).value) || 0) * tamanhoMl(t), 0);
   const granel = est.produtos.find((p) => p.id === $('e-prod').value)?.granel_ml || 0;
-  // vidros, etiquetas e saquinhos que o envase vai gastar
-  const precisa = {};
-  est.tamanhos.forEach((t) => { const n = Number($('e-u-' + t).value) || 0; Object.entries(est.receita_envase[t] || {}).forEach(([iid, por]) => { if (n) precisa[iid] = (precisa[iid] || 0) + n * por; }); });
-  const faltam = [];
-  const lista = Object.entries(precisa).map(([iid, n]) => { const i = est.insumos.find((x) => x.id === iid); if (!i) return null; if (n > i.qtd) faltam.push(i.nome.toLowerCase()); return `${n} × ${i.nome.toLowerCase()}`; }).filter(Boolean);
-  uso.innerHTML = `Vai usar ${nf.format(usado)} ml dos ${nf.format(granel)} ml a granel${lista.length ? ` e ${esc(lista.join(', '))}` : ''}.${faltam.length ? ` <b>Faltam ${esc(faltam.join(', '))}.</b>` : ''}`;
-  uso.style.color = usado > granel || faltam.length ? 'var(--perigo)' : '';
+  uso.textContent = `Vai usar ${nf.format(usado)} ml dos ${nf.format(granel)} ml a granel.`;
+  uso.style.color = usado > granel ? 'var(--perigo)' : '';
 }
 
 function folhaInsumoMover(id, tipo) {
@@ -748,6 +1203,8 @@ document.addEventListener('click', async (ev) => {
   }
   const ir = t.closest('[data-go]');
   if (ir) { irPara(ir.dataset.go); return; }
+  const pf = t.closest('[data-ped-filtro]');
+  if (pf) { filtroPed.cat = pf.dataset.pedFiltro; animPed = true; desenharPedidos(); return; }
   const cat = t.closest('[data-cat]');
   if (cat) { filtro.cat = cat.dataset.cat; desenharCatalogo(); return; }
 
@@ -756,6 +1213,23 @@ document.addEventListener('click', async (ev) => {
     const { act, id } = b.dataset;
     if (act === 'entrada') folhaEntrada(id);
     else if (act === 'envasar') folhaEntrada(id, 'env');
+    else if (act === 'ped-abrir') abrirPedido(id);
+    else if (act === 'ped-novo') irPara('baixa');
+    else if (act === 'ped-cliente') folhaPedCliente(id);
+    else if (act === 'ped-item') folhaPedItem(id);
+    else if (act === 'ped-parcelamento') folhaPedParcelamento(id);
+    else if (act === 'ped-cancelar') folhaPedCancelar(id);
+    else if (act === 'ped-status') {
+      try { await api('pedido_status', { id, status: b.dataset.st }); aviso('Etapa: ' + ROTULO_ETAPA[b.dataset.st].toLowerCase() + '.'); abrirPedido(id); } catch (e) { falhou(e); }
+    } else if (act === 'ped-parcela') {
+      try {
+        const pago = b.getAttribute('aria-pressed') !== 'true';
+        await api('pedido_parcela', { id, n: b.dataset.n, pago });
+        aviso(pago ? 'Pagamento registrado.' : 'Voltou para a pagar.'); abrirPedido(id);
+      } catch (e) { falhou(e); }
+    } else if (act === 'ped-quitar') {
+      try { await api('pedido_quitar', { id }); aviso('Tudo pago.'); abrirPedido(id); } catch (e) { falhou(e); }
+    }
     else if (act === 'insumo-entrada') folhaInsumoMover(id, 'entrada');
     else if (act === 'insumo-uso') folhaInsumoMover(id, 'uso');
     else if (act === 'insumo-corrigir') folhaInsumoCorrigir(id);
@@ -779,15 +1253,20 @@ document.addEventListener('click', async (ev) => {
   }
   if (t.id === 'tentar') entrar(senha, true).catch(() => {});
   else if (t.id === 'colar') { try { $('pedido').value = await navigator.clipboard.readText(); } catch (_) { aviso('Não consegui ler a área de transferência. Cole no campo.', true); } }
-  else if (t.id === 'conferir') conferir({ acao: 'pedido', texto: $('pedido').value });
-  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }] });
+  else if (t.id === 'conferir') conferir({ acao: 'pedido', texto: $('pedido').value, pagamento: lerPagamento('pd') });
+  else if (t.id === 'conferir-avulsa') conferir({ acao: 'venda', itens: [{ id: $('v-prod').value, tamanho: $('v-tam').value, qtd: $('v-qtd').value }], cliente: { nome: $('av-nome').value, telefone: $('av-tel').value }, pagamento: lerPagamento('av') });
   else if (t.id === 'confirmar' && pendente) {
     t.disabled = true;
     try {
       const antes = idUltimo();
       const d = await api(pendente.corpo.acao, { ...pendente.corpo, confirmar: true });
-      pendente = null; $('pedido') && ($('pedido').value = ''); $('previa').innerHTML = '';
-      aviso(d.nada_a_descontar ? 'Nenhum item desse pedido tem estoque controlado.' : 'Baixa feita. O site já está atualizado.', false, acaoDesfazer(antes));
+      pendente = null; limparRascunhoBaixa(); if ($('pedido')) $('pedido').value = ''; $('previa').innerHTML = '';
+      const novo = d.pedido;
+      aviso(d.nada_a_descontar ? `Pedido nº ${novo.numero} criado. Nenhum item tem estoque controlado.` : `Baixa feita. Pedido nº ${novo.numero} criado.`, false, [
+        { rotulo: 'Ver pedido', fn: async () => { irPara('pedidos'); abrirPedido(novo.id); } },
+        acaoDesfazer(antes),
+      ]);
+      desenharBaixa();
     } catch (e) { falhou(e); t.disabled = false; }
   }
 });
@@ -829,6 +1308,19 @@ document.addEventListener('submit', async (ev) => {
     } else if (f.dataset.form === 'insumo-novo') {
       await api('insumo_criar', v);
       aviso('Insumo criado.');
+    } else if (f.dataset.form === 'ped-obs') {
+      await api('pedido_obs', { id: f.dataset.id, texto: v.texto }); aviso('Observação salva.'); abrirPedido(f.dataset.id); return;
+    } else if (f.dataset.form === 'ped-cliente') {
+      await api('pedido_cliente', { id: f.dataset.id, nome: v.nome, telefone: v.telefone, recebimento: v.recebimento }); aviso('Dados do cliente salvos.'); abrirPedido(f.dataset.id); return;
+    } else if (f.dataset.form === 'ped-parc') {
+      await api('pedido_parcelamento', { id: f.dataset.id, modo: v.modo, parcelas: v.parcelas }); aviso('Pagamento atualizado.'); abrirPedido(f.dataset.id); return;
+    } else if (f.dataset.form === 'ped-cancelar') {
+      await api('pedido_cancelar', { id: f.dataset.id, devolver: Boolean(f.elements.devolver && f.elements.devolver.checked) }); aviso('Pedido cancelado.'); abrirPedido(f.dataset.id); return;
+    } else if (f.dataset.form === 'ped-item') {
+      const livre = v.produto === '__livre';
+      const comTamanho = !$('pi-tam-box').hidden;
+      await api('pedido_item', livre ? { id: f.dataset.id, nome: v.nome, qtd: v.qtd, preco: v.preco } : { id: f.dataset.id, produto_id: v.produto, tamanho: comTamanho ? v.tamanho : '', qtd: v.qtd, preco: v.preco });
+      aviso('Item adicionado ao pedido.'); abrirPedido(f.dataset.id); return;
     } else if (f.dataset.form === 'precos') {
       await api('produto_precos', { id: f.dataset.id, precos: v });
       aviso('Preços atualizados.');
@@ -845,8 +1337,8 @@ document.addEventListener('submit', async (ev) => {
 // ao voltar para a aba ou para o app, busca o estoque de novo (outro aparelho pode ter mudado)
 document.addEventListener('visibilitychange', () => { if (!document.hidden && senha && est && !$('folha').open) api('estado').catch(() => {}); });
 
-if (senha) entrar(senha, true).catch((e) => { if (e.message === 'Senha incorreta.') $('login').hidden = false; });
-else $('login').hidden = false;
+if (senha) entrar(senha, true).catch(() => {});   // senha antiga errada: api() já volta para a tela de entrada
+else mostrarLogin();
 </script>
 </body>
 </html>

@@ -43,3 +43,26 @@ export async function gravarJSON(chave, valor) {
   }
   await comando('SET', chave, JSON.stringify(valor));
 }
+
+// ---------- Contador com validade (limite de tentativas de senha) ----------
+const memoria = new Map();   // só no modo local
+
+export async function contagem(chave) {
+  if (process.env.ESTOQUE_LOCAL) {
+    const m = memoria.get(chave);
+    return m && m.ate > Date.now() ? m.n : 0;
+  }
+  return Number(await comando('GET', chave)) || 0;
+}
+
+export async function contar(chave, janelaSegundos) {
+  if (process.env.ESTOQUE_LOCAL) {
+    const m = memoria.get(chave);
+    const n = (m && m.ate > Date.now() ? m.n : 0) + 1;
+    memoria.set(chave, { n, ate: m && m.ate > Date.now() ? m.ate : Date.now() + janelaSegundos * 1000 });
+    return n;
+  }
+  const n = await comando('INCR', chave);
+  if (n === 1) await comando('EXPIRE', chave, janelaSegundos);
+  return n;
+}

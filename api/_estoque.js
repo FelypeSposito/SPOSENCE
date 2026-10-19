@@ -27,8 +27,8 @@ export const INSUMOS_PADRAO = [
   { id: 'vidro-30ml', nome: 'Vidros de 30 ml', unidade: 'un', qtd: 11, minimo: 5 },
   { id: 'vidro-50ml', nome: 'Vidros de 50 ml', unidade: 'un', qtd: 6, minimo: 3 },
 ];
-// O que cada frasco envasado consome.
-export const RECEITA_ENVASE = {
+// O que cada perfume vendido consome (um vidro do tamanho, uma etiqueta e um saquinho).
+export const RECEITA_FRASCO = {
   '30ml': { 'vidro-30ml': 1, etiqueta: 1, saquinho: 1 },
   '50ml': { 'vidro-50ml': 1, etiqueta: 1, saquinho: 1 },
 };
@@ -60,6 +60,8 @@ export async function carregar() {
   e.catalogo.precos ??= {};
   e.catalogo.extras ??= [];
   e.insumos ??= structuredClone(INSUMOS_PADRAO);
+  e.pedidos ??= [];
+  e.proximo_pedido ??= 1;
   return e;
 }
 export const salvar = (e) => gravarJSON(CHAVE, e);
@@ -121,8 +123,10 @@ export function estado(e) {
       variantes: precosDe(e, p),
       dados: extras.has(p.id) ? dadosEditaveis(p) : undefined,
     })),
+    pedidos: [...e.pedidos].reverse().slice(0, 300).map(pedidoParaTela),
+    formas_pagamento: FORMAS,
+    etapas_pedido: STATUS_PEDIDO,
     insumos: e.insumos.map((i) => ({ ...i, acabando: i.qtd <= (i.minimo ?? 0) })),
-    receita_envase: RECEITA_ENVASE,
     historico: e.historico.slice(-30).reverse().map((h) => ({ id: h.id, data: h.data, tipo: h.tipo, descricao: h.descricao })),
   };
 }
@@ -267,8 +271,8 @@ export function definirPrecos(e, id, precos) {
 export function itensDoPedido(texto) {
   const itens = [];
   for (const linha of String(texto).replace(/\*/g, '').split(/\r?\n/)) {
-    const m = linha.match(/^\s*-\s*(\d+)x\s+(.+?)\s+\(([^)]+)\)\s*\|/);
-    if (m) itens.push({ qtd: Number(m[1]), nome: m[2].trim(), variante: m[3].trim() });
+    const m = linha.match(/^\s*-\s*(\d+)x\s+(.+?)\s+\(([^)]+)\)\s*\|\s*(?:R\$)?\s*([\d.,]+)?/);
+    if (m) itens.push({ qtd: Number(m[1]), nome: m[2].trim(), variante: m[3].trim(), total: valorBR(m[4]) });
   }
   return itens;
 }
@@ -291,11 +295,17 @@ export function simularBaixa(e, itens) {
   const linhas = [];
   const problemas = [];
   const movs = [];
+  const usoInsumo = {};   // insumo -> quanto o pedido precisa
   for (const it of itens) {
     const produto = todos(e).find((p) => normal(p.name) === normal(it.nome));
     const item = produto && copia[produto.id];
+    // todo perfume que sai leva um vidro do tamanho, uma etiqueta e um saquinho
+    const receita = produto?.category === 'perfumes' ? RECEITA_FRASCO[it.variante] : null;
+    if (receita) for (const [iid, por] of Object.entries(receita)) usoInsumo[iid] = (usoInsumo[iid] || 0) + it.qtd * por;
     if (!item || !e.tamanhos.includes(it.variante)) {
-      linhas.push({ ok: null, texto: `${it.qtd}x ${it.nome} (${it.variante}): sem controle de estoque, nada a descontar` });
+      linhas.push({ ok: null, texto: receita
+        ? `${it.qtd}x ${it.nome} (${it.variante}): sem controle de ml, só desconta vidro, etiqueta e saquinho`
+        : `${it.qtd}x ${it.nome} (${it.variante}): sem controle de estoque, nada a descontar` });
       continue;
     }
     for (let i = 0; i < it.qtd; i++) {
@@ -313,6 +323,18 @@ export function simularBaixa(e, itens) {
       }
     }
   }
+  // Insumos: a venda já aconteceu, então nunca bloqueia; se faltar, a contagem vai a zero e avisa.
+  if (!problemas.length) {
+    const gastos = [];
+    for (const [iid, preciso] of Object.entries(usoInsumo)) {
+      const ins = e.insumos.find((i) => i.id === iid);
+      if (!ins) continue;
+      const aplicado = Math.min(preciso, Math.max(ins.qtd, 0));
+      if (aplicado > 0) { movs.push({ id: iid, campo: 'insumo', delta: -aplicado }); gastos.push(`${aplicado} × ${ins.nome.toLowerCase()}`); }
+      if (aplicado < preciso) linhas.push({ ok: null, texto: `Faltou ${ins.nome.toLowerCase()}: precisava de ${preciso} e havia ${ins.qtd}. A contagem foi a zero; corrija em Insumos.` });
+    }
+    if (gastos.length) linhas.push({ ok: true, texto: `Insumos: −${gastos.join(', −')}` });
+  }
   return { linhas, problemas, movs: somarMovs(movs) };
 }
 
@@ -328,16 +350,34 @@ function aplicarMov(e, m, sinal = 1) {
   else item.unidades[m.campo] = (item.unidades[m.campo] || 0) + sinal * m.delta;
 }
 
-export function registrar(e, { tipo, descricao, movs, hash }) {
+export function registrar(e, { tipo, descricao, movs, hash, meta }) {
   for (const m of movs) aplicarMov(e, m);
-  e.historico.push({ id: crypto.randomBytes(4).toString('hex'), data: agora(), tipo, descricao, movs, hash });
+  const id = crypto.randomBytes(4).toString('hex');
+  e.historico.push({ id, data: agora(), tipo, descricao, movs, hash, meta });
   e.historico = e.historico.slice(-MAX_HISTORICO);
+  return id;
 }
 
 export function desfazerUltimo(e) {
   const h = e.historico[e.historico.length - 1];
   if (!h) throw erro('Não há nada para desfazer.');
   for (const m of h.movs) aplicarMov(e, m, -1);
+  // o movimento criou, aumentou ou cancelou um pedido: desfaz isso também
+  const meta = h.meta || {};
+  const pedido = meta.pedido && e.pedidos.find((p) => p.id === meta.pedido);
+  if (pedido && meta.item) {
+    if (pedido.itens.length - 1 === meta.item.indice) {
+      pedido.itens.pop();
+      pedido.total = arred(pedido.total - meta.item.total);
+      pedido.movs = (pedido.movs || []).slice(0, Math.max(0, (pedido.movs || []).length - meta.item.movs.length));
+      recalcularParcelas(pedido);
+    }
+  } else if (pedido && meta.cancelamento) {
+    pedido.status = meta.cancelamento.anterior;
+    delete pedido.cancelado_em; delete pedido.devolvido;
+  } else if (pedido) {
+    e.pedidos = e.pedidos.filter((p) => p.id !== meta.pedido);
+  }
   e.historico.pop();
   return h;
 }
@@ -369,20 +409,6 @@ export function movimentosDeUnidades(e, { id, unidades, envasar }) {
     const granel = e.produtos[id]?.granel_ml || 0;
     if (usado > granel) throw erro(`Para envasar ${partes.join(' e ')} precisa de ${usado} ml, e só há ${granel} ml a granel.`);
     movs.push({ id, campo: 'granel_ml', delta: -usado });
-    // cada frasco leva um vidro, uma etiqueta e um saquinho
-    const uso = {};
-    for (const s of e.tamanhos) {
-      const n = Number(unidades?.[s] || 0);
-      for (const [iid, por] of Object.entries(RECEITA_ENVASE[s] || {})) if (n) uso[iid] = (uso[iid] || 0) + n * por;
-    }
-    const faltas = [];
-    for (const [iid, preciso] of Object.entries(uso)) {
-      const ins = e.insumos.find((i) => i.id === iid);
-      if (!ins) continue;
-      if (ins.qtd < preciso) faltas.push(`${ins.nome} (precisa de ${preciso}, tem ${ins.qtd})`);
-      else movs.push({ id: iid, campo: 'insumo', delta: -preciso });
-    }
-    if (faltas.length) throw erro(`Faltam insumos para envasar: ${faltas.join('; ')}. Se a contagem estiver errada, corrija em Insumos.`);
   }
   return { movs, partes, usado };
 }
@@ -429,6 +455,185 @@ export function criarInsumo(e, d) {
 export function removerInsumo(e, id) {
   achaInsumo(e, id);
   e.insumos = e.insumos.filter((i) => i.id !== id);
+}
+
+// ---------- Pedidos ----------
+// Cada baixa (pedido colado ou venda avulsa) vira um pedido: itens, cliente, etapa, pagamento
+// (à vista ou em parcelas) e observações. Os movimentos de estoque ficam guardados para poder
+// devolver ao estoque se o pedido for cancelado.
+export const STATUS_PEDIDO = ['novo', 'separando', 'pronto', 'entregue'];
+export const FORMAS = ['pix', 'dinheiro', 'cartao', 'outro'];
+const arred = (n) => Math.round(n * 100) / 100;
+const valorBR = (t) => { const n = Number(String(t ?? '').replace(/[^\d,]/g, '').replace(',', '.')); return Number.isFinite(n) ? n : 0; };
+
+export const clienteDe = (d) => ({ nome: limpar(d?.nome, 80), telefone: limpar(d?.telefone, 30), recebimento: limpar(d?.recebimento, 200) });
+
+// A mensagem do site traz "Nome:", "WhatsApp:" e "Recebimento:"
+export function clienteDoTexto(texto) {
+  const limpo = String(texto).replace(/\*/g, '');
+  const pega = (rotulo) => (limpo.match(new RegExp(`^\\s*${rotulo}\\s*:\\s*(.+)$`, 'mi')) || [])[1] || '';
+  return clienteDe({ nome: pega('Nome'), telefone: pega('WhatsApp'), recebimento: pega('Recebimento') });
+}
+
+export function precoUnitario(e, produto, variante) {
+  const ajuste = e.catalogo.precos[produto.id] || {};
+  if (variante in ajuste) return ajuste[variante];
+  const v = produto.variants?.find((x) => x.size === variante);
+  return v?.price ?? ajuste.unico ?? produto.price ?? 0;
+}
+
+// Itens do pedido com o valor de cada linha (usa o preço do site se a linha não trouxe)
+export function itensParaPedido(e, itens) {
+  return itens.map((i) => {
+    const prod = todos(e).find((p) => normal(p.name) === normal(i.nome));
+    const total = i.total || (prod ? arred(precoUnitario(e, prod, i.variante) * i.qtd) : 0);
+    return { nome: i.nome, variante: i.variante, qtd: i.qtd, total, produto_id: prod?.id };
+  });
+}
+
+export function planoParcelas(total, modo, n) {
+  if (modo === 'pago') return [{ n: 1, valor: total, pago: true, data: agora() }];
+  const qtd = modo === 'parcelado' ? Math.min(Math.max(Math.floor(Number(n) || 2), 2), 12) : 1;
+  const base = Math.floor((total / qtd) * 100) / 100;
+  const lista = Array.from({ length: qtd }, (_, i) => ({ n: i + 1, valor: base, pago: false }));
+  lista[qtd - 1].valor = arred(total - base * (qtd - 1));
+  return lista;
+}
+
+// Quando o total muda, as parcelas já pagas ficam como estão e o resto é redistribuído
+function recalcularParcelas(p) {
+  const pagas = p.parcelas.filter((x) => x.pago);
+  const abertas = p.parcelas.filter((x) => !x.pago);
+  const restante = arred(p.total - pagas.reduce((t, x) => t + x.valor, 0));
+  let lista;
+  if (restante <= 0) lista = pagas;
+  else if (!abertas.length) lista = [...pagas, { n: 0, valor: restante, pago: false }];
+  else {
+    const base = Math.floor((restante / abertas.length) * 100) / 100;
+    abertas.forEach((x, i) => { x.valor = i === abertas.length - 1 ? arred(restante - base * (abertas.length - 1)) : base; });
+    lista = [...pagas, ...abertas];
+  }
+  lista.sort((a, b) => (a.n || 999) - (b.n || 999));
+  lista.forEach((x, i) => { x.n = i + 1; });
+  p.parcelas = lista;
+}
+
+export function criarPedido(e, { origem, itens, cliente, pagamento, movs, hash, texto }) {
+  const total = arred(itens.reduce((t, i) => t + i.total, 0));
+  const numero = e.proximo_pedido++;
+  const p = {
+    id: `p${numero}`, numero, criado: agora(), origem, cliente, itens, total,
+    forma: FORMAS.includes(pagamento?.forma) ? pagamento.forma : 'pix',
+    parcelas: planoParcelas(total, pagamento?.modo, pagamento?.parcelas),
+    status: 'novo', observacoes: [], movs, hash,
+  };
+  if (texto) p.texto = String(texto).slice(0, 2500);
+  e.pedidos.push(p);
+  return p;
+}
+
+const achaPedido = (e, id) => {
+  const p = e.pedidos.find((x) => x.id === id);
+  if (!p) throw erro('Pedido não encontrado.', 404);
+  return p;
+};
+const abertoParaMudar = (p) => { if (p.status === 'cancelado') throw erro('Esse pedido está cancelado.'); return p; };
+
+export function pedidoParaTela(p) {
+  const pago = arred(p.parcelas.filter((x) => x.pago).reduce((t, x) => t + x.valor, 0));
+  return { ...p, texto: undefined, movs: undefined, estoque_movido: (p.movs || []).length > 0, pago, falta: arred(Math.max(p.total - pago, 0)) };
+}
+
+export function statusPedido(e, id, status) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  if (!STATUS_PEDIDO.includes(status)) throw erro('Etapa inválida.');
+  p.status = status;
+  if (status === 'entregue') p.entregue_em = agora(); else delete p.entregue_em;
+}
+
+export function observacaoPedido(e, id, texto) {
+  const p = achaPedido(e, id);
+  const t = limpar(texto, 500);
+  if (!t) throw erro('Escreva a observação.');
+  p.observacoes.push({ data: agora(), texto: t });
+}
+
+export function clientePedido(e, id, d) { achaPedido(e, id).cliente = clienteDe(d); }
+
+export function formaPedido(e, id, forma) {
+  if (!FORMAS.includes(forma)) throw erro('Forma de pagamento inválida.');
+  achaPedido(e, id).forma = forma;
+}
+
+export function parcelaPedido(e, id, n, pago) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  const parcela = p.parcelas.find((x) => x.n === Number(n));
+  if (!parcela) throw erro('Parcela não encontrada.');
+  parcela.pago = Boolean(pago);
+  if (parcela.pago) parcela.data = agora(); else delete parcela.data;
+}
+
+export function quitarPedido(e, id) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  for (const x of p.parcelas) if (!x.pago) { x.pago = true; x.data = agora(); }
+}
+
+export function parcelamentoPedido(e, id, modo, n) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  if (p.parcelas.some((x) => x.pago)) throw erro('Já há parcela paga. Desmarque as pagas antes de mudar o parcelamento.');
+  if (!['pago', 'pendente', 'parcelado'].includes(modo)) throw erro('Escolha como será o pagamento.');
+  p.parcelas = planoParcelas(p.total, modo, n);
+}
+
+// Item novo no pedido. Perfume de 30/50 ml desconta do estoque e dos insumos, como uma baixa.
+export function adicionarItemPedido(e, id, d) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  const qtd = quantidade(d.qtd, 1000);
+  if (!qtd) throw erro('Informe a quantidade.');
+  let item;
+  let movs = [];
+  if (d.produto_id) {
+    const prod = todos(e).find((x) => x.id === d.produto_id);
+    if (!prod) throw erro('Produto não encontrado.');
+    const variante = d.tamanho || prod.variants?.[0]?.size || '';
+    const unit = d.preco != null && String(d.preco).trim() !== '' ? preco(d.preco, 'preço') : precoUnitario(e, prod, variante);
+    item = { nome: prod.name, variante, qtd, total: arred(unit * qtd), produto_id: prod.id };
+    const sim = simularBaixa(e, [{ qtd, nome: prod.name, variante }]);
+    if (sim.problemas.length) throw erro(sim.problemas.join('; '), 409);
+    movs = sim.movs;
+  } else {
+    const nome = limpar(d.nome, 80);
+    if (!nome) throw erro('Dê um nome ao item.');
+    item = { nome, variante: '', qtd, total: arred(preco(d.preco, 'preço') * qtd) };
+  }
+  p.itens.push(item);
+  p.total = arred(p.total + item.total);
+  recalcularParcelas(p);
+  if (movs.length) {
+    p.movs = [...(p.movs || []), ...movs];
+    registrar(e, {
+      tipo: 'pedido-item',
+      descricao: `Pedido #${p.numero}: +${qtd}x ${item.nome}${item.variante ? ` (${item.variante})` : ''}`,
+      movs,
+      meta: { pedido: p.id, item: { indice: p.itens.length - 1, total: item.total, movs } },
+    });
+  }
+}
+
+export function cancelarPedido(e, id, devolver) {
+  const p = abertoParaMudar(achaPedido(e, id));
+  const anterior = p.status;
+  p.status = 'cancelado';
+  p.cancelado_em = agora();
+  if (devolver && p.movs?.length) {
+    registrar(e, {
+      tipo: 'cancelamento',
+      descricao: `Pedido #${p.numero} cancelado: devolveu ao estoque`,
+      movs: p.movs.map((m) => ({ ...m, delta: -m.delta })),
+      meta: { pedido: p.id, cancelamento: { anterior } },
+    });
+    p.devolvido = true;
+  }
 }
 
 // Ajuste manual: define os valores certos e guarda só a diferença.
