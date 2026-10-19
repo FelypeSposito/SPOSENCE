@@ -448,6 +448,19 @@ const SPOSENCE_DATA = {
       featured: true
     },
     { 
+      id: "creme-neutro", 
+      name: "Creme Neutro", 
+      type: "Creme Corporal", 
+      volume: "100g",
+      description: "Hidratação para o corpo sem fragrância. Textura leve e toque macio, para quem prefere uma pele sem perfume ou quer passar o seu perfume Sposence por cima.", 
+      category: "skincare",
+      variants: [
+        { size: "100g", price: 35 }
+      ],
+      image: "img/Creme Neutro.jpg",
+      tags: ["neutro", "hidratação", "corpo", "sem fragrância"]
+    },
+    { 
       id: "sk-hidra-frutado", 
       name: "Creme Hidratante Frutado", 
       type: "Creme Corporal", 
