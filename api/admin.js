@@ -8,6 +8,8 @@
 //   envasar         { id, unidades: { "30ml": 5, "50ml": 3 } }   tira os ml do granel
 //   ajustar         { id, granel_ml, unidades: { "30ml": n } }
 //   desfazer
+//   maturacao_criar {produto_id | nome, ml, inicio: "AAAA-MM-DD", dias, obs} · maturacao_editar {id, ...} · maturacao_remover {id}
+//   maturacao_concluir {id, produto_id, ml}   os ml entram como granel; dá para desfazer
 //   pedido_status {id, status} · pedido_obs {id, texto} · pedido_cliente {id, nome, telefone, recebimento}
 //   pedido_forma {id, forma} · pedido_parcela {id, n, pago} · pedido_quitar {id}
 //   pedido_parcelamento {id, modo, parcelas} · pedido_item {id, produto_id, tamanho, qtd, preco | nome} · pedido_cancelar {id, devolver}
@@ -31,6 +33,7 @@ import {
   movimentoDeInsumo, movimentoDeAjusteInsumo, criarInsumo, removerInsumo,
   clienteDe, clienteDoTexto, itensParaPedido, criarPedido, statusPedido, observacaoPedido, clientePedido,
   formaPedido, parcelaPedido, quitarPedido, parcelamentoPedido, adicionarItemPedido, cancelarPedido,
+  criarLote, editarLote, removerLote, concluirLote,
 } from './_estoque.js';
 
 const LIMITE_TENTATIVAS = 8;   // senhas erradas por aparelho...
@@ -133,6 +136,14 @@ export default async function handler(req, res) {
       const h = desfazerUltimo(e);
       await salvar(e);
       extra = { desfeito: h.descricao };
+    } else if (b.acao === 'maturacao_criar') {
+      extra = { criado: criarLote(e, b).id }; await salvar(e);
+    } else if (b.acao === 'maturacao_editar') {
+      editarLote(e, b.id, b); await salvar(e);
+    } else if (b.acao === 'maturacao_concluir') {
+      concluirLote(e, b.id, b); await salvar(e);
+    } else if (b.acao === 'maturacao_remover') {
+      removerLote(e, b.id); await salvar(e);
     } else if (b.acao === 'pedido_status') {
       statusPedido(e, b.id, b.status); await salvar(e);
     } else if (b.acao === 'pedido_obs') {

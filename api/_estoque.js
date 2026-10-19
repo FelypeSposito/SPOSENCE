@@ -62,6 +62,7 @@ export async function carregar() {
   e.insumos ??= structuredClone(INSUMOS_PADRAO);
   e.pedidos ??= [];
   e.proximo_pedido ??= 1;
+  e.maturacao ??= [];
   return e;
 }
 export const salvar = (e) => gravarJSON(CHAVE, e);
@@ -123,6 +124,8 @@ export function estado(e) {
       variantes: precosDe(e, p),
       dados: extras.has(p.id) ? dadosEditaveis(p) : undefined,
     })),
+    hoje: hojeSP(),
+    maturacao: lotesParaTela(e),
     pedidos: [...e.pedidos].reverse().slice(0, 300).map(pedidoParaTela),
     formas_pagamento: FORMAS,
     etapas_pedido: STATUS_PEDIDO,
@@ -364,6 +367,8 @@ export function desfazerUltimo(e) {
   for (const m of h.movs) aplicarMov(e, m, -1);
   // o movimento criou, aumentou ou cancelou um pedido: desfaz isso também
   const meta = h.meta || {};
+  const lote = meta.maturacao && e.maturacao.find((l) => l.id === meta.maturacao);
+  if (lote) { lote.status = 'maturando'; delete lote.concluido_em; delete lote.ml_entrada; delete lote.destino_id; }
   const pedido = meta.pedido && e.pedidos.find((p) => p.id === meta.pedido);
   if (pedido && meta.item) {
     if (pedido.itens.length - 1 === meta.item.indice) {
@@ -634,6 +639,79 @@ export function cancelarPedido(e, id, devolver) {
     });
     p.devolvido = true;
   }
+}
+
+// ---------- Maturação ----------
+// Lotes de perfume que estão maturando: quanto, desde quando e por quantos dias. Servem de base
+// para saber quando lançar. Ao ficar pronto, o lote vai para o estoque como granel.
+export const hojeSP = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' });
+const dataOk = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s)) && !Number.isNaN(Date.parse(s));
+const somaDias = (s, n) => { const [a, m, d] = s.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d + n)).toISOString().slice(0, 10); };
+const difDias = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
+
+function dadosLote(e, d) {
+  const prod = d.produto_id ? todos(e).find((p) => p.id === d.produto_id && p.category === 'perfumes') : null;
+  if (d.produto_id && !prod) throw erro('Perfume não encontrado.');
+  const nome = prod ? prod.name : limpar(d.nome, 80);
+  if (!nome) throw erro('Escolha o perfume ou digite o nome.');
+  const ml = quantidade(d.ml, 100000);
+  if (!ml) throw erro('Informe quantos ml estão maturando.');
+  const dias = quantidade(d.dias, 365);
+  if (!dias) throw erro('Informe quantos dias de maturação.');
+  const inicio = dataOk(d.inicio) ? d.inicio : hojeSP();
+  return { produto_id: prod?.id, nome, ml, inicio, dias, previsto: somaDias(inicio, dias), obs: limpar(d.obs, 200) };
+}
+
+const achaLote = (e, id) => {
+  const l = e.maturacao.find((x) => x.id === id);
+  if (!l) throw erro('Lote não encontrado.', 404);
+  return l;
+};
+
+export function criarLote(e, d) {
+  const l = { id: 'm' + crypto.randomBytes(3).toString('hex'), status: 'maturando', criado: agora(), ...dadosLote(e, d) };
+  e.maturacao.push(l);
+  return l;
+}
+
+export function editarLote(e, id, d) {
+  const l = achaLote(e, id);
+  if (l.status === 'concluido') throw erro('Esse lote já foi para o estoque.');
+  Object.assign(l, dadosLote(e, d));
+}
+
+export function removerLote(e, id) {
+  achaLote(e, id);
+  e.maturacao = e.maturacao.filter((l) => l.id !== id);
+}
+
+// Colocar no estoque: os ml entram como granel do perfume escolhido. Dá para desfazer.
+export function concluirLote(e, id, d) {
+  const l = achaLote(e, id);
+  if (l.status === 'concluido') throw erro('Esse lote já foi para o estoque.');
+  const produtoId = d.produto_id || l.produto_id;
+  if (!produtoId) throw erro('Escolha em qual perfume do catálogo ele entra.');
+  const ml = d.ml ? quantidade(d.ml, 100000) : l.ml;
+  if (!ml) throw erro('Informe quantos ml entram no estoque.');
+  const movs = movimentosDeEntrada(e, { id: produtoId, ml });
+  const nome = todos(e).find((p) => p.id === produtoId).name;
+  registrar(e, { tipo: 'entrada', descricao: `Maturação concluída: +${ml} ml de ${nome}`, movs, meta: { maturacao: l.id } });
+  l.status = 'concluido';
+  l.concluido_em = agora();
+  l.destino_id = produtoId;   // para onde foi; o perfume original do lote não muda
+  l.ml_entrada = ml;
+}
+
+export function lotesParaTela(e) {
+  const hoje = hojeSP();
+  const prontoEm = (l) => difDias(hoje, l.previsto);
+  const ativos = e.maturacao.filter((l) => l.status === 'maturando')
+    .sort((a, b) => a.previsto.localeCompare(b.previsto))
+    .map((l) => ({ ...l, dias_restantes: prontoEm(l), progresso: Math.min(1, Math.max(0, difDias(l.inicio, hoje) / l.dias)) }));
+  const feitos = e.maturacao.filter((l) => l.status === 'concluido')
+    .sort((a, b) => String(b.concluido_em).localeCompare(String(a.concluido_em))).slice(0, 8)
+    .map((l) => ({ ...l, dias_restantes: 0, progresso: 1 }));
+  return [...ativos, ...feitos];
 }
 
 // Ajuste manual: define os valores certos e guarda só a diferença.

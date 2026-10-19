@@ -105,15 +105,6 @@
     .link { background: none; border: 0; padding: 0; min-height: 0; color: var(--acento); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
     /* Pedidos: cartões na linguagem do site (cantos de 16px, sombra suave, pílulas, trilha animada) */
-    .ped-resumo { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin: 4px 0 24px; }
-    .ped-resumo small { display: block; margin-top: 8px; font-size: 13.5px; }
-    .ped-receber { position: relative; overflow: hidden; background: var(--btn); color: var(--no-btn); border-radius: 16px; padding: 18px 20px; }
-    .ped-receber .num { font-size: clamp(28px, 8vw, 38px); line-height: 1; font-variant-numeric: tabular-nums; }
-    .ped-receber small { opacity: .8; }
-    .ped-receber::after { content: ''; position: absolute; right: -16px; bottom: -22px; width: 104px; height: 104px; background: currentColor; opacity: .13; -webkit-mask: url('img/simbolo-loader.png') center / contain no-repeat; mask: url('img/simbolo-loader.png') center / contain no-repeat; }
-    .ped-abertos { border: 1px solid var(--forte); border-radius: 16px; padding: 18px 20px; }
-    .ped-abertos .num { font-size: clamp(28px, 8vw, 38px); line-height: 1; }
-    .ped-abertos small { color: var(--suave); }
     .filtros small { font-size: 12px; opacity: .7; margin-left: 2px; font-variant-numeric: tabular-nums; }
     .ped-lista { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 18px; }
     .ped { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 18px 18px 16px; cursor: pointer; box-shadow: 0 16px 34px -24px rgba(70, 37, 6, .4); transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .3s; }
@@ -320,6 +311,90 @@
       main { max-width: 960px; padding: 40px 28px 56px; }
       #aviso { bottom: 28px; left: calc(50% + 116px); }
     }
+    /* Maturação: lotes com prazo e progresso */
+    .troca-vista { margin: 0 0 24px; gap: 22px; flex-wrap: wrap; }
+    .troca button small { font-size: 12px; opacity: .7; margin-left: 3px; font-variant-numeric: tabular-nums; }
+    .sub-titulo { font-size: 22px; margin: 36px 0 4px; }
+    .mat-lista { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 22px; }
+    .lote { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 18px; box-shadow: 0 16px 34px -24px rgba(70, 37, 6, .4); transition: border-color .4s, box-shadow .4s var(--ease); }
+    .lote.pronto { border-color: color-mix(in srgb, var(--acento) 60%, transparent); }
+    .lote.feito { opacity: .7; box-shadow: none; }
+    .lote .qtd { margin-top: 10px; }
+    .lote-datas { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .lote-datas small { display: block; font-family: 'Philosopher', serif; font-style: italic; font-weight: 400; color: var(--suave); font-size: 15px; }
+    @media (min-width: 900px) { .mat-lista { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); } }
+    /* Pedidos, versão 2: cabeçalho editorial, métricas, quadro por etapa, botão e cartão flutuante do site */
+    .eyebrow { display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--acento); margin-bottom: .9rem; }
+    .ped-cabeca { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px 32px; flex-wrap: wrap; margin-bottom: 28px; }
+    .ped-cabeca h2 { font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.02; letter-spacing: -.012em; margin: 0; }
+    .ped-cabeca h2 em { color: var(--acento); }
+    .ped-lead { color: var(--suave); max-width: 44ch; margin-top: 12px; font-size: 1.0625rem; line-height: 1.6; }
+    .ped-acoes { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .ped-acoes .troca-vista { margin: 0; }
+    /* botão do site: pílula com preenchimento que sobe no hover e seta que anda */
+    .btn-site { position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap; min-height: 52px; padding: 0 1.6rem; border-radius: 999px; border: 1px solid var(--btn); background: var(--btn); color: var(--no-btn); font-size: .9rem; font-weight: 600; letter-spacing: .02em; transition: color .45s var(--ease), border-color .45s var(--ease), transform .2s; }
+    .btn-site::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--acento); transform: translateY(101%); transition: transform .5s var(--ease); }
+    .btn-site svg { width: 18px; height: 18px; transition: transform .45s var(--ease); }
+    .btn-site:active { transform: scale(.98); }
+    @media (hover: hover) { .btn-site:hover { border-color: var(--acento); } .btn-site:hover::before { transform: translateY(0); } .btn-site:hover svg { transform: translateX(4px); } }
+    /* métricas */
+    .ped-resumo { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 14px; margin: 0 0 30px; }
+    .ped-resumo > div { position: relative; overflow: hidden; border-radius: 16px; padding: 20px 22px; }
+    .ped-resumo small { display: block; font-size: 13.5px; }
+    .ped-resumo .num { font-size: clamp(30px, 4.2vw, 46px); line-height: 1; margin: 12px 0 10px; font-variant-numeric: tabular-nums; }
+    .ped-receber { background: var(--btn); color: var(--no-btn); }
+    .ped-receber small { opacity: .82; }
+    .ped-receber::after { content: ''; position: absolute; right: -18px; bottom: -26px; width: 118px; height: 118px; background: currentColor; opacity: .12; -webkit-mask: url('img/simbolo-loader.png') center / contain no-repeat; mask: url('img/simbolo-loader.png') center / contain no-repeat; }
+    .ped-abertos, .ped-mes { border: 1px solid var(--forte); }
+    .ped-abertos small, .ped-mes small { color: var(--suave); }
+    @media (max-width: 640px) { .ped-resumo { grid-template-columns: 1fr 1fr; } .ped-receber { grid-column: 1 / -1; } .ped-cabeca { align-items: flex-start; } .ped-abertos, .ped-mes { padding: 16px 16px 14px; } .ped-abertos .num, .ped-mes .num { font-size: clamp(22px, 6.4vw, 28px); } }
+    /* quadro por etapa */
+    .quadro-ped { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .col { background: color-mix(in srgb, var(--tinta) 4.5%, transparent); border-radius: 18px; padding: 14px; min-height: 240px; transition: background .3s, box-shadow .3s; }
+    .col.alvo { background: color-mix(in srgb, var(--acento) 13%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--acento) 55%, transparent); }
+    .col-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 2px 14px; }
+    .col-topo small { color: var(--suave); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+    .col-corpo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .mini { min-width: 0; }
+    .col-vazio { border: 1.5px dashed var(--forte); border-radius: 14px; padding: 28px 12px; text-align: center; color: var(--suave); font-family: 'Philosopher', serif; font-style: italic; font-size: 16px; }
+    .mini { background: var(--papel); border: 1px solid var(--linha); border-radius: 14px; padding: 14px 14px 12px; cursor: grab; box-shadow: 0 12px 26px -22px rgba(70, 37, 6, .5); transition: transform .35s var(--ease), box-shadow .35s var(--ease), opacity .2s; }
+    @media (hover: hover) { .mini:hover { transform: translateY(-2px); box-shadow: 0 20px 34px -22px rgba(70, 37, 6, .55); } }
+    .mini:active { cursor: grabbing; }
+    .mini.arrastando { opacity: .4; transform: rotate(1.5deg); }
+    .mini-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .mini-nome { font-size: 21px; line-height: 1.12; margin-top: 4px; }
+    .mini-nome.sem-nome { font-style: italic; color: var(--suave); }
+    .mini-itens { font-size: 13.5px; color: var(--suave); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-pe { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 0 8px; font-family: 'Philosopher', serif; font-size: 20px; font-variant-numeric: tabular-nums; }
+    .falta-selo { font-size: 12.5px; font-weight: 700; color: var(--ambar); font-variant-numeric: tabular-nums; }
+    /* estado vazio: texto e foto emoldurada com o cartão flutuante do site */
+    .ped-vazio { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: center; }
+    .ped-vazio h3 { font-size: clamp(1.9rem, 4.4vw, 2.8rem); line-height: 1.06; letter-spacing: -.01em; }
+    .ped-vazio h3 em { color: var(--acento); }
+    .ped-vazio p { color: var(--suave); max-width: 40ch; margin: 14px 0 24px; line-height: 1.6; font-size: 1.0625rem; }
+    .ped-vazio__foto { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4 / 3; background: #ead9b8; }
+    .ped-vazio__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; }
+    .ped-flutua { position: absolute; left: 16px; bottom: 16px; max-width: calc(100% - 32px); display: grid; grid-template-columns: 46px 1fr auto; gap: .8rem; align-items: center; padding: .7rem .8rem .7rem .7rem; background: color-mix(in srgb, var(--papel) 88%, transparent); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); border: 1px solid color-mix(in srgb, #fff 55%, transparent); border-radius: 16px; box-shadow: 0 16px 34px -20px rgba(70, 37, 6, .4), inset 0 1px 0 rgba(255, 255, 255, .5); }
+    .flutua-simbolo { width: 46px; height: 46px; border-radius: 10px; background: color-mix(in srgb, var(--acento) 16%, transparent); position: relative; }
+    .flutua-simbolo::after { content: ''; position: absolute; inset: 7px; background: var(--acento); -webkit-mask: url('img/simbolo-loader.png') center / contain no-repeat; mask: url('img/simbolo-loader.png') center / contain no-repeat; }
+    .ped-flutua strong { display: block; font-family: 'Philosopher', serif; font-weight: 400; font-size: 1.1rem; line-height: 1.15; }
+    .ped-flutua small { display: block; color: var(--suave); font-size: .8rem; margin-top: .15rem; }
+    .flutua-seta { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--btn); color: var(--no-btn); display: grid; place-items: center; transition: transform .5s var(--ease); }
+    .flutua-seta svg { width: 18px; height: 18px; }
+    @media (hover: hover) { .flutua-seta:hover { transform: rotate(-45deg); } }
+    @media (min-width: 900px) {
+      .ped-lista { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+      .ped-vazio { grid-template-columns: 1fr 1.15fr; gap: 56px; }
+      .ped-vazio__foto { aspect-ratio: 5 / 4; }
+    }
+    @media (max-width: 999px) { .quadro-ped { display: none; } }
+    /* telas largas: o painel de pedidos usa mais espaço; as outras abas ficam numa coluna de leitura */
+    @media (min-width: 1100px) {
+      main { max-width: 1180px; }
+      main > section { max-width: 860px; margin-inline: auto; }
+      main > #t-pedidos { max-width: none; }
+      .topo-in { max-width: 1180px; }
+    }
     @media (prefers-reduced-motion: no-preference) {
       dialog[open] { animation: sobe .32s var(--ease); }
       dialog[open]::backdrop { animation: fade .25s ease-out; }
@@ -343,6 +418,10 @@
       @keyframes enche-x { from { transform: scaleX(0); } }
       @keyframes pulsa { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--acento) 8%, transparent); } }
       @keyframes desenha { from { stroke-dashoffset: 24; } }
+      .anim .mini, .anim .lote { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 70ms); }
+      .anim .lote .pg-barra i { animation: enche-x 1.1s var(--ease) both; animation-delay: calc(var(--i) * 70ms + 250ms); }
+      .ped-flutua { animation: flutua 6s ease-in-out infinite; }
+      @keyframes flutua { 50% { transform: translateY(-5px); } }
       .anim .item { animation: item .7s var(--ease) both; animation-delay: calc(var(--i) * 90ms); }
       .anim .vial .liquido { animation: enche 1.3s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 200ms); }
       @keyframes item { from { transform: translateY(14px); opacity: 0; } }
@@ -637,12 +716,14 @@ function selos(p) {
 }
 
 function desenharEstoque() {
+  if (vistaEstoque === 'maturacao') { desenharMaturacao(); return; }
   const r = est.resumo;
   const maior = Math.max(1, ...est.produtos.map((p) => p.ml_total));
   const pratos = est.produtos.length;
   $('t-estoque').classList.toggle('anim', primeiraVez);
   $('t-estoque').innerHTML = `
     <div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>
+    ${trocaEstoque()}
     <div class="total">
       <div class="num">${nf.format(r.ml_total)}<em>ml</em></div>
       <p>de essência no total, em <b>${r.frascos_prontos}</b> frascos prontos e no granel${r.esgotados ? `. <b>${r.esgotados}</b> ${r.esgotados === 1 ? 'perfume está' : 'perfumes estão'} sem estoque` : ''}.</p>
@@ -781,25 +862,137 @@ function cartaoPedido(p, i) {
   </article></li>`;
 }
 
+/* ----- tela de pedidos: cabeçalho, métricas, lista ou quadro por etapa ----- */
+let vistaPed = (() => { try { return localStorage.getItem('sp-ped-vista') || ''; } catch (_) { return ''; } })();
+const cabeQuadro = () => matchMedia('(min-width: 1000px)').matches;
+const vistaAtualPed = () => (cabeQuadro() ? (vistaPed || 'quadro') : 'lista');
+const IC_SETA = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+// cartão compacto do quadro (a etapa já está dito pela coluna)
+function cartaoMini(p, i) {
+  const nome = p.cliente && p.cliente.nome;
+  const frac = p.total ? Math.min(1, p.pago / p.total) : 1;
+  return `<article class="mini" draggable="true" style="--i:${i}" data-act="ped-abrir" data-id="${esc(p.id)}" tabindex="0" role="button" aria-label="Abrir o pedido ${p.numero}${nome ? ' de ' + esc(nome) : ''}">
+    <div class="mini-topo"><span class="ped-num">nº ${p.numero}, ${dataCurta(p.criado)}</span>${p.falta === 0 ? '<span class="pago-selo">Pago</span>' : `<span class="falta-selo">falta ${din(p.falta)}</span>`}</div>
+    <h4 class="mini-nome${nome ? '' : ' sem-nome'}">${nome ? esc(nome) : 'Sem nome'}</h4>
+    <p class="mini-itens">${esc(resumoItens(p))}</p>
+    <div class="mini-pe"><b>${din(p.total)}</b><span class="ped-origem">${p.origem === 'site' ? 'site' : 'avulsa'}</span></div>
+    <div class="pg-barra" aria-hidden="true"><i style="--p:${frac.toFixed(3)}"></i></div>
+  </article>`;
+}
+
+function quadroPedidos() {
+  let n = 0;
+  const colunas = ETAPAS.map(([k, nome]) => {
+    const todas = est.pedidos.filter((p) => p.status === k);
+    const total = todas.reduce((t, p) => t + p.total, 0);
+    const lista = k === 'entregue' ? todas.slice(0, 8) : todas;
+    return `<section class="col" data-etapa="${k}" aria-label="${nome}">
+      <header class="col-topo"><span class="chip-st" data-st="${k}">${nome}</span><small>${todas.length} · ${din(total)}</small></header>
+      <div class="col-corpo">${lista.length ? lista.map((p) => cartaoMini(p, n++)).join('') : '<p class="col-vazio">Solte um pedido aqui</p>'}</div>
+    </section>`;
+  }).join('');
+  const cancelados = est.pedidos.filter((p) => p.status === 'cancelado').length;
+  return `<div class="quadro-ped" role="group" aria-label="Quadro de pedidos por etapa">${colunas}</div>
+    <p class="detalhe" style="margin-top:14px">Arraste um cartão para mudar a etapa, ou toque nele para abrir.${cancelados ? ` <button class="link" type="button" data-ped-lista="cancelados">Ver ${cancelados} ${cancelados === 1 ? 'cancelado' : 'cancelados'}</button>` : ''}</p>`;
+}
+
+function vazioPedidos() {
+  return `<section class="ped-vazio">
+    <div class="ped-vazio__copy">
+      <h3>Ainda não há <em>pedidos</em></h3>
+      <p>Cada baixa que você confirmar vira um pedido aqui, com cliente, etapas, itens, observações e parcelas.</p>
+      <button class="btn-site" type="button" data-act="ped-novo"><span>Dar baixa em uma venda</span>${IC_SETA}</button>
+    </div>
+    <div class="ped-vazio__foto">
+      <picture>
+        <source type="image/avif" sizes="(min-width: 900px) 45vw, 100vw" srcset="img/hero/sacola-640.avif 640w, img/hero/sacola-960.avif 960w, img/hero/sacola-1280.avif 1280w">
+        <source type="image/webp" sizes="(min-width: 900px) 45vw, 100vw" srcset="img/hero/sacola-640.webp 640w, img/hero/sacola-960.webp 960w, img/hero/sacola-1280.webp 1280w">
+        <img src="img/hero/sacola-1280.jpg" alt="" width="1600" height="1460" loading="lazy" decoding="async">
+      </picture>
+      <div class="ped-flutua">
+        <span class="flutua-simbolo" aria-hidden="true"></span>
+        <div><strong>Seu primeiro pedido</strong><small>aparece aqui ao dar baixa</small></div>
+        <button class="flutua-seta" type="button" data-act="ped-novo" aria-label="Dar baixa em uma venda">${IC_SETA}</button>
+      </div>
+    </div>
+  </section>`;
+}
+
 function desenharPedidos() {
   const todosPed = est.pedidos;
-  const receber = todosPed.filter((p) => p.status !== 'cancelado').reduce((t, p) => t + p.falta, 0);
+  const ativos = todosPed.filter((p) => p.status !== 'cancelado');
+  const receber = ativos.reduce((t, p) => t + p.falta, 0);
+  const comPendencia = ativos.filter((p) => p.falta > 0).length;
   const abertos = todosPed.filter((p) => passaFiltroPed(p, 'abertos')).length;
-  const lista = todosPed.filter((p) => passaFiltroPed(p, filtroPed.cat));
+  const mes = (est.hoje || '').slice(0, 7);
+  const vendidoMes = ativos.filter((p) => p.criado.slice(0, 7) === mes).reduce((t, p) => t + p.total, 0);
+  const nomeMes = est.hoje ? new Date(est.hoje + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long' }) : 'o mês';
+  const vista = vistaAtualPed();
   const el = $('t-pedidos');
   el.classList.toggle('anim', animPed);
-  el.innerHTML = `
-    <div class="secao-topo"><h2 id="h-pedidos">Pedidos</h2><p class="legenda">quem comprou, o que falta receber e entregar</p></div>
-    <div class="ped-resumo">
-      <div class="ped-receber"><div class="num">${din(receber)}</div><small>a receber</small></div>
-      <div class="ped-abertos"><div class="num">${abertos}</div><small>${abertos === 1 ? 'pedido em aberto' : 'pedidos em aberto'}</small></div>
-    </div>
+  const corpoLista = () => `
     <div class="filtros" role="group" aria-label="Filtrar pedidos">${FILTROS_PED.map(([k, n]) => `<button type="button" data-ped-filtro="${k}" aria-pressed="${filtroPed.cat === k}">${n} <small>${todosPed.filter((p) => passaFiltroPed(p, k)).length}</small></button>`).join('')}</div>
-    ${lista.length ? `<ul class="ped-lista">${lista.map((p, i) => cartaoPedido(p, i)).join('')}</ul>`
-      : todosPed.length ? '<div class="vazio"><span class="simbolo"></span><b>Nenhum pedido nesta lista</b>Troque o filtro para ver os outros.</div>'
-      : '<div class="vazio"><span class="simbolo"></span><b>Ainda não há pedidos</b>Cada baixa que você confirmar vira um pedido aqui, com cliente, etapas e pagamento.<br><button class="btn primario" data-act="ped-novo" type="button">Dar baixa em uma venda</button></div>'}`;
+    ${(() => { const lista = todosPed.filter((p) => passaFiltroPed(p, filtroPed.cat)); return lista.length ? `<ul class="ped-lista">${lista.map((p, i) => cartaoPedido(p, i)).join('')}</ul>` : '<div class="vazio"><span class="simbolo"></span><b>Nenhum pedido nesta lista</b>Troque o filtro para ver os outros.</div>'; })()}`;
+  el.innerHTML = `
+    <header class="ped-cabeca">
+      <div>
+        <span class="eyebrow">Painel de pedidos</span>
+        <h2 id="h-pedidos">Seus <em>pedidos</em></h2>
+        <p class="ped-lead">Acompanhe cada venda: o que falta pagar, separar e entregar.</p>
+      </div>
+      <div class="ped-acoes">
+        ${todosPed.length && cabeQuadro() ? `<div class="troca troca-vista" role="group" aria-label="Como ver os pedidos">
+          <button type="button" data-act="ped-vista" data-v="quadro" aria-pressed="${vista === 'quadro'}">Quadro</button>
+          <button type="button" data-act="ped-vista" data-v="lista" aria-pressed="${vista === 'lista'}">Lista</button></div>` : ''}
+        <button class="btn-site" type="button" data-act="ped-novo"><span>Dar baixa em uma venda</span>${IC_SETA}</button>
+      </div>
+    </header>
+    <div class="ped-resumo">
+      <div class="ped-receber"><small>A receber</small><div class="num">${din(receber)}</div><small>${comPendencia ? `${comPendencia} ${comPendencia === 1 ? 'pedido com pagamento pendente' : 'pedidos com pagamento pendente'}` : 'nada pendente'}</small></div>
+      <div class="ped-abertos"><small>Em aberto</small><div class="num">${abertos}</div><small>${abertos === 1 ? 'pedido a entregar' : 'pedidos a entregar'}</small></div>
+      <div class="ped-mes"><small>Vendido em ${nomeMes}</small><div class="num">${din(vendidoMes)}</div><small>${ativos.filter((p) => p.criado.slice(0, 7) === mes).length} no mês</small></div>
+    </div>
+    ${!todosPed.length ? vazioPedidos() : vista === 'quadro' ? quadroPedidos() : corpoLista()}`;
   animPed = false;
 }
+
+/* arrastar e soltar no quadro: mudar a etapa */
+let arrastando = null;
+document.addEventListener('dragstart', (ev) => {
+  const c = ev.target.closest && ev.target.closest('.mini');
+  if (!c) return;
+  arrastando = c.dataset.id;
+  ev.dataTransfer.effectAllowed = 'move';
+  ev.dataTransfer.setData('text/plain', arrastando);
+  c.classList.add('arrastando');
+});
+document.addEventListener('dragend', () => {
+  arrastando = null;
+  document.querySelectorAll('.mini.arrastando, .col.alvo').forEach((x) => x.classList.remove('arrastando', 'alvo'));
+});
+document.addEventListener('dragover', (ev) => {
+  const col = ev.target.closest && ev.target.closest('.col');
+  if (!col || !arrastando) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.col.alvo').forEach((x) => { if (x !== col) x.classList.remove('alvo'); });
+  col.classList.add('alvo');
+});
+document.addEventListener('drop', async (ev) => {
+  const col = ev.target.closest && ev.target.closest('.col');
+  if (!col || !arrastando) return;
+  ev.preventDefault();
+  const id = arrastando;
+  const etapa = col.dataset.etapa;
+  col.classList.remove('alvo');
+  const p = est.pedidos.find((x) => x.id === id);
+  if (!p || p.status === etapa) return;
+  try { await api('pedido_status', { id, status: etapa }); aviso(`Pedido nº ${p.numero}: ${ROTULO_ETAPA[etapa].toLowerCase()}.`); } catch (e) { falhou(e); }
+});
+let redesenhoPed = 0;
+addEventListener('resize', () => { clearTimeout(redesenhoPed); redesenhoPed = setTimeout(() => { if (est && !$('t-pedidos').hidden) { animPed = false; desenharPedidos(); } }, 200); });
+
 
 /* ----- detalhe do pedido (janela) ----- */
 const voltarPedido = (id) => `<button class="voltar" type="button" data-act="ped-abrir" data-id="${esc(id)}">← Voltar ao pedido</button>`;
@@ -947,6 +1140,134 @@ document.addEventListener('change', async (ev) => {
   else if (t.id === 'pi-tam') atualizarItemPedido('tamanho');
   else if (t.id === 'pp-modo') $('pp-n-box').hidden = t.value !== 'parcelado';
 });
+
+/* ---------- maturação ---------- */
+let vistaEstoque = 'prateleira';   // 'prateleira' | 'maturacao'
+let animMat = true;                // a lista entra em sequência quando a aba é aberta
+const dataBR = (s) => (s ? `${String(s).slice(8, 10)}/${String(s).slice(5, 7)}` : '');
+const dataBRano = (s) => (s ? `${String(s).slice(8, 10)}/${String(s).slice(5, 7)}/${String(s).slice(0, 4)}` : '');
+const somaDiasCli = (s, n) => { const [a, m, d] = s.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d + n)).toISOString().slice(0, 10); };
+const difDiasCli = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
+const nDias = (n) => `${n} ${Math.abs(n) === 1 ? 'dia' : 'dias'}`;
+
+const trocaEstoque = () => `<div class="troca troca-vista" role="group" aria-label="O que mostrar">
+  <button type="button" data-act="vista-estoque" data-v="prateleira" aria-pressed="${vistaEstoque === 'prateleira'}">Na prateleira</button>
+  <button type="button" data-act="vista-estoque" data-v="maturacao" aria-pressed="${vistaEstoque === 'maturacao'}">Em maturação <small>${est.maturacao.filter((l) => l.status === 'maturando').length}</small></button></div>`;
+
+function cartaoLote(l, i) {
+  const feito = l.status === 'concluido';
+  const pronto = !feito && l.dias_restantes <= 0;
+  const rotulo = feito ? 'No estoque' : pronto ? 'Pronto' : 'Maturando';
+  const st = feito ? 'entregue' : pronto ? 'pronto' : 'separando';
+  const legenda = feito ? `foi para o estoque em ${dataBR(String(l.concluido_em).slice(0, 10))}${l.ml_entrada && l.ml_entrada !== l.ml ? `, com ${nf.format(l.ml_entrada)} ml` : ''}`
+    : l.dias_restantes > 0 ? `faltam ${nDias(l.dias_restantes)}`
+    : l.dias_restantes === 0 ? 'fica pronto hoje'
+    : `pronto há ${nDias(-l.dias_restantes)}`;
+  return `<li class="lote${pronto ? ' pronto' : ''}${feito ? ' feito' : ''}" style="--i:${i}">
+    <div class="ped-topo"><h3 class="ped-nome">${esc(l.nome)}</h3><span class="chip-st" data-st="${st}">${rotulo}</span></div>
+    <div class="qtd">${nf.format(l.ml)}<em>ml</em></div>
+    <div class="lote-datas">
+      <span><small>começou</small>${dataBR(l.inicio)}</span>
+      <span><small>${feito ? 'ficou pronto' : 'fica pronto'}</small>${dataBR(l.previsto)}</span>
+      <span><small>maturação</small>${nDias(l.dias)}</span>
+    </div>
+    <div class="pg"><div class="pg-linha"><span class="${pronto ? 'pago-selo' : ''}">${esc(legenda)}</span><span>${Math.round(l.progresso * 100)}%</span></div><div class="pg-barra" aria-hidden="true"><i style="--p:${l.progresso.toFixed(3)}"></i></div></div>
+    ${l.obs ? `<p class="detalhe" style="margin-top:12px">${esc(l.obs)}</p>` : ''}
+    <div class="acoes">
+      ${feito ? '' : `<button class="btn ${pronto ? 'primario ' : ''}pequeno" type="button" data-act="mat-concluir" data-id="${esc(l.id)}">Colocar no estoque</button>
+      <button class="btn pequeno" type="button" data-act="mat-editar" data-id="${esc(l.id)}">Editar</button>`}
+      <button class="btn pequeno" type="button" data-act="mat-excluir" data-id="${esc(l.id)}">Excluir</button>
+    </div>
+  </li>`;
+}
+
+function desenharMaturacao() {
+  const ativos = est.maturacao.filter((l) => l.status === 'maturando');
+  const feitos = est.maturacao.filter((l) => l.status === 'concluido');
+  const mlTotal = ativos.reduce((t, l) => t + l.ml, 0);
+  const prontos = ativos.filter((l) => l.dias_restantes <= 0).length;
+  const ultimo = ativos.reduce((m, l) => (l.previsto > m ? l.previsto : m), '');
+  const diasAteTodos = ultimo ? difDiasCli(est.hoje, ultimo) : 0;
+  const el = $('t-estoque');
+  el.classList.toggle('anim', animMat);
+  el.innerHTML = `
+    <div class="secao-topo"><h2 id="h-estoque">Estoque</h2><p class="legenda">essência em ml, do granel ao frasco</p></div>
+    ${trocaEstoque()}
+    ${ativos.length ? `<div class="total">
+        <div class="num">${nf.format(mlTotal)}<em>ml</em></div>
+        <p>de essência maturando, em <b>${ativos.length}</b> ${ativos.length === 1 ? 'lote' : 'lotes'}.
+        ${prontos === ativos.length ? ` <b>Tudo pronto</b> para colocar no estoque.` : prontos ? ` <b>${prontos}</b> já ${prontos === 1 ? 'está pronto' : 'estão prontos'}.` : ''}
+        ${ativos.length > 1 && diasAteTodos > 0 ? ` A linha completa fica pronta em <b>${dataBRano(ultimo)}</b>, daqui a ${nDias(diasAteTodos)}.` : ''}
+        ${ativos.length === 1 && diasAteTodos > 0 ? ` Fica pronto em <b>${dataBRano(ultimo)}</b>.` : ''}</p>
+      </div>` : ''}
+    <button class="btn primario" data-act="mat-novo" type="button">${IC_MAIS} Novo lote em maturação</button>
+    ${ativos.length ? `<ul class="mat-lista">${ativos.map((l, i) => cartaoLote(l, i)).join('')}</ul>`
+      : '<div class="vazio"><span class="simbolo"></span><b>Nada maturando agora</b>Registre cada lote com a data em que começou e os dias de maturação. O painel mostra quanto falta e quando dá para lançar.</div>'}
+    ${feitos.length ? `<h3 class="sub-titulo">Já foram para o estoque</h3><ul class="mat-lista mat-feitos">${feitos.map((l, i) => cartaoLote(l, i)).join('')}</ul>` : ''}`;
+  animMat = false;
+}
+
+/* ----- janelas do lote ----- */
+function folhaLote(id) {
+  const l = id ? est.maturacao.find((x) => x.id === id) : null;
+  const opcoes = est.perfumes.map((p) => `<option value="${esc(p.id)}"${l && l.produto_id === p.id ? ' selected' : ''}>${esc(p.nome)}</option>`).join('');
+  const livre = l ? !l.produto_id : !est.perfumes.length;
+  abrirFolha(l ? 'Editar lote' : 'Novo lote em maturação', `
+    <form data-form="mat-lote" data-id="${esc(id || '')}">
+      <label for="ml-prod">Perfume</label>
+      <select id="ml-prod" name="produto_id">${opcoes}<option value=""${livre ? ' selected' : ''}>Outro (ainda não cadastrado)</option></select>
+      <div id="ml-livre"${livre ? '' : ' hidden'}><label for="ml-nome">Nome do perfume</label><input id="ml-nome" name="nome" value="${esc(l && !l.produto_id ? l.nome : '')}" maxlength="80" placeholder="Ex.: Dior J'adore" /></div>
+      <div class="grade2">
+        <div><label for="ml-ml">Quantos ml</label><input id="ml-ml" name="ml" type="number" min="1" inputmode="numeric" required value="${l ? l.ml : ''}" placeholder="180" /></div>
+        <div><label for="ml-ini">Começou em</label><input id="ml-ini" name="inicio" type="date" required value="${l ? l.inicio : est.hoje}" /></div>
+      </div>
+      <label for="ml-dias">Dias de maturação</label>
+      <input id="ml-dias" name="dias" type="number" min="1" max="365" inputmode="numeric" required value="${l ? l.dias : 30}" />
+      <div class="escolha" id="ml-atalhos" style="column-gap:20px;flex-wrap:wrap">${[15, 30, 45, 60].map((n) => `<button type="button" data-dias="${n}" aria-pressed="false">${n} dias</button>`).join('')}</div>
+      <p class="ajuda" id="ml-previsto" aria-live="polite"></p>
+      <label for="ml-obs">Observação (opcional)</label>
+      <input id="ml-obs" name="obs" maxlength="200" value="${esc(l ? l.obs : '')}" placeholder="Ex.: lote do fornecedor novo" />
+      <button class="btn primario cheio" type="submit" style="margin-top:28px">${l ? 'Salvar lote' : 'Registrar lote'}</button>
+    </form>`);
+  atualizarPrevisto();
+}
+function atualizarPrevisto() {
+  const ini = $('ml-ini'), dias = $('ml-dias');
+  if (!ini || !dias) return;
+  $('ml-livre').hidden = $('ml-prod').value !== '';
+  $('ml-nome').required = $('ml-prod').value === '';
+  document.querySelectorAll('#ml-atalhos button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.dias === dias.value));
+  const n = Number(dias.value);
+  if (!ini.value || !n) { $('ml-previsto').textContent = ''; return; }
+  const previsto = somaDiasCli(ini.value, n);
+  const falta = difDiasCli(est.hoje, previsto);
+  $('ml-previsto').textContent = `Fica pronto em ${dataBRano(previsto)}${falta > 0 ? `, daqui a ${nDias(falta)}` : falta === 0 ? ', hoje' : `, há ${nDias(-falta)}`}.`;
+}
+
+function folhaConcluirLote(id) {
+  const l = est.maturacao.find((x) => x.id === id);
+  const parecido = est.perfumes.find((p) => l.produto_id === p.id) || est.perfumes.find((p) => p.nome.toLowerCase() === l.nome.toLowerCase());
+  abrirFolha('Colocar no estoque', `
+    <form data-form="mat-concluir" data-id="${esc(id)}">
+      <p class="legenda" style="margin-top:4px">${esc(l.nome)}, ${nf.format(l.ml)} ml maturados</p>
+      <label for="mc-prod">Entra em qual perfume do catálogo</label>
+      <select id="mc-prod" name="produto_id" required>${parecido ? '' : '<option value="" disabled selected>Escolha o perfume</option>'}${est.perfumes.map((p) => `<option value="${esc(p.id)}"${parecido && parecido.id === p.id ? ' selected' : ''}>${esc(p.nome)}</option>`).join('')}</select>
+      <p class="ajuda">Ainda não cadastrou? Crie em Catálogo, Novo, e volte aqui.</p>
+      <label for="mc-ml">Quantos ml entram no estoque</label>
+      <input id="mc-ml" name="ml" type="number" min="1" inputmode="numeric" required value="${l.ml}" />
+      <p class="ajuda">Se perdeu um pouco na filtragem, ajuste aqui. Os ml entram como granel, prontos para envasar.</p>
+      <button class="btn primario cheio" type="submit" style="margin-top:28px"${est.perfumes.length ? '' : ' disabled'}>Colocar no estoque</button>
+    </form>`);
+}
+
+/* ----- eventos da maturação ----- */
+document.addEventListener('input', (ev) => { if (ev.target.id === 'ml-ini' || ev.target.id === 'ml-dias') atualizarPrevisto(); });
+document.addEventListener('change', (ev) => { if (ev.target.id === 'ml-prod') atualizarPrevisto(); });
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('#ml-atalhos [data-dias]');
+  if (b) { $('ml-dias').value = b.dataset.dias; atualizarPrevisto(); }
+});
+
 
 const TIPOS = { pedido: 'pedido', venda: 'venda avulsa', entrada: 'entrada', envase: 'envase', insumo: 'insumo', 'pedido-item': 'item de pedido', cancelamento: 'cancelamento', ajuste: 'correção' };
 function desenharHistorico() {
@@ -1203,6 +1524,8 @@ document.addEventListener('click', async (ev) => {
   }
   const ir = t.closest('[data-go]');
   if (ir) { irPara(ir.dataset.go); return; }
+  const pl = t.closest('[data-ped-lista]');
+  if (pl) { vistaPed = 'lista'; try { localStorage.setItem('sp-ped-vista', 'lista'); } catch (_) {} filtroPed.cat = pl.dataset.pedLista; animPed = true; desenharPedidos(); return; }
   const pf = t.closest('[data-ped-filtro]');
   if (pf) { filtroPed.cat = pf.dataset.pedFiltro; animPed = true; desenharPedidos(); return; }
   const cat = t.closest('[data-cat]');
@@ -1214,6 +1537,15 @@ document.addEventListener('click', async (ev) => {
     if (act === 'entrada') folhaEntrada(id);
     else if (act === 'envasar') folhaEntrada(id, 'env');
     else if (act === 'ped-abrir') abrirPedido(id);
+    else if (act === 'ped-vista') { vistaPed = b.dataset.v; try { localStorage.setItem('sp-ped-vista', vistaPed); } catch (_) {} animPed = true; desenharPedidos(); }
+    else if (act === 'vista-estoque') { vistaEstoque = b.dataset.v; animMat = true; desenharEstoque(); }
+    else if (act === 'mat-novo') folhaLote();
+    else if (act === 'mat-editar') folhaLote(id);
+    else if (act === 'mat-concluir') folhaConcluirLote(id);
+    else if (act === 'mat-excluir') {
+      const l = est.maturacao.find((x) => x.id === id);
+      confirmar('Excluir este lote?', `${l.nome}, ${nf.format(l.ml)} ml. Ele sai da lista de maturação.`, 'Excluir lote', async () => { await api('maturacao_remover', { id }); aviso('Lote excluído.'); });
+    }
     else if (act === 'ped-novo') irPara('baixa');
     else if (act === 'ped-cliente') folhaPedCliente(id);
     else if (act === 'ped-item') folhaPedItem(id);
@@ -1308,6 +1640,15 @@ document.addEventListener('submit', async (ev) => {
     } else if (f.dataset.form === 'insumo-novo') {
       await api('insumo_criar', v);
       aviso('Insumo criado.');
+    } else if (f.dataset.form === 'mat-lote') {
+      const id = f.dataset.id;
+      await api(id ? 'maturacao_editar' : 'maturacao_criar', { id, produto_id: v.produto_id, nome: v.nome, ml: v.ml, inicio: v.inicio, dias: v.dias, obs: v.obs });
+      aviso(id ? 'Lote atualizado.' : 'Lote registrado.');
+      if (!id) { vistaEstoque = 'maturacao'; animMat = true; desenharEstoque(); }
+    } else if (f.dataset.form === 'mat-concluir') {
+      const antes = idUltimo();
+      await api('maturacao_concluir', { id: f.dataset.id, produto_id: v.produto_id, ml: v.ml });
+      aviso('Entrou no estoque como granel.', false, acaoDesfazer(antes));
     } else if (f.dataset.form === 'ped-obs') {
       await api('pedido_obs', { id: f.dataset.id, texto: v.texto }); aviso('Observação salva.'); abrirPedido(f.dataset.id); return;
     } else if (f.dataset.form === 'ped-cliente') {
